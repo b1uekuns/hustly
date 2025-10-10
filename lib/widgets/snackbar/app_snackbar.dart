@@ -9,12 +9,18 @@ enum SnackType { success, error, warning, info }
 class AppSnackbar {
   static OverlayEntry? _currentOverlay;
 
+  static void hideCurrentOverlay() {
+    _currentOverlay?.remove();
+    _currentOverlay = null;
+  }
+
   static void showSnackBar(
     BuildContext context, {
-    required String title,
+    String? title,
     required String message,
     SnackType type = SnackType.success,
     Duration duration = const Duration(seconds: 3),
+    VoidCallback? onDismissed,
   }) {
     if (!context.mounted) return;
     final overlay = Overlay.of(context);
@@ -74,7 +80,9 @@ class AppSnackbar {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          "$title\n$message",
+                          (title == null || title.isEmpty)
+                              ? message
+                              : "$title\n$message",
                           style: AppStyle.def.bold
                               .size(16)
                               .colors(AppColor.white),
@@ -96,6 +104,7 @@ class AppSnackbar {
     Future.delayed(duration, () {
       if (overlayEntry.mounted) overlayEntry.remove();
       if (_currentOverlay == overlayEntry) _currentOverlay = null;
+      if (onDismissed != null) onDismissed();
     });
   }
 }

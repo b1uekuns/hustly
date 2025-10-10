@@ -26,7 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     final result = await sendOtpUseCase(params: SendOtpParams(event.email));
     if (result is DataSuccess) {
-      emit(OtpSentSuccess());
+      emit(OtpSentSuccess('Đã gửi OTP, vui lòng kiểm tra email'));
     } else if (result is DataError) {
       emit(AuthFailure('Gửi OTP thất bại'));
     }

@@ -4,6 +4,7 @@ import 'package:hust_chill_app/core/utils/images_local.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hust_chill_app/widgets/pin_put_otp/pin_put_widget.dart';
+import 'package:hust_chill_app/widgets/snackbar/app_snackbar.dart';
 
 import '../../../../core/utils/app_function.dart';
 import '../bloc/auth_bloc.dart';
@@ -25,16 +26,18 @@ class _LoginOTPPageState extends State<LoginOTPPage> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
-          AppFunction.showSnackBar(
+          AppSnackbar.showSnackBar(
             context,
-            title: 'Error',
+            title: 'Lỗi',
             message: state.message,
+            type: SnackType.error,
           );
         } else if (state is AuthSuccess) {
-          AppFunction.showSnackBar(
+          AppSnackbar.showSnackBar(
             context,
-            title: 'Success',
+            //title: 'Success',
             message: 'Đăng nhập thành công',
+            type: SnackType.success,
           );
           // Điều hướng đến trang chính hoặc trang khác nếu cần
         }
@@ -167,7 +170,11 @@ class _LoginOTPPageState extends State<LoginOTPPage> {
                           child: GestureDetector(
                             onTap: () {
                               context.read<AuthBloc>().add(
-                                SendOtpRequested(_emailController.text),
+                                VerifyOtpRequested(
+                                  _otpController.text,
+                                  _emailController
+                                      .text, // passing email as second required argument
+                                ),
                               );
                             },
                             child: Container(

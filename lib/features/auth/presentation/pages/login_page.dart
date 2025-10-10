@@ -23,25 +23,38 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   String? _emailError;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is OtpSentSuccess) {
+          setState(() {
+            _isLoading = false;
+          });
           AppSnackbar.showSnackBar(
             context,
-            title: "Success",
+            title: "Thành công",
             message: state.message,
             type: SnackType.success,
+            duration: const Duration(seconds: 1),
+            onDismissed: () {
+              if (context.mounted) {
+                GoRouter.of(context).push(AppPage.loginOtp.toPath());
+              }
+            },
           );
-          GoRouter.of(context).pushReplacement(AppPage.loginOtp.toPath());
         } else if (state is AuthFailure) {
+          setState(() {
+            _isLoading = false;
+          });
           AppSnackbar.showSnackBar(
             context,
-            title: "Error",
+            title: "Lỗi",
             message: state.message,
-            type: SnackType.error,);
+            type: SnackType.error,
+          );
         }
       },
       builder: (context, state) {
@@ -145,6 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                                         Expanded(
                                           child: EmailInputField(
                                             controller: _emailController,
+                                            enabled: !_isLoading,
                                             // Bỏ errorText khỏi đây
                                             onChanged: (value) {
                                               if (_emailError != null) {
@@ -190,66 +204,80 @@ class _LoginPageState extends State<LoginPage> {
                         // Button được cải thiện
                         Positioned(
                           bottom: -5,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                final email = _emailController.text.trim();
-                                if (email.isEmpty) {
-                                  _emailError = 'Vui lòng nhập email';
-                                } else if (!RegExp(
-                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                ).hasMatch(email)) {
-                                  _emailError = 'Email không đúng định dạng';
-                                } else if (!email.endsWith(
-                                      '@sis.hust.edu.vn',
-                                    ) &&
-                                    !email.endsWith('@hust.edu.vn')) {
-                                  _emailError = 'Chỉ chấp nhận email HUST';
-                                } else {
-                                  _emailError = null;
-                                  // Gửi OTP nếu hợp lệ
-                                  context.read<AuthBloc>().add(
-                                    SendOtpRequested(_emailController.text),
-                                  );
-                                }
-                              });
-                            },
+                          child: AbsorbPointer(
+                            absorbing: _isLoading,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  final email = _emailController.text.trim();
+                                  if (email.isEmpty) {
+                                    _emailError = 'Vui lòng nhập email';
+                                  } else if (!RegExp(
+                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                  ).hasMatch(email)) {
+                                    _emailError = 'Email không đúng định dạng';
+                                  } else if (!email.endsWith(
+                                        '@sis.hust.edu.vn',
+                                      ) &&
+                                      !email.endsWith('@hust.edu.vn')) {
+                                    _emailError = 'Chỉ chấp nhận email HUST';
+                                  } else {
+                                    _emailError = null;
+                                    // Gửi OTP nếu hợp lệ
+                                    _isLoading = true;
+                                    context.read<AuthBloc>().add(
+                                      SendOtpRequested(_emailController.text),
+                                    );
+                                    _emailController.clear();
+                                  }
+                                });
+                              },
 
-                            child: Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    AppColor.redExtraLight,
-                                    AppColor.redLight,
+                              child: Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      AppColor.redExtraLight,
+                                      AppColor.redLight,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColor.redPrimary,
+                                      blurRadius: 0,
+                                      offset: const Offset(0, 0),
+                                      spreadRadius: 10,
+                                    ),
+                                    BoxShadow(
+                                      color: Colors.black,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 0),
+                                      spreadRadius: -5,
+                                    ),
                                   ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
                                 ),
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColor.redPrimary,
-                                    blurRadius: 0,
-                                    offset: const Offset(0, 0),
-                                    spreadRadius: 10,
-                                  ),
-                                  BoxShadow(
-                                    color: Colors.black,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 0),
-                                    spreadRadius: -5,
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: SvgPicture.asset(
-                                  ImageLocal.iconButtonArrow,
-                                  width: 24,
-                                  height: 24,
-                                  fit: BoxFit.contain,
+                                child: Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 3,
+                                          ),
+                                        )
+                                      : SvgPicture.asset(
+                                          ImageLocal.iconButtonArrow,
+                                          width: 24,
+                                          height: 24,
+                                          fit: BoxFit.contain,
+                                        ),
                                 ),
                               ),
                             ),

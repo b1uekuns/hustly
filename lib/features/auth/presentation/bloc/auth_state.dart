@@ -14,9 +14,7 @@ class AuthInitial extends AuthState {}
 
 class OtpSentSuccess extends AuthState {
   final String message;
-  OtpSentSuccess([
-    this.message = 'Gửi OTP thành công, vui lòng kiểm tra email',
-  ]);
+  OtpSentSuccess(this.message);
 
   @override
   List<Object?> get props => [message];
