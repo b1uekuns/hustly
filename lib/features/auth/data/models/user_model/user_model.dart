@@ -1,32 +1,42 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hust_chill_app/features/auth/domain/entities/user/user_entity.dart';
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';
 
-/// Model/DTO dùng ở Data layer để (de)serialize JSON.
 @freezed
 class UserModel with _$UserModel {
   const factory UserModel({
-    required String studentId,
+    @JsonKey(name: '_id') required String id,
     required String email,
-    required String name,
-    String? avatar,
-    @Default(false) bool isVerified,
+    String? firstName,
+    String? lastName,
+    String? dateOfBirth,
+    String? gender,
+    String? bio,
+    @Default([]) List<PhotoModel> photos,
+    @Default([]) List<String> interests,
+    String? interestedIn,
+    String? studentId,
+    String? major,
+    int? year,
+    @Default(false) bool isEmailVerified,
+    @Default(false) bool isProfileComplete,
+    String? lastActive,
+    @Default(false) bool isOnline,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 }
 
-/// Chuyển Model -> Entity (dùng ở RepositoryImpl)
-extension UserModelMapper on UserModel {
-  UserEntity toEntity() => UserEntity(
-        studentId: studentId,
-        email: email,
-        name: name,
-        avatar: avatar,
-        isVerified: isVerified,
-      );
-}
+@freezed
+class PhotoModel with _$PhotoModel {
+  const factory PhotoModel({
+    required String url,
+    String? publicId,
+    @Default(false) bool isMain,
+  }) = _PhotoModel;
 
+  factory PhotoModel.fromJson(Map<String, dynamic> json) =>
+      _$PhotoModelFromJson(json);
+}

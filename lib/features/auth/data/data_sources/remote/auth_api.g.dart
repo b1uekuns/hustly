@@ -18,7 +18,7 @@ class _AuthApi implements AuthApi {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<HttpResponse<BaseResponse<void>>> sendOtp(
+  Future<HttpResponse<BaseResponse<SendOtpResponse>>> sendOtp(
     Map<String, dynamic> body,
   ) async {
     final _extra = <String, dynamic>{};
@@ -26,20 +26,26 @@ class _AuthApi implements AuthApi {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body);
-    final _options = _setStreamType<HttpResponse<BaseResponse<void>>>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'api/auth/send-code',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
+    final _options =
+        _setStreamType<HttpResponse<BaseResponse<SendOtpResponse>>>(
+          Options(method: 'POST', headers: _headers, extra: _extra)
+              .compose(
+                _dio.options,
+                'api/v1/auth/send-otp',
+                queryParameters: queryParameters,
+                data: _data,
+              )
+              .copyWith(
+                baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+              ),
+        );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BaseResponse<void> _value;
+    late BaseResponse<SendOtpResponse> _value;
     try {
-      _value = BaseResponse<void>.fromJson(_result.data!, (json) => () {}());
+      _value = BaseResponse<SendOtpResponse>.fromJson(
+        _result.data!,
+        (json) => SendOtpResponse.fromJson(json as Map<String, dynamic>),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -62,7 +68,7 @@ class _AuthApi implements AuthApi {
           Options(method: 'POST', headers: _headers, extra: _extra)
               .compose(
                 _dio.options,
-                'api/auth/verify-code',
+                'api/v1/auth/verify-otp',
                 queryParameters: queryParameters,
                 data: _data,
               )
@@ -86,16 +92,56 @@ class _AuthApi implements AuthApi {
   }
 
   @override
-  Future<HttpResponse<BaseResponse<UserModel>>> getCurrentUser() async {
+  Future<HttpResponse<BaseResponse<SendOtpResponse>>> resendOtp(
+    Map<String, dynamic> body,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
+    final _options =
+        _setStreamType<HttpResponse<BaseResponse<SendOtpResponse>>>(
+          Options(method: 'POST', headers: _headers, extra: _extra)
+              .compose(
+                _dio.options,
+                'api/v1/auth/resend-otp',
+                queryParameters: queryParameters,
+                data: _data,
+              )
+              .copyWith(
+                baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+              ),
+        );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BaseResponse<SendOtpResponse> _value;
+    try {
+      _value = BaseResponse<SendOtpResponse>.fromJson(
+        _result.data!,
+        (json) => SendOtpResponse.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<BaseResponse<UserModel>>> getCurrentUser(
+    String token,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<HttpResponse<BaseResponse<UserModel>>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'api/auth/me',
+            'api/v1/auth/me',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -130,7 +176,7 @@ class _AuthApi implements AuthApi {
           Options(method: 'POST', headers: _headers, extra: _extra)
               .compose(
                 _dio.options,
-                'api/auth/refresh',
+                'api/v1/auth/refresh-token',
                 queryParameters: queryParameters,
                 data: _data,
               )
@@ -154,16 +200,17 @@ class _AuthApi implements AuthApi {
   }
 
   @override
-  Future<HttpResponse<BaseResponse<void>>> logout() async {
+  Future<HttpResponse<BaseResponse<void>>> logout(String token) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<HttpResponse<BaseResponse<void>>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'api/auth/logout',
+            'api/v1/auth/logout',
             queryParameters: queryParameters,
             data: _data,
           )

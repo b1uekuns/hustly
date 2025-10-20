@@ -22,7 +22,9 @@ LoginResponseModel _$LoginResponseModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$LoginResponseModel {
   UserModel get user => throw _privateConstructorUsedError;
-  RefreshTokenModel get tokens => throw _privateConstructorUsedError;
+  String get token => throw _privateConstructorUsedError;
+  String get refreshToken => throw _privateConstructorUsedError;
+  bool get isNewUser => throw _privateConstructorUsedError;
 
   /// Serializes this LoginResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,10 +43,14 @@ abstract class $LoginResponseModelCopyWith<$Res> {
     $Res Function(LoginResponseModel) then,
   ) = _$LoginResponseModelCopyWithImpl<$Res, LoginResponseModel>;
   @useResult
-  $Res call({UserModel user, RefreshTokenModel tokens});
+  $Res call({
+    UserModel user,
+    String token,
+    String refreshToken,
+    bool isNewUser,
+  });
 
   $UserModelCopyWith<$Res> get user;
-  $RefreshTokenModelCopyWith<$Res> get tokens;
 }
 
 /// @nodoc
@@ -61,17 +67,30 @@ class _$LoginResponseModelCopyWithImpl<$Res, $Val extends LoginResponseModel>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? user = null, Object? tokens = null}) {
+  $Res call({
+    Object? user = null,
+    Object? token = null,
+    Object? refreshToken = null,
+    Object? isNewUser = null,
+  }) {
     return _then(
       _value.copyWith(
             user: null == user
                 ? _value.user
                 : user // ignore: cast_nullable_to_non_nullable
                       as UserModel,
-            tokens: null == tokens
-                ? _value.tokens
-                : tokens // ignore: cast_nullable_to_non_nullable
-                      as RefreshTokenModel,
+            token: null == token
+                ? _value.token
+                : token // ignore: cast_nullable_to_non_nullable
+                      as String,
+            refreshToken: null == refreshToken
+                ? _value.refreshToken
+                : refreshToken // ignore: cast_nullable_to_non_nullable
+                      as String,
+            isNewUser: null == isNewUser
+                ? _value.isNewUser
+                : isNewUser // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -86,16 +105,6 @@ class _$LoginResponseModelCopyWithImpl<$Res, $Val extends LoginResponseModel>
       return _then(_value.copyWith(user: value) as $Val);
     });
   }
-
-  /// Create a copy of LoginResponseModel
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $RefreshTokenModelCopyWith<$Res> get tokens {
-    return $RefreshTokenModelCopyWith<$Res>(_value.tokens, (value) {
-      return _then(_value.copyWith(tokens: value) as $Val);
-    });
-  }
 }
 
 /// @nodoc
@@ -107,12 +116,15 @@ abstract class _$$LoginResponseModelImplCopyWith<$Res>
   ) = __$$LoginResponseModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({UserModel user, RefreshTokenModel tokens});
+  $Res call({
+    UserModel user,
+    String token,
+    String refreshToken,
+    bool isNewUser,
+  });
 
   @override
   $UserModelCopyWith<$Res> get user;
-  @override
-  $RefreshTokenModelCopyWith<$Res> get tokens;
 }
 
 /// @nodoc
@@ -128,17 +140,30 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? user = null, Object? tokens = null}) {
+  $Res call({
+    Object? user = null,
+    Object? token = null,
+    Object? refreshToken = null,
+    Object? isNewUser = null,
+  }) {
     return _then(
       _$LoginResponseModelImpl(
         user: null == user
             ? _value.user
             : user // ignore: cast_nullable_to_non_nullable
                   as UserModel,
-        tokens: null == tokens
-            ? _value.tokens
-            : tokens // ignore: cast_nullable_to_non_nullable
-                  as RefreshTokenModel,
+        token: null == token
+            ? _value.token
+            : token // ignore: cast_nullable_to_non_nullable
+                  as String,
+        refreshToken: null == refreshToken
+            ? _value.refreshToken
+            : refreshToken // ignore: cast_nullable_to_non_nullable
+                  as String,
+        isNewUser: null == isNewUser
+            ? _value.isNewUser
+            : isNewUser // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -147,7 +172,12 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$LoginResponseModelImpl implements _LoginResponseModel {
-  const _$LoginResponseModelImpl({required this.user, required this.tokens});
+  const _$LoginResponseModelImpl({
+    required this.user,
+    required this.token,
+    required this.refreshToken,
+    this.isNewUser = false,
+  });
 
   factory _$LoginResponseModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$LoginResponseModelImplFromJson(json);
@@ -155,11 +185,16 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
   @override
   final UserModel user;
   @override
-  final RefreshTokenModel tokens;
+  final String token;
+  @override
+  final String refreshToken;
+  @override
+  @JsonKey()
+  final bool isNewUser;
 
   @override
   String toString() {
-    return 'LoginResponseModel(user: $user, tokens: $tokens)';
+    return 'LoginResponseModel(user: $user, token: $token, refreshToken: $refreshToken, isNewUser: $isNewUser)';
   }
 
   @override
@@ -168,12 +203,17 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
         (other.runtimeType == runtimeType &&
             other is _$LoginResponseModelImpl &&
             (identical(other.user, user) || other.user == user) &&
-            (identical(other.tokens, tokens) || other.tokens == tokens));
+            (identical(other.token, token) || other.token == token) &&
+            (identical(other.refreshToken, refreshToken) ||
+                other.refreshToken == refreshToken) &&
+            (identical(other.isNewUser, isNewUser) ||
+                other.isNewUser == isNewUser));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, user, tokens);
+  int get hashCode =>
+      Object.hash(runtimeType, user, token, refreshToken, isNewUser);
 
   /// Create a copy of LoginResponseModel
   /// with the given fields replaced by the non-null parameter values.
@@ -195,7 +235,9 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
 abstract class _LoginResponseModel implements LoginResponseModel {
   const factory _LoginResponseModel({
     required final UserModel user,
-    required final RefreshTokenModel tokens,
+    required final String token,
+    required final String refreshToken,
+    final bool isNewUser,
   }) = _$LoginResponseModelImpl;
 
   factory _LoginResponseModel.fromJson(Map<String, dynamic> json) =
@@ -204,7 +246,11 @@ abstract class _LoginResponseModel implements LoginResponseModel {
   @override
   UserModel get user;
   @override
-  RefreshTokenModel get tokens;
+  String get token;
+  @override
+  String get refreshToken;
+  @override
+  bool get isNewUser;
 
   /// Create a copy of LoginResponseModel
   /// with the given fields replaced by the non-null parameter values.

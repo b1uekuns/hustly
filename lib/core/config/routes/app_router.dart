@@ -20,7 +20,10 @@ class AppRouter {
         GoRoute(
           name: AppPage.loginOtp.toName,
           path: AppPage.loginOtp.toPath(),
-          builder: (context, state) => const LoginOTPPage(),
+          builder: (context, state) {
+            final email = state.extra as String;
+            return LoginOTPPage(email: email);
+          },
         ),
         GoRoute(
           name: AppPage.home.toName,

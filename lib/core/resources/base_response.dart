@@ -1,20 +1,31 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'base_response.freezed.dart';
 part 'base_response.g.dart';
 
-@JsonSerializable(genericArgumentFactories: true)
-class BaseResponse<T> {
-  final int? status;
-  final String? message;
-  final T? data;
-
-  BaseResponse({this.status, this.message, this.data});
+@Freezed(genericArgumentFactories: true)
+class BaseResponse<T> with _$BaseResponse<T> {
+  const factory BaseResponse({
+    required bool success,
+    required String message,
+    T? data,
+    @JsonKey(name: 'error') ErrorResponse? error,
+  }) = _BaseResponse<T>;
 
   factory BaseResponse.fromJson(
     Map<String, dynamic> json,
-    T Function(Object? json) fromJsonT,
-  ) => _$BaseResponseFromJson(json, fromJsonT);
+    T Function(Object?) fromJsonT,
+  ) =>
+      _$BaseResponseFromJson(json, fromJsonT);
+}
 
-  Map<String, dynamic> toJson(Object Function(T value) toJsonT) =>
-      _$BaseResponseToJson(this, toJsonT);
+@freezed
+class ErrorResponse with _$ErrorResponse {
+  const factory ErrorResponse({
+    required String message,
+    String? stack,
+  }) = _ErrorResponse;
+
+  factory ErrorResponse.fromJson(Map<String, dynamic> json) =>
+      _$ErrorResponseFromJson(json);
 }

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
+import '../../widgets/snackbar/app_snackbar.dart';
+
 class NetWorkService {
   static final NetWorkService _instance = NetWorkService._internal();
   factory NetWorkService() => _instance;
@@ -27,12 +29,12 @@ class NetWorkService {
         break;
       case ConnectivityResult.none:
         isConnected = false;
-        // showSnackBar(
-        //   context,
-        //   title: 'Mất kết nối',
-        //   message: 'Vui lòng kiểm tra lại kết nối mạng',
-        //   isError: true,
-        // );
+        AppSnackbar.showSnackBar(
+          context,
+          title: 'Mất kết nối',
+          message: 'Vui lòng kiểm tra lại kết nối mạng',
+          type: SnackType.error,
+        );
         break;
       default:
         isConnected = false;

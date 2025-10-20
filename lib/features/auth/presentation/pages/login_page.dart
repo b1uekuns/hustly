@@ -10,8 +10,7 @@ import 'package:hust_chill_app/widgets/snackbar/app_snackbar.dart';
 import 'package:hust_chill_app/widgets/textField/email_input_field.dart';
 
 import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,42 +22,49 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   String? _emailError;
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is OtpSentSuccess) {
-          setState(() {
-            _isLoading = false;
-          });
-          AppSnackbar.showSnackBar(
-            context,
-            title: "Thành công",
-            message: state.message,
-            type: SnackType.success,
-            duration: const Duration(seconds: 1),
-            onDismissed: () {
-              if (context.mounted) {
-                GoRouter.of(context).push(AppPage.loginOtp.toPath());
-              }
-            },
-          );
-        } else if (state is AuthFailure) {
-          setState(() {
-            _isLoading = false;
-          });
-          AppSnackbar.showSnackBar(
-            context,
-            title: "Lỗi",
-            message: state.message,
-            type: SnackType.error,
-          );
-        }
+        state.maybeWhen(
+          otpSent: (email, expiresIn) {
+            _emailController.clear();
+            AppSnackbar.showSnackBar(
+              context,
+              title: "Thành công",
+              message: "Mã OTP đã được gửi đến $email",
+              type: SnackType.success,
+              duration: const Duration(milliseconds: 1500),
+              onDismissed: () {
+                if (context.mounted) {
+                  GoRouter.of(context).push(
+                    AppPage.loginOtp.toPath(),
+                    extra: email,
+                  );
+                }
+              },
+            );
+          },
+          sendOtpError: (message) {
+            AppSnackbar.showSnackBar(
+              context,
+              title: "Lỗi",
+              message: message,
+              type: SnackType.error,
+            );
+          },
+          orElse: () {},
+        );
       },
+
       builder: (context, state) {
-        final Size size = MediaQuery.of(context).size;
+        final bool isLoading = state.maybeWhen(
+          sendingOtp: () => true,
+          orElse: () => false,
+        );
 
         return Scaffold(
           backgroundColor: AppColor.redPrimary,
@@ -158,8 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                                         Expanded(
                                           child: EmailInputField(
                                             controller: _emailController,
-                                            enabled: !_isLoading,
-                                            // Bỏ errorText khỏi đây
+                                            enabled: !isLoading,
                                             onChanged: (value) {
                                               if (_emailError != null) {
                                                 setState(() {
@@ -172,7 +177,6 @@ class _LoginPageState extends State<LoginPage> {
                                       ],
                                     ),
                                   ),
-                                  // Hiển thị error bên ngoài container
                                   if (_emailError != null)
                                     Padding(
                                       padding: const EdgeInsets.only(
@@ -204,66 +208,74 @@ class _LoginPageState extends State<LoginPage> {
                         // Button được cải thiện
                         Positioned(
                           bottom: -5,
-                          child: AbsorbPointer(
-                            absorbing: _isLoading,
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  final email = _emailController.text.trim();
-                                  if (email.isEmpty) {
-                                    _emailError = 'Vui lòng nhập email';
-                                  } else if (!RegExp(
-                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                  ).hasMatch(email)) {
-                                    _emailError = 'Email không đúng định dạng';
-                                  } else if (!email.endsWith(
-                                        '@sis.hust.edu.vn',
-                                      ) &&
-                                      !email.endsWith('@hust.edu.vn')) {
-                                    _emailError = 'Chỉ chấp nhận email HUST';
-                                  } else {
-                                    _emailError = null;
-                                    // Gửi OTP nếu hợp lệ
-                                    _isLoading = true;
-                                    context.read<AuthBloc>().add(
-                                      SendOtpRequested(_emailController.text),
-                                    );
-                                    _emailController.clear();
-                                  }
-                                });
-                              },
+                          child: GestureDetector(
+                            onTap: isLoading
+                                ? null
+                                : () {
+                                    FocusScope.of(context).unfocus();
+                                    final email = _emailController.text.trim();
 
-                              child: Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      AppColor.redExtraLight,
-                                      AppColor.redLight,
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColor.redPrimary,
-                                      blurRadius: 0,
-                                      offset: const Offset(0, 0),
-                                      spreadRadius: 10,
-                                    ),
-                                    BoxShadow(
-                                      color: Colors.black,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 0),
-                                      spreadRadius: -5,
-                                    ),
+                                    if (email.isEmpty) {
+                                      setState(
+                                        () =>
+                                            _emailError = 'Vui lòng nhập email',
+                                      );
+                                    } else if (!RegExp(
+                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                    ).hasMatch(email)) {
+                                      setState(
+                                        () => _emailError =
+                                            'Email không đúng định dạng',
+                                      );
+                                    } else if (!email.endsWith(
+                                      '@sis.hust.edu.vn',
+                                    )) {
+                                      setState(
+                                        () => _emailError =
+                                            'Chỉ chấp nhận email HUST',
+                                      );
+                                    } else {
+                                      _emailError = null;
+                                      // Gửi OTP nếu hợp lệ
+                                      context.read<AuthBloc>().add(
+                                        AuthEvent.sendOtpRequested(email: email),
+                                      );
+                                      //_emailController.clear();
+                                    }
+                                  },
+                            child: Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColor.redExtraLight,
+                                    AppColor.redLight,
                                   ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: _isLoading
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColor.redPrimary,
+                                    blurRadius: 0,
+                                    offset: const Offset(0, 0),
+                                    spreadRadius: 10,
+                                  ),
+                                  BoxShadow(
+                                    color: Colors.black,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 0),
+                                    spreadRadius: -5,
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 200),
+                                  child: isLoading
                                       ? const SizedBox(
                                           width: 24,
                                           height: 24,
@@ -293,12 +305,6 @@ class _LoginPageState extends State<LoginPage> {
         );
       },
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _emailError = null;
   }
 
   @override

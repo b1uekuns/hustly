@@ -1,85 +1,137 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hust_chill_app/core/utils/app_color.dart';
 import 'package:hust_chill_app/core/utils/app_style.dart';
 import 'package:hust_chill_app/core/utils/images_local.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hust_chill_app/widgets/pin_put_otp/pin_put_widget.dart';
 import 'package:hust_chill_app/widgets/snackbar/app_snackbar.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/config/routes/app_page.dart';
 
-import '../../../../core/utils/app_function.dart';
 import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
 
 class LoginOTPPage extends StatefulWidget {
-  const LoginOTPPage({super.key});
+  final String email;
+  const LoginOTPPage({super.key, required this.email});
 
   @override
   State<LoginOTPPage> createState() => _LoginOTPPageState();
 }
 
 class _LoginOTPPageState extends State<LoginOTPPage> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
+
+  Timer? _timer;
+  int _secondsRemaining = 60;
+
+  void _startCountdown() {
+    _timer?.cancel();
+    setState(() => _secondsRemaining = 60);
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secondsRemaining == 0) {
+        timer.cancel();
+      } else {
+        setState(() => _secondsRemaining--);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _startCountdown();
+  }
+
+  @override
+  void dispose() {
+    _otpController.dispose();
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthFailure) {
-          AppSnackbar.showSnackBar(
-            context,
-            title: 'Lỗi',
-            message: state.message,
-            type: SnackType.error,
-          );
-        } else if (state is AuthSuccess) {
-          AppSnackbar.showSnackBar(
-            context,
-            //title: 'Success',
-            message: 'Đăng nhập thành công',
-            type: SnackType.success,
-          );
-          // Điều hướng đến trang chính hoặc trang khác nếu cần
-        }
+        state.maybeWhen(
+          otpSent: (email, expiresIn) {
+            AppSnackbar.showSnackBar(
+              context,
+              title: 'Đã gửi lại mã',
+              message: 'Mã OTP đã được gửi lại',
+              type: SnackType.success,
+            );
+            _startCountdown(); // reset countdown
+          },
+          verifyOtpError: (message) {
+            AppSnackbar.showSnackBar(
+              context,
+              title: 'Lỗi',
+              message: message,
+              type: SnackType.error,
+            );
+          },
+          authenticated: (user, token, isNewUser) {
+            AppSnackbar.showSnackBar(
+              context,
+              message: 'Đăng nhập thành công!',
+              type: SnackType.success,
+              duration: const Duration(milliseconds: 800),
+            );
+            Future.delayed(const Duration(seconds: 1), () {
+              if (context.mounted) {
+                if (isNewUser) {
+                  // TODO: Navigate to complete profile
+                  GoRouter.of(context).go(AppPage.home.toPath());
+                } else {
+                  GoRouter.of(context).go(AppPage.home.toPath());
+                }
+              }
+            });
+          },
+          orElse: () {},
+        );
       },
       builder: (context, state) {
+        final bool isLoading = state.maybeWhen(
+          verifyingOtp: () => true,
+          sendingOtp: () => true,
+          orElse: () => false,
+        );
         final Size size = MediaQuery.of(context).size;
-        TextEditingController _otpController = TextEditingController();
+
         return Scaffold(
+          backgroundColor: AppColor.redPrimary,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: AppColor.textWhite),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ),
-          backgroundColor: AppColor.redPrimary,
           body: SafeArea(
             child: SingleChildScrollView(
               child: Center(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: size.width * 0.1),
                     Image.asset(ImageLocal.iconOpt, width: 237, height: 180),
-                    SizedBox(height: size.width * 0.05),
                     Text(
                       'Xác thực OTP',
                       style: AppStyle.def.bold
                           .size(23)
                           .colors(AppColor.textWhite),
                     ),
-                    SizedBox(height: size.width * 0.05),
+                    // Main box
                     Stack(
                       alignment: Alignment.bottomCenter,
                       clipBehavior: Clip.none,
                       children: [
                         Container(
-                          margin: EdgeInsets.all(24),
-                          padding: const EdgeInsets.fromLTRB(24, 40, 24, 60),
+                          margin: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.fromLTRB(24, 15, 24, 60),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
@@ -96,63 +148,67 @@ class _LoginOTPPageState extends State<LoginOTPPage> {
                               width: 1.5,
                             ),
                             boxShadow: [
-                              // Soft shadow
                               BoxShadow(
                                 color: Colors.black.withValues(alpha: 0.1),
                                 blurRadius: 20,
-                                offset: Offset(0, 1),
+                                offset: const Offset(0, 1),
                               ),
-                              // Inner glow effect
                               BoxShadow(
                                 color: Colors.white.withValues(alpha: 0.2),
                                 blurRadius: 5,
-                                offset: Offset(0, -2),
+                                offset: const Offset(0, -2),
                               ),
                             ],
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColor.redPrimary.withValues(
-                                        alpha: 0.1,
-                                      ),
-                                      blurRadius: 10,
-                                      offset: Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      'Mã OTP đã được gửi đến email của bạn',
-                                      style: AppStyle.def
-                                          .size(13)
-                                          .colors(AppColor.textLight),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    SizedBox(height: size.width * 0.05),
-                                    PinPutOtpWidget(
-                                      controller: _otpController,
-                                      onCompleted: (otp) {
-                                        context.read<AuthBloc>().add(
-                                          VerifyOtpRequested(
-                                            otp,
-                                            _emailController
-                                                .text, // passing email as second required argument
-                                          ),
-                                        );
-                                      },
-                                      onChanged: (otp) {},
-                                    ),
-                                  ],
-                                ),
+                              Text(
+                                'Mã OTP đã được gửi đến\n${widget.email}',
+                                style: AppStyle.def
+                                    .size(13)
+                                    .colors(AppColor.textLight),
+                                textAlign: TextAlign.center,
                               ),
                               SizedBox(height: size.width * 0.05),
+
+                              // OTP Input
+                              PinPutOtpWidget(
+                                controller: _otpController,
+                                onCompleted: (otp) {
+                                  _verifyOtp(context);
+                                },
+                                onChanged: (_) {},
+                              ),
+
+                              SizedBox(height: size.width * 0.05),
+
+                              // Countdown resend
+                              GestureDetector(
+                                onTap: _secondsRemaining == 0 && !isLoading
+                                    ? () {
+                                        context.read<AuthBloc>().add(
+                                          AuthEvent.sendOtpRequested(
+                                            email: widget.email,
+                                          ),
+                                        );
+                                      }
+                                    : null,
+                                child: Text(
+                                  _secondsRemaining == 0
+                                      ? 'Gửi lại mã OTP'
+                                      : 'Gửi lại sau $_secondsRemaining giây',
+                                  style: AppStyle.def
+                                      .size(13)
+                                      .colors(
+                                        _secondsRemaining == 0
+                                            ? AppColor.white
+                                            : AppColor.textLight.withOpacity(
+                                                0.6,
+                                              ),
+                                      ),
+                                ),
+                              ),
                               Text(
                                 'Hãy kiểm tra thư rác nếu không thấy trong hộp thư đến',
                                 style: AppStyle.def
@@ -164,19 +220,11 @@ class _LoginOTPPageState extends State<LoginOTPPage> {
                           ),
                         ),
 
-                        // Button được cải thiện
+                        // Confirm button
                         Positioned(
                           bottom: -5,
                           child: GestureDetector(
-                            onTap: () {
-                              context.read<AuthBloc>().add(
-                                VerifyOtpRequested(
-                                  _otpController.text,
-                                  _emailController
-                                      .text, // passing email as second required argument
-                                ),
-                              );
-                            },
+                            onTap: isLoading ? null : () => _verifyOtp(context),
                             child: Container(
                               width: 60,
                               height: 60,
@@ -199,10 +247,25 @@ class _LoginOTPPageState extends State<LoginOTPPage> {
                                   ),
                                 ],
                               ),
-                              child: const Icon(
-                                Icons.arrow_forward,
-                                color: Colors.white,
-                                size: 24,
+                              child: Center(
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 250),
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 3,
+                                          ),
+                                        )
+                                      : SvgPicture.asset(
+                                          ImageLocal.iconButtonArrow,
+                                          width: 24,
+                                          height: 24,
+                                          fit: BoxFit.contain,
+                                        ),
+                                ),
                               ),
                             ),
                           ),
@@ -219,9 +282,19 @@ class _LoginOTPPageState extends State<LoginOTPPage> {
     );
   }
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    super.dispose();
+  void _verifyOtp(BuildContext context) {
+    final otp = _otpController.text.trim();
+    if (otp.isEmpty) {
+      AppSnackbar.showSnackBar(
+        context,
+        title: 'Thiếu mã OTP',
+        message: 'Vui lòng nhập mã xác thực',
+        type: SnackType.error,
+      );
+      return;
+    }
+    context.read<AuthBloc>().add(
+      AuthEvent.verifyOtpRequested(email: widget.email, otp: otp),
+    );
   }
 }

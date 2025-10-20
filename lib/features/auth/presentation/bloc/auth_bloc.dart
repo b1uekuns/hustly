@@ -1,11 +1,13 @@
-import 'package:hust_chill_app/core/resources/data_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/usecases/auth_usecases.dart';
-import '../../data/models/refresh_token/refresh_token_model.dart';
 import '../../data/models/user_model/user_model.dart';
-import 'auth_event.dart';
-import 'auth_state.dart';
 import 'package:hust_chill_app/core/data/local/share_preferences_manager.dart';
+import 'package:hust_chill_app/core/resources/data_state.dart';
+
+part 'auth_event.dart';
+part 'auth_state.dart';
+part 'auth_bloc.freezed.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SharedPreferencesManager preferencesManager;
@@ -16,41 +18,100 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.preferencesManager,
     required this.sendOtpUseCase,
     required this.verifyOtpUseCase,
-  }) : super(AuthInitial()) {
-    on<SendOtpRequested>(_sendOtp);
-    on<VerifyOtpRequested>(_verifyOtp);
-    on<LogOutRequested>(_logOut);
+  }) : super(const AuthState.initial()) {
+    on<SendOtpRequested>(_onSendOtpRequested);
+    on<VerifyOtpRequested>(_onVerifyOtpRequested);
+    on<ResendOtpRequested>(_onResendOtpRequested);
+    on<LogoutRequested>(_onLogoutRequested);
   }
 
-  Future<void> _sendOtp(SendOtpRequested event, Emitter<AuthState> emit) async {
-    emit(AuthLoading());
+  Future<void> _onSendOtpRequested(
+    SendOtpRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.sendingOtp());
+
     final result = await sendOtpUseCase(params: SendOtpParams(event.email));
-    if (result is DataSuccess) {
-      emit(OtpSentSuccess('Đã gửi OTP, vui lòng kiểm tra email'));
-    } else if (result is DataError) {
-      emit(AuthFailure('Gửi OTP thất bại'));
-    }
+
+    result.fold(
+      (error) => emit(AuthState.sendOtpError(error)),
+      (_) => emit(AuthState.otpSent(
+        email: event.email,
+        expiresIn: 300, // 5 minutes
+      )),
+    );
   }
 
-  Future<void> _verifyOtp(
+  Future<void> _onVerifyOtpRequested(
     VerifyOtpRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    print('🟢 [BLOC] Starting OTP verification...');
+    emit(const AuthState.verifyingOtp());
+
+    print('🟢 [BLOC] Calling verifyOtpUseCase...');
     final result = await verifyOtpUseCase(
       params: VerifyOtpParams(email: event.email, otp: event.otp),
     );
-    if (result is DataSuccess && result.data != null) {
-      final (user, tokens) = result.data!;
-      emit(AuthSuccess(user as UserModel, tokens as RefreshTokenModel));
-    } else if (result is DataError) {
-      emit(AuthFailure('Xác thực thất bại'));
-    }
+
+    print('🟢 [BLOC] Got result from use case');
+    
+    // Extract value from Either before async operations
+    await result.fold(
+      (error) async {
+        print('🔴 [BLOC] Verify OTP error: $error');
+        emit(AuthState.verifyOtpError(error));
+      },
+      (response) async {
+        print('🟢 [BLOC] Verify OTP success!');
+        print('🟢 [BLOC] User: ${response.user.email}');
+        print('🟢 [BLOC] Token: ${response.token.substring(0, 20)}...');
+        print('🟢 [BLOC] IsNewUser: ${response.isNewUser}');
+        
+        // Save tokens
+        print('🟢 [BLOC] Saving tokens...');
+        await preferencesManager.saveAccessToken(response.token);
+        await preferencesManager.saveRefreshToken(response.refreshToken);
+        print('🟢 [BLOC] Tokens saved!');
+
+        print('🟢 [BLOC] Emitting authenticated state...');
+        emit(AuthState.authenticated(
+          user: response.user,
+          token: response.token,
+          isNewUser: response.isNewUser,
+        ));
+        print('✅ [BLOC] Authenticated state emitted!');
+      },
+    );
   }
 
-  Future<void> _logOut(LogOutRequested event, Emitter<AuthState> emit) async {
-    emit(AuthLoading());
-    await preferencesManager.clear();
-    emit(LogOutSuccess());
+  Future<void> _onResendOtpRequested(
+    ResendOtpRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.sendingOtp());
+
+    final result = await sendOtpUseCase(params: SendOtpParams(event.email));
+
+    result.fold(
+      (error) => emit(AuthState.sendOtpError(error)),
+      (_) => emit(AuthState.otpSent(
+        email: event.email,
+        expiresIn: 300,
+      )),
+    );
+  }
+
+  Future<void> _onLogoutRequested(
+    LogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      emit(const AuthState.loading());
+      await preferencesManager.clear();
+      emit(const AuthState.unauthenticated());
+    } catch (e) {
+      emit(AuthState.sendOtpError('Logout failed: $e'));
+    }
   }
 }

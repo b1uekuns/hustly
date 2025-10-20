@@ -19,7 +19,7 @@ class AppSnackbar {
     String? title,
     required String message,
     SnackType type = SnackType.success,
-    Duration duration = const Duration(seconds: 3),
+    Duration duration = const Duration(seconds: 2),
     VoidCallback? onDismissed,
   }) {
     if (!context.mounted) return;

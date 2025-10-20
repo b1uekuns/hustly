@@ -13,6 +13,22 @@ class SharedPreferencesManager {
     });
   }
 
+  Future<void> saveAccessToken(String token) async {
+    await _sharedPreferences.setString('access_token', token);
+  }
+
+  Future<void> saveRefreshToken(String token) async {
+    await _sharedPreferences.setString('refresh_token', token);
+  }
+
+  Future<String?> getAccessToken() async {
+    return _sharedPreferences.getString('access_token');
+  }
+
+  Future<String?> getRefreshToken() async {
+    return _sharedPreferences.getString('refresh_token');
+  }
+
   Set<String> getKeys() {
     return _sharedPreferences.getKeys();
   }
@@ -20,9 +36,10 @@ class SharedPreferencesManager {
   Future<bool> putString({required String key, required String value}) =>
       _sharedPreferences.setString(key, value);
 
-  Future<bool> putStringList(
-          {required String key, required List<String> value}) =>
-      _sharedPreferences.setStringList(key, value);
+  Future<bool> putStringList({
+    required String key,
+    required List<String> value,
+  }) => _sharedPreferences.setStringList(key, value);
   String? getString(String key) => _sharedPreferences.getString(key);
   List<String>? getStringList(String key) =>
       _sharedPreferences.getStringList(key);
@@ -41,5 +58,7 @@ class SharedPreferencesManager {
 
   Future remove(String key) => _sharedPreferences.remove(key);
 
-  Future clear() => _sharedPreferences.clear();
+  Future<void> clear() async {
+    await _sharedPreferences.clear();
+  }
 }

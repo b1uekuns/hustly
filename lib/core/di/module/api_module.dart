@@ -20,8 +20,9 @@ class ApiModule {
   static FutureOr<Dio> setup(String baseUrl) async {
     final preferencesManager = sl.get<SharedPreferencesManager>();
     final options = BaseOptions(
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 5),
+      sendTimeout: const Duration(seconds: 5),
       baseUrl: baseUrl,
     );
 

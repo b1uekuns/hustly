@@ -6,22 +6,26 @@ part of 'base_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-BaseResponse<T> _$BaseResponseFromJson<T>(
+_$BaseResponseImpl<T> _$$BaseResponseImplFromJson<T>(
   Map<String, dynamic> json,
   T Function(Object? json) fromJsonT,
-) => BaseResponse<T>(
-  status: (json['status'] as num?)?.toInt(),
-  message: json['message'] as String?,
+) => _$BaseResponseImpl<T>(
+  success: json['success'] as bool,
+  message: json['message'] as String,
   data: _$nullableGenericFromJson(json['data'], fromJsonT),
+  error: json['error'] == null
+      ? null
+      : ErrorResponse.fromJson(json['error'] as Map<String, dynamic>),
 );
 
-Map<String, dynamic> _$BaseResponseToJson<T>(
-  BaseResponse<T> instance,
+Map<String, dynamic> _$$BaseResponseImplToJson<T>(
+  _$BaseResponseImpl<T> instance,
   Object? Function(T value) toJsonT,
 ) => <String, dynamic>{
-  'status': instance.status,
+  'success': instance.success,
   'message': instance.message,
   'data': _$nullableGenericToJson(instance.data, toJsonT),
+  'error': instance.error,
 };
 
 T? _$nullableGenericFromJson<T>(
@@ -33,3 +37,12 @@ Object? _$nullableGenericToJson<T>(
   T? input,
   Object? Function(T value) toJson,
 ) => input == null ? null : toJson(input);
+
+_$ErrorResponseImpl _$$ErrorResponseImplFromJson(Map<String, dynamic> json) =>
+    _$ErrorResponseImpl(
+      message: json['message'] as String,
+      stack: json['stack'] as String?,
+    );
+
+Map<String, dynamic> _$$ErrorResponseImplToJson(_$ErrorResponseImpl instance) =>
+    <String, dynamic>{'message': instance.message, 'stack': instance.stack};

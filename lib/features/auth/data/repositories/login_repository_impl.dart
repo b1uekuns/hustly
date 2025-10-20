@@ -1,120 +1,148 @@
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../../../../core/resources/data_state.dart';
 import '../../domain/entities/refresh_token/refresh_token_entities.dart';
 import '../../domain/entities/user/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../data_sources/remote/auth_api.dart';
-
-import '../models/refresh_token/refresh_token_model.dart';
-import '../models/user_model/user_model.dart';
+import '../models/login_response/login_response_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthApi api;
+  final AuthApi _authApi;
 
-  AuthRepositoryImpl(this.api);
+  AuthRepositoryImpl(this._authApi);
 
   @override
-  Future<DataState<void>> sendOtp(String email) async {
+  Future<Either<String, void>> sendOtp(String email) async {
     try {
-      final res = await api.sendOtp({"email": email});
-      if (res.response.statusCode == 200) {
-        return const DataSuccess(data: null);
+      final response = await _authApi.sendOtp({
+        'email': email,
+      });
+
+      if (response.response.statusCode == 200 && response.data.success) {
+        return const Right(null);
       } else {
-        return DataError(
-          error: DioException(
-            requestOptions: res.response.requestOptions,
-            message: res.data.message ?? "Unknown error",
-          ),
-        );
+        return Left(response.data.error?.message ?? 'Failed to send OTP');
       }
-    } on DioException catch (e) {
-      return DataError(error: e);
+    } catch (e) {
+      return Left(_handleError(e));
     }
   }
 
   @override
-  Future<DataState<(UserEntity, RefreshTokenEntity)>> verifyOtp({
-    required String email,
-    required String otp,
-  }) async {
+  Future<Either<String, LoginResponseModel>> verifyOtp(
+    String email,
+    String otp,
+  ) async {
     try {
-      final res = await api.verifyOtp({"email": email, "otp": otp});
+      print('🔵 [DEBUG] Calling verifyOtp API...');
+      final response = await _authApi.verifyOtp({
+        'email': email,
+        'otp': otp,
+      });
 
-      if (res.response.statusCode == 200 && res.data.data != null) {
-        final loginResponse = res.data.data!;
-        final user = loginResponse.user.toEntity();
-        final token = loginResponse.tokens.toEntity();
+      print('🔵 [DEBUG] Response status: ${response.response.statusCode}');
+      print('🔵 [DEBUG] Response success: ${response.data.success}');
+      print('🔵 [DEBUG] Response data: ${response.data.data}');
 
-        return DataSuccess(data: (user, token));
+      if (response.response.statusCode == 200 && response.data.success) {
+        print('✅ [DEBUG] Parsing LoginResponseModel...');
+        final loginResponse = response.data.data!;
+        print('✅ [DEBUG] Login response parsed successfully');
+        return Right(loginResponse);
       } else {
-        return DataError(
-          error: DioException(
-            requestOptions: res.response.requestOptions,
-            message: res.data.message ?? "Verify OTP failed",
-          ),
-        );
+        print('❌ [DEBUG] API error: ${response.data.error?.message}');
+        return Left(response.data.error?.message ?? 'Invalid OTP');
       }
-    } on DioException catch (e) {
-      return DataError(error: e);
+    } catch (e, stackTrace) {
+      print('❌ [DEBUG] Exception in verifyOtp: $e');
+      print('❌ [DEBUG] Stack trace: $stackTrace');
+      return Left(_handleError(e));
     }
   }
 
   @override
-  Future<DataState<UserEntity>> getCurrentUser() async {
+  Future<Either<String, void>> resendOtp(String email) async {
     try {
-      final res = await api.getCurrentUser();
-      if (res.response.statusCode == 200 && res.data.data != null) {
-        return DataSuccess(data: res.data.data!.toEntity());
+      final response = await _authApi.resendOtp({
+        'email': email,
+      });
+
+      if (response.response.statusCode == 200 && response.data.success) {
+        return const Right(null);
       } else {
-        return DataError(
-          error: DioException(
-            requestOptions: res.response.requestOptions,
-            message: res.data.message ?? "Get user failed",
-          ),
-        );
+        return Left(response.data.error?.message ?? 'Failed to resend OTP');
       }
-    } on DioException catch (e) {
-      return DataError(error: e);
+    } catch (e) {
+      return Left(_handleError(e));
     }
   }
 
   @override
-  Future<DataState<RefreshTokenEntity>> refreshToken({
-    required String refreshToken,
-  }) async {
+  Future<Either<String, UserEntity>> getCurrentUser() async {
     try {
-      final res = await api.refreshToken({"refreshToken": refreshToken});
-      if (res.response.statusCode == 200 && res.data.data != null) {
-        return DataSuccess(data: res.data.data!.toEntity());
+      // TODO: Get token from secure storage
+      const token = 'Bearer YOUR_TOKEN_HERE';
+      final response = await _authApi.getCurrentUser(token);
+
+      if (response.response.statusCode == 200 && response.data.success) {
+        // TODO: Map response.data.data (UserModel) to UserEntity
+        throw UnimplementedError('getCurrentUser not implemented yet');
       } else {
-        return DataError(
-          error: DioException(
-            requestOptions: res.response.requestOptions,
-            message: res.data.message ?? "Refresh token failed",
-          ),
-        );
+        return Left(response.data.error?.message ?? 'Failed to get user');
       }
-    } on DioException catch (e) {
-      return DataError(error: e);
+    } catch (e) {
+      return Left(_handleError(e));
     }
   }
 
   @override
-  Future<DataState<void>> logout() async {
+  Future<Either<String, RefreshTokenEntity>> refreshToken(
+    String refreshToken,
+  ) async {
     try {
-      final res = await api.logout();
-      if (res.response.statusCode == 200) {
-        return const DataSuccess(data: null);
+      final response = await _authApi.refreshToken({
+        'refreshToken': refreshToken,
+      });
+
+      if (response.response.statusCode == 200 && response.data.success) {
+        // TODO: Map response to RefreshTokenEntity
+        throw UnimplementedError('refreshToken not implemented yet');
       } else {
-        return DataError(
-          error: DioException(
-            requestOptions: res.response.requestOptions,
-            message: res.data.message ?? "Logout failed",
-          ),
-        );
+        return Left(response.data.error?.message ?? 'Failed to refresh token');
       }
-    } on DioException catch (e) {
-      return DataError(error: e);
+    } catch (e) {
+      return Left(_handleError(e));
     }
+  }
+
+  @override
+  Future<Either<String, void>> logout() async {
+    try {
+      // TODO: Get token from secure storage
+      const token = 'Bearer YOUR_TOKEN_HERE';
+      final response = await _authApi.logout(token);
+
+      if (response.response.statusCode == 200) {
+        // TODO: Clear local storage (token, user data)
+        return const Right(null);
+      } else {
+        return Left(response.data.error?.message ?? 'Failed to logout');
+      }
+    } catch (e) {
+      return Left(_handleError(e));
+    }
+  }
+
+  String _handleError(dynamic error) {
+    if (error is DioException) {
+      if (error.response != null) {
+        final data = error.response?.data;
+        if (data is Map<String, dynamic> && data['error'] != null) {
+          return data['error']['message'] ?? 'An error occurred';
+        }
+      }
+      return error.message ?? 'Network error';
+    }
+    return 'An unexpected error occurred';
   }
 }

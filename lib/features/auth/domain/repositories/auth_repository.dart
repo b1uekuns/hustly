@@ -1,25 +1,25 @@
+import 'package:dartz/dartz.dart';
+import '../../data/models/login_response/login_response_model.dart';
+import '../../data/models/user_model/user_model.dart';
 import '../entities/refresh_token/refresh_token_entities.dart';
 import '../entities/user/user_entity.dart';
-import '../../../../core/resources/data_state.dart';
 
 abstract class AuthRepository {
-  /// Gửi OTP đến email để đăng nhập
-  Future<DataState<void>> sendOtp(String email);
+  // Send OTP
+  Future<Either<String, void>> sendOtp(String email);
 
-  /// Xác thực OTP, nếu đúng thì trả về User + Token
-  Future<DataState<(UserEntity, RefreshTokenEntity)>> verifyOtp({
-    required String email,
-    required String otp,
-  });
+  // Verify OTP ✅ Return LoginResponseModel
+  Future<Either<String, LoginResponseModel>> verifyOtp(String email, String otp);
 
-  /// Lấy thông tin user hiện tại
-  Future<DataState<UserEntity>> getCurrentUser();
+  // Resend OTP
+  Future<Either<String, void>> resendOtp(String email);
 
-  /// Làm mới access token bằng refresh token
-  Future<DataState<RefreshTokenEntity>> refreshToken({
-    required String refreshToken,
-  });
+  // Get current user
+  Future<Either<String, UserEntity>> getCurrentUser();
 
-  /// Đăng xuất
-  Future<DataState<void>> logout();
+  // Refresh token
+  Future<Either<String, RefreshTokenEntity>> refreshToken(String refreshToken);
+
+  // Logout
+  Future<Either<String, void>> logout();
 }
