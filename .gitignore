@@ -56,3 +56,15 @@ macos/Flutter/ephemeral/
 .DS_Store
 # Windows
 Thumbs.db
+
+# Environment files
+.env
+.env.*
+
+# Markdown files (except README.md)
+*.md
+!README.md
+
+# Generated files (build_runner, freezed, json_serializable)
+*.g.dart
+*.freezed.dart
