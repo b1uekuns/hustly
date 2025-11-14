@@ -7,6 +7,8 @@ import 'interceptors/logging_interceptor.dart';
 class DioClient {
   final Dio _dio;
 
+  DioClient.fromDio(Dio dio) : _dio = dio;
+
   DioClient({
     required String baseUrl,
     Duration connectTimeout = const Duration(seconds: 10),
@@ -14,19 +16,19 @@ class DioClient {
     Map<String, dynamic>? headers,
     Interceptor? authInterceptor,
   }) : _dio = Dio(
-          BaseOptions(
-            baseUrl: baseUrl,
-            connectTimeout: connectTimeout,
-            receiveTimeout: receiveTimeout,
-            sendTimeout: const Duration(seconds: 15),
-            responseType: ResponseType.json,
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              if (headers != null) ...headers,
-            },
-          ),
-        ) {
+         BaseOptions(
+           baseUrl: baseUrl,
+           connectTimeout: connectTimeout,
+           receiveTimeout: receiveTimeout,
+           sendTimeout: const Duration(seconds: 15),
+           responseType: ResponseType.json,
+           headers: {
+             'Accept': 'application/json',
+             'Content-Type': 'application/json',
+             if (headers != null) ...headers,
+           },
+         ),
+       ) {
     // Thêm interceptors mặc định
     _dio.interceptors.add(LoggingInterceptor());
     if (authInterceptor != null) _dio.interceptors.add(authInterceptor);
@@ -46,7 +48,11 @@ class DioClient {
     } on DioException catch (e, st) {
       throw DioExceptionMapper.map(e, st: st);
     } catch (e, st) {
-      throw UnknownException(message: e.toString(), original: e, stackTrace: st);
+      throw UnknownException(
+        message: e.toString(),
+        original: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -57,11 +63,20 @@ class DioClient {
     Options? options,
   }) async {
     try {
-      return await _dio.post<T>(path, data: data, queryParameters: query, options: options);
+      return await _dio.post<T>(
+        path,
+        data: data,
+        queryParameters: query,
+        options: options,
+      );
     } on DioException catch (e, st) {
       throw DioExceptionMapper.map(e, st: st);
     } catch (e, st) {
-      throw UnknownException(message: e.toString(), original: e, stackTrace: st);
+      throw UnknownException(
+        message: e.toString(),
+        original: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -72,11 +87,20 @@ class DioClient {
     Options? options,
   }) async {
     try {
-      return await _dio.put<T>(path, data: data, queryParameters: query, options: options);
+      return await _dio.put<T>(
+        path,
+        data: data,
+        queryParameters: query,
+        options: options,
+      );
     } on DioException catch (e, st) {
       throw DioExceptionMapper.map(e, st: st);
     } catch (e, st) {
-      throw UnknownException(message: e.toString(), original: e, stackTrace: st);
+      throw UnknownException(
+        message: e.toString(),
+        original: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -87,11 +111,20 @@ class DioClient {
     Options? options,
   }) async {
     try {
-      return await _dio.delete<T>(path, data: data, queryParameters: query, options: options);
+      return await _dio.delete<T>(
+        path,
+        data: data,
+        queryParameters: query,
+        options: options,
+      );
     } on DioException catch (e, st) {
       throw DioExceptionMapper.map(e, st: st);
     } catch (e, st) {
-      throw UnknownException(message: e.toString(), original: e, stackTrace: st);
+      throw UnknownException(
+        message: e.toString(),
+        original: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -113,7 +146,11 @@ class DioClient {
     } on DioException catch (e, st) {
       throw DioExceptionMapper.map(e, st: st);
     } catch (e, st) {
-      throw UnknownException(message: e.toString(), original: e, stackTrace: st);
+      throw UnknownException(
+        message: e.toString(),
+        original: e,
+        stackTrace: st,
+      );
     }
   }
 }

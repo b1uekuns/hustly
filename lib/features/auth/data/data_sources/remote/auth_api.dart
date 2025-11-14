@@ -4,7 +4,6 @@ import '../../models/login_response/login_response_model.dart';
 import '../../models/refresh_token/refresh_token_model.dart';
 import '../../models/send_otp/send_otp_response.dart';
 import '../../models/user_model/user_model.dart';
-import '../../../../../core/resources/base_response.dart';
 
 part 'auth_api.g.dart';
 

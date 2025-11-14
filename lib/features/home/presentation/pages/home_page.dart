@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hust_chill_app/core/utils/app_color.dart';
-import 'package:hust_chill_app/core/utils/app_style.dart';
+import 'package:hust_chill_app/core/resources/app_color.dart';
+import 'package:hust_chill_app/core/resources/app_style.dart';
 import 'package:hust_chill_app/widgets/navBar/bottom_nav_bar.dart';
 
 class HomePage extends StatefulWidget {

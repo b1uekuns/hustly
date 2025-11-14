@@ -2,20 +2,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/usecases/auth_usecases.dart';
 import '../../data/models/user_model/user_model.dart';
-import 'package:hust_chill_app/core/data/local/share_preferences_manager.dart';
-import 'package:hust_chill_app/core/resources/data_state.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 part 'auth_bloc.freezed.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final SharedPreferencesManager preferencesManager;
   final SendOtpUseCase sendOtpUseCase;
   final VerifyOtpUseCase verifyOtpUseCase;
 
   AuthBloc({
-    required this.preferencesManager,
     required this.sendOtpUseCase,
     required this.verifyOtpUseCase,
   }) : super(const AuthState.initial()) {

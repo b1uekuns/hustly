@@ -1,8 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:hust_chill_app/core/config/routes/app_page.dart';
-import 'package:hust_chill_app/core/utils/app_color.dart';
-import 'package:hust_chill_app/core/utils/app_style.dart';
-import 'package:hust_chill_app/core/utils/images_local.dart';
+import 'package:hust_chill_app/core/resources/app_color.dart';
+import 'package:hust_chill_app/core/resources/app_style.dart';
+import 'package:hust_chill_app/core/resources/images_local.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';

@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'core/di/injector.dart';
 import 'core/config/routes/app_router.dart';
-import 'core/utils/app_color.dart';
+import 'core/resources/app_color.dart';
 import 'features/auth/domain/usecases/auth_usecases.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 

@@ -1,7 +1,7 @@
 enum AppPage { splash, login, loginOtp, home }
 
 extension AppPageExtension on AppPage {
-  String toPath({Map<String, String>? params}) {
+  String toPath() {
     switch (this) {
       case AppPage.splash:
         return '/splash';

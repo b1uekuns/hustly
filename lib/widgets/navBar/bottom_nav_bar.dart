@@ -1,6 +1,6 @@
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
 import 'package:flutter/material.dart';
-import 'package:hust_chill_app/core/utils/app_color.dart';
+import 'package:hust_chill_app/core/resources/app_color.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;

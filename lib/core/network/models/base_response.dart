@@ -1,5 +1,5 @@
+// core/network/models/base_response.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
-
 part 'base_response.freezed.dart';
 part 'base_response.g.dart';
 
