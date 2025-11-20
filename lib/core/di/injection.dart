@@ -6,7 +6,6 @@ import 'injection.config.dart';
 final getIt = GetIt.instance;
 
 /// Khởi tạo tất cả dependencies
-/// 
 /// Gọi trong main.dart:
 /// ```dart
 /// void main() async {

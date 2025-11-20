@@ -21,6 +21,7 @@ RefreshTokenModel _$RefreshTokenModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$RefreshTokenModel {
+  @JsonKey(name: 'token')
   String get accessToken => throw _privateConstructorUsedError;
   String get refreshToken => throw _privateConstructorUsedError;
   DateTime? get expiresAt => throw _privateConstructorUsedError;
@@ -42,7 +43,11 @@ abstract class $RefreshTokenModelCopyWith<$Res> {
     $Res Function(RefreshTokenModel) then,
   ) = _$RefreshTokenModelCopyWithImpl<$Res, RefreshTokenModel>;
   @useResult
-  $Res call({String accessToken, String refreshToken, DateTime? expiresAt});
+  $Res call({
+    @JsonKey(name: 'token') String accessToken,
+    String refreshToken,
+    DateTime? expiresAt,
+  });
 }
 
 /// @nodoc
@@ -93,7 +98,11 @@ abstract class _$$RefreshTokenModelImplCopyWith<$Res>
   ) = __$$RefreshTokenModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String accessToken, String refreshToken, DateTime? expiresAt});
+  $Res call({
+    @JsonKey(name: 'token') String accessToken,
+    String refreshToken,
+    DateTime? expiresAt,
+  });
 }
 
 /// @nodoc
@@ -135,17 +144,18 @@ class __$$RefreshTokenModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$RefreshTokenModelImpl implements _RefreshTokenModel {
+class _$RefreshTokenModelImpl extends _RefreshTokenModel {
   const _$RefreshTokenModelImpl({
-    required this.accessToken,
+    @JsonKey(name: 'token') required this.accessToken,
     required this.refreshToken,
     this.expiresAt,
-  });
+  }) : super._();
 
   factory _$RefreshTokenModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$RefreshTokenModelImplFromJson(json);
 
   @override
+  @JsonKey(name: 'token')
   final String accessToken;
   @override
   final String refreshToken;
@@ -192,17 +202,19 @@ class _$RefreshTokenModelImpl implements _RefreshTokenModel {
   }
 }
 
-abstract class _RefreshTokenModel implements RefreshTokenModel {
+abstract class _RefreshTokenModel extends RefreshTokenModel {
   const factory _RefreshTokenModel({
-    required final String accessToken,
+    @JsonKey(name: 'token') required final String accessToken,
     required final String refreshToken,
     final DateTime? expiresAt,
   }) = _$RefreshTokenModelImpl;
+  const _RefreshTokenModel._() : super._();
 
   factory _RefreshTokenModel.fromJson(Map<String, dynamic> json) =
       _$RefreshTokenModelImpl.fromJson;
 
   @override
+  @JsonKey(name: 'token')
   String get accessToken;
   @override
   String get refreshToken;

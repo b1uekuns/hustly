@@ -1,6 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hust_chill_app/features/auth/data/models/refresh_token/refresh_token_model.dart';
-
 import '../user_model/user_model.dart';
 
 part 'login_response_model.freezed.dart';
@@ -13,7 +11,7 @@ class LoginResponseModel with _$LoginResponseModel {
     required String token,
     required String refreshToken,
     @Default(false) bool isNewUser,
-  }) = _LoginResponseModel;
+  }) = _LoginResponseModel; 
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) =>
       _$LoginResponseModelFromJson(json);

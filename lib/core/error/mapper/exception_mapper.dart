@@ -45,7 +45,7 @@ class ExceptionMapper {
     // Network / Timeout
     if (exception is TimeoutException || exception is NetworkException) {
       return NetworkFailure(
-        exception.message ?? 'No internet connection',
+        exception.message ?? 'Lỗi mạng',
         code: exception.code,
         details: exception.details,
       );

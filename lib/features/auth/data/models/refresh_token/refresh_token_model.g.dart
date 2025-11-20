@@ -9,7 +9,7 @@ part of 'refresh_token_model.dart';
 _$RefreshTokenModelImpl _$$RefreshTokenModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$RefreshTokenModelImpl(
-  accessToken: json['accessToken'] as String,
+  accessToken: json['token'] as String,
   refreshToken: json['refreshToken'] as String,
   expiresAt: json['expiresAt'] == null
       ? null
@@ -19,7 +19,7 @@ _$RefreshTokenModelImpl _$$RefreshTokenModelImplFromJson(
 Map<String, dynamic> _$$RefreshTokenModelImplToJson(
   _$RefreshTokenModelImpl instance,
 ) => <String, dynamic>{
-  'accessToken': instance.accessToken,
+  'token': instance.accessToken,
   'refreshToken': instance.refreshToken,
   'expiresAt': instance.expiresAt?.toIso8601String(),
 };

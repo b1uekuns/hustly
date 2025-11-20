@@ -81,7 +81,7 @@ class AuthState with _$AuthState {
   // OTP Verifying
   const factory AuthState.verifyingOtp() = VerifyingOtp;
   const factory AuthState.authenticated({
-    required UserModel user,
+    required UserEntity user, // ✅ Use Domain entity
     required String token,
     required bool isNewUser,
   }) = Authenticated;

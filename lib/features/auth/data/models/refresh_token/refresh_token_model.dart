@@ -6,20 +6,23 @@ part 'refresh_token_model.g.dart';
 
 @freezed
 class RefreshTokenModel with _$RefreshTokenModel {
+  const RefreshTokenModel._(); // Add private constructor
+  
   const factory RefreshTokenModel({
-    required String accessToken,
+    @JsonKey(name: 'token') required String accessToken,
     required String refreshToken,
     DateTime? expiresAt,
   }) = _RefreshTokenModel;
 
   factory RefreshTokenModel.fromJson(Map<String, dynamic> json) =>
       _$RefreshTokenModelFromJson(json);
-}
-
-extension RefreshTokenMapper on RefreshTokenModel {
-  RefreshTokenEntity toEntity() => RefreshTokenEntity(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        expiresAt: expiresAt,
-      );
+  
+  // Convert to Entity
+  RefreshTokenEntity toEntity() {
+    return RefreshTokenEntity(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      expiresAt: expiresAt,
+    );
+  }
 }

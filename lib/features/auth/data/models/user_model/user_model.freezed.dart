@@ -324,7 +324,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$UserModelImpl implements _UserModel {
+class _$UserModelImpl extends _UserModel {
   const _$UserModelImpl({
     @JsonKey(name: '_id') required this.id,
     required this.email,
@@ -344,7 +344,8 @@ class _$UserModelImpl implements _UserModel {
     this.lastActive,
     this.isOnline = false,
   }) : _photos = photos,
-       _interests = interests;
+       _interests = interests,
+       super._();
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -480,7 +481,7 @@ class _$UserModelImpl implements _UserModel {
   }
 }
 
-abstract class _UserModel implements UserModel {
+abstract class _UserModel extends UserModel {
   const factory _UserModel({
     @JsonKey(name: '_id') required final String id,
     required final String email,
@@ -500,6 +501,7 @@ abstract class _UserModel implements UserModel {
     final String? lastActive,
     final bool isOnline,
   }) = _$UserModelImpl;
+  const _UserModel._() : super._();
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;

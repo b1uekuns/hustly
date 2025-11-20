@@ -17,7 +17,6 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$UserEntity {
-  /// ID sinh viên hoặc ID hệ thống
   String get studentId => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
@@ -172,7 +171,6 @@ class _$UserEntityImpl implements _UserEntity {
     this.isVerified = false,
   });
 
-  /// ID sinh viên hoặc ID hệ thống
   @override
   final String studentId;
   @override
@@ -226,7 +224,6 @@ abstract class _UserEntity implements UserEntity {
     final bool isVerified,
   }) = _$UserEntityImpl;
 
-  /// ID sinh viên hoặc ID hệ thống
   @override
   String get studentId;
   @override

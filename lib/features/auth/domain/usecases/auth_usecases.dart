@@ -1,12 +1,14 @@
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
+import '../../../../core/error/failures/failure.dart';
 import '../../../../core/usecases/app_usecases.dart';
-import '../../data/models/login_response/login_response_model.dart'; // ✅ Dùng đúng model
+import '../entities/login_response/login_response_entity.dart';
 import '../entities/refresh_token/refresh_token_entities.dart';
 import '../entities/user/user_entity.dart';
 import '../repositories/auth_repository.dart';
 
 /// --------------------
-/// Params
+/// Params Classes
 /// --------------------
 class SendOtpParams {
   final String email;
@@ -25,66 +27,67 @@ class RefreshTokenParams {
 }
 
 /// --------------------
-/// UseCases
+/// UseCases (Clean Architecture)
+/// Repository returns Failure directly, no conversion needed
 /// --------------------
 
-// 1. Gửi OTP
-class SendOtpUseCase implements AppUseCases<Either<String, void>, SendOtpParams> {
+// 1. Send OTP
+// Clean Architecture: Repository returns Failure, no conversion needed
+@injectable
+class SendOtpUseCase implements UseCase<void, SendOtpParams> {
   final AuthRepository repository;
   SendOtpUseCase(this.repository);
 
   @override
-  Future<Either<String, void>> call({SendOtpParams? params}) {
-    return repository.sendOtp(params!.email);
+  Future<Either<Failure, void>> call(SendOtpParams params) async {
+    return await repository.sendOtp(params.email);
   }
 }
 
-// 2. Xác thực OTP ✅ Fixed: Dùng LoginResponseModel
-class VerifyOtpUseCase
-    implements AppUseCases<Either<String, LoginResponseModel>, VerifyOtpParams> {
+// 2. Verify OTP
+@injectable
+class VerifyOtpUseCase implements UseCase<LoginResponseEntity, VerifyOtpParams> {
   final AuthRepository repository;
   VerifyOtpUseCase(this.repository);
 
   @override
-  Future<Either<String, LoginResponseModel>> call({
-    VerifyOtpParams? params,
-  }) {
-    return repository.verifyOtp(params!.email, params.otp);
+  Future<Either<Failure, LoginResponseEntity>> call(VerifyOtpParams params) async {
+    return await repository.verifyOtp(params.email, params.otp);
   }
 }
 
-// 3. Lấy user hiện tại
-class GetCurrentUserUseCase implements AppUseCases<Either<String, UserEntity>, NoParams> {
+// 3. Get Current User
+@injectable
+class GetCurrentUserUseCase implements UseCase<UserEntity, NoParams> {
   final AuthRepository repository;
   GetCurrentUserUseCase(this.repository);
 
   @override
-  Future<Either<String, UserEntity>> call({NoParams? params}) {
-    return repository.getCurrentUser();
+  Future<Either<Failure, UserEntity>> call(NoParams params) async {
+    return await repository.getCurrentUser();
   }
 }
 
-// 4. Refresh token
-class RefreshTokenUseCase
-    implements AppUseCases<Either<String, RefreshTokenEntity>, RefreshTokenParams> {
+// 4. Refresh Token
+@injectable
+class RefreshTokenUseCase implements UseCase<RefreshTokenEntity, RefreshTokenParams> {
   final AuthRepository repository;
   RefreshTokenUseCase(this.repository);
 
   @override
-  Future<Either<String, RefreshTokenEntity>> call({RefreshTokenParams? params}) {
-    return repository.refreshToken(params!.refreshToken);
+  Future<Either<Failure, RefreshTokenEntity>> call(RefreshTokenParams params) async {
+    return await repository.refreshToken(params.refreshToken);
   }
 }
 
 // 5. Logout
-class LogoutUseCase implements AppUseCases<Either<String, void>, NoParams> {
+@injectable
+class LogoutUseCase implements UseCase<void, NoParams> {
   final AuthRepository repository;
   LogoutUseCase(this.repository);
 
   @override
-  Future<Either<String, void>> call({NoParams? params}) {
-    return repository.logout();
+  Future<Either<Failure, void>> call(NoParams params) async {
+    return await repository.logout();
   }
 }
-
-class NoParams {}

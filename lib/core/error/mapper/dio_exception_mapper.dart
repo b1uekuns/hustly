@@ -24,7 +24,7 @@ class DioExceptionMapper {
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
         return TimeoutException(
-          message: serverMessage ?? 'Request timeout',
+          message: serverMessage ?? 'Hết thời gian chờ yêu cầu',
           code: status,
           original: error,
           stackTrace: st,
@@ -34,7 +34,7 @@ class DioExceptionMapper {
       case DioExceptionType.badResponse:
         if (status == 401 || status == 403) {
           return UnauthorizedException(
-            message: serverMessage ?? 'Unauthorized',
+            message: serverMessage ?? 'Không được phép truy cập',
             code: status,
             original: error,
             stackTrace: st,
@@ -42,7 +42,7 @@ class DioExceptionMapper {
           );
         }
         return ServerException(
-          message: serverMessage ?? 'Server error',
+          message: serverMessage ?? 'Lỗi máy chủ',
           code: status,
           original: error,
           stackTrace: st,
@@ -51,14 +51,14 @@ class DioExceptionMapper {
 
       case DioExceptionType.cancel:
         return UnknownException(
-          message: 'Request cancelled',
+          message: 'Yêu cầu đã bị hủy',
           original: error,
           stackTrace: st,
         );
 
       case DioExceptionType.badCertificate:
         return NetworkException(
-          message: 'SSL certificate validation failed',
+          message: 'Xác thực chứng chỉ SSL thất bại',
           original: error,
           stackTrace: st,
         );
@@ -66,7 +66,7 @@ class DioExceptionMapper {
       case DioExceptionType.connectionError:
       case DioExceptionType.unknown:
         if (underlying is SocketException) {
-          final msg = underlying.message.isNotEmpty ? underlying.message : 'No internet connection';
+          final msg = underlying.message.isNotEmpty ? underlying.message : 'Lỗi kết nối mạng';
           return NetworkException(
             message: msg,
             original: underlying,
@@ -74,7 +74,7 @@ class DioExceptionMapper {
           );
         }
         return UnknownException(
-          message: error.message ?? 'Unknown network error',
+          message: error.message ?? 'Lỗi mạng không xác định',
           original: error,
           stackTrace: st,
         );

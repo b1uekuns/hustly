@@ -2,6 +2,7 @@
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../network/dio_client.dart';
@@ -9,6 +10,7 @@ import '../../network/network_info.dart';
 import '../../network/interceptors/auth_interceptor.dart';
 import '../../network/interceptors/logging_interceptor.dart';
 import '../../error/handlers/token_provider.dart';
+import '../../../features/auth/data/data_sources/remote/auth_api.dart';
 
 /// Module để register các dependencies liên quan đến Network
 @module
@@ -30,12 +32,11 @@ abstract class NetworkModule {
   @lazySingleton
   @Named('refreshDio')
   Dio provideRefreshDio(LoggingInterceptor loggingInterceptor) {
+    final baseUrl = dotenv.get('BASE_URL', fallback: 'http://localhost:5000/');
+    
     final dio = Dio(
       BaseOptions(
-        baseUrl: const String.fromEnvironment(
-          'BASE_URL',
-          defaultValue: 'http://localhost:3000',
-        ),
+        baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),
@@ -53,12 +54,11 @@ abstract class NetworkModule {
     @Named('refreshDio') Dio refreshDio,
     TokenProvider tokenProvider,
   ) {
+    final baseUrl = dotenv.get('BASE_URL', fallback: 'http://localhost:5000/');
+    
     final dio = Dio(
       BaseOptions(
-        baseUrl: const String.fromEnvironment(
-          'BASE_URL',
-          defaultValue: 'http://localhost:3000',
-        ),
+        baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),
@@ -111,5 +111,11 @@ abstract class NetworkModule {
   @lazySingleton
   DioClient dioClient(@Named('mainDio') Dio dio) {
     return DioClient.fromDio(dio);
+  }
+
+  /// Provide AuthApi for authentication endpoints
+  @lazySingleton
+  AuthApi authApi(@Named('mainDio') Dio dio) {
+    return AuthApi(dio);
   }
 }
