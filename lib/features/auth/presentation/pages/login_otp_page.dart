@@ -83,8 +83,7 @@ class _LoginOTPPageState extends State<LoginOTPPage> {
             Future.delayed(const Duration(seconds: 1), () {
               if (context.mounted) {
                 if (isNewUser) {
-                  // TODO: Navigate to complete profile
-                  GoRouter.of(context).go(AppPage.home.toPath());
+                  GoRouter.of(context).go(AppPage.onboarding.toPath());
                 } else {
                   GoRouter.of(context).go(AppPage.home.toPath());
                 }
@@ -198,11 +197,11 @@ class _LoginOTPPageState extends State<LoginOTPPage> {
                                   _secondsRemaining == 0
                                       ? 'Gửi lại mã OTP'
                                       : 'Gửi lại sau $_secondsRemaining giây',
-                                  style: AppStyle.def
+                                  style: AppStyle.def.bold
                                       .size(13)
                                       .colors(
                                         _secondsRemaining == 0
-                                            ? AppColor.white
+                                            ? AppColor.blueDarkPrimary
                                             : AppColor.textLight.withOpacity(
                                                 0.6,
                                               ),

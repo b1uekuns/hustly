@@ -24,8 +24,7 @@ mixin _$UserModel {
   @JsonKey(name: '_id')
   String get id => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
-  String? get firstName => throw _privateConstructorUsedError;
-  String? get lastName => throw _privateConstructorUsedError;
+  String? get name => throw _privateConstructorUsedError;
   String? get dateOfBirth => throw _privateConstructorUsedError;
   String? get gender => throw _privateConstructorUsedError;
   String? get bio => throw _privateConstructorUsedError;
@@ -34,7 +33,8 @@ mixin _$UserModel {
   String? get interestedIn => throw _privateConstructorUsedError;
   String? get studentId => throw _privateConstructorUsedError;
   String? get major => throw _privateConstructorUsedError;
-  int? get year => throw _privateConstructorUsedError;
+  @JsonKey(name: 'class')
+  String? get className => throw _privateConstructorUsedError;
   bool get isEmailVerified => throw _privateConstructorUsedError;
   bool get isProfileComplete => throw _privateConstructorUsedError;
   String? get lastActive => throw _privateConstructorUsedError;
@@ -58,8 +58,7 @@ abstract class $UserModelCopyWith<$Res> {
   $Res call({
     @JsonKey(name: '_id') String id,
     String email,
-    String? firstName,
-    String? lastName,
+    String? name,
     String? dateOfBirth,
     String? gender,
     String? bio,
@@ -68,7 +67,7 @@ abstract class $UserModelCopyWith<$Res> {
     String? interestedIn,
     String? studentId,
     String? major,
-    int? year,
+    @JsonKey(name: 'class') String? className,
     bool isEmailVerified,
     bool isProfileComplete,
     String? lastActive,
@@ -93,8 +92,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
   $Res call({
     Object? id = null,
     Object? email = null,
-    Object? firstName = freezed,
-    Object? lastName = freezed,
+    Object? name = freezed,
     Object? dateOfBirth = freezed,
     Object? gender = freezed,
     Object? bio = freezed,
@@ -103,7 +101,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? interestedIn = freezed,
     Object? studentId = freezed,
     Object? major = freezed,
-    Object? year = freezed,
+    Object? className = freezed,
     Object? isEmailVerified = null,
     Object? isProfileComplete = null,
     Object? lastActive = freezed,
@@ -119,13 +117,9 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
                 ? _value.email
                 : email // ignore: cast_nullable_to_non_nullable
                       as String,
-            firstName: freezed == firstName
-                ? _value.firstName
-                : firstName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            lastName: freezed == lastName
-                ? _value.lastName
-                : lastName // ignore: cast_nullable_to_non_nullable
+            name: freezed == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
                       as String?,
             dateOfBirth: freezed == dateOfBirth
                 ? _value.dateOfBirth
@@ -159,10 +153,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
                 ? _value.major
                 : major // ignore: cast_nullable_to_non_nullable
                       as String?,
-            year: freezed == year
-                ? _value.year
-                : year // ignore: cast_nullable_to_non_nullable
-                      as int?,
+            className: freezed == className
+                ? _value.className
+                : className // ignore: cast_nullable_to_non_nullable
+                      as String?,
             isEmailVerified: null == isEmailVerified
                 ? _value.isEmailVerified
                 : isEmailVerified // ignore: cast_nullable_to_non_nullable
@@ -197,8 +191,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
   $Res call({
     @JsonKey(name: '_id') String id,
     String email,
-    String? firstName,
-    String? lastName,
+    String? name,
     String? dateOfBirth,
     String? gender,
     String? bio,
@@ -207,7 +200,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
     String? interestedIn,
     String? studentId,
     String? major,
-    int? year,
+    @JsonKey(name: 'class') String? className,
     bool isEmailVerified,
     bool isProfileComplete,
     String? lastActive,
@@ -231,8 +224,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? email = null,
-    Object? firstName = freezed,
-    Object? lastName = freezed,
+    Object? name = freezed,
     Object? dateOfBirth = freezed,
     Object? gender = freezed,
     Object? bio = freezed,
@@ -241,7 +233,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? interestedIn = freezed,
     Object? studentId = freezed,
     Object? major = freezed,
-    Object? year = freezed,
+    Object? className = freezed,
     Object? isEmailVerified = null,
     Object? isProfileComplete = null,
     Object? lastActive = freezed,
@@ -257,13 +249,9 @@ class __$$UserModelImplCopyWithImpl<$Res>
             ? _value.email
             : email // ignore: cast_nullable_to_non_nullable
                   as String,
-        firstName: freezed == firstName
-            ? _value.firstName
-            : firstName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        lastName: freezed == lastName
-            ? _value.lastName
-            : lastName // ignore: cast_nullable_to_non_nullable
+        name: freezed == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
                   as String?,
         dateOfBirth: freezed == dateOfBirth
             ? _value.dateOfBirth
@@ -297,10 +285,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
             ? _value.major
             : major // ignore: cast_nullable_to_non_nullable
                   as String?,
-        year: freezed == year
-            ? _value.year
-            : year // ignore: cast_nullable_to_non_nullable
-                  as int?,
+        className: freezed == className
+            ? _value.className
+            : className // ignore: cast_nullable_to_non_nullable
+                  as String?,
         isEmailVerified: null == isEmailVerified
             ? _value.isEmailVerified
             : isEmailVerified // ignore: cast_nullable_to_non_nullable
@@ -328,8 +316,7 @@ class _$UserModelImpl extends _UserModel {
   const _$UserModelImpl({
     @JsonKey(name: '_id') required this.id,
     required this.email,
-    this.firstName,
-    this.lastName,
+    this.name,
     this.dateOfBirth,
     this.gender,
     this.bio,
@@ -338,7 +325,7 @@ class _$UserModelImpl extends _UserModel {
     this.interestedIn,
     this.studentId,
     this.major,
-    this.year,
+    @JsonKey(name: 'class') this.className,
     this.isEmailVerified = false,
     this.isProfileComplete = false,
     this.lastActive,
@@ -356,9 +343,7 @@ class _$UserModelImpl extends _UserModel {
   @override
   final String email;
   @override
-  final String? firstName;
-  @override
-  final String? lastName;
+  final String? name;
   @override
   final String? dateOfBirth;
   @override
@@ -390,7 +375,8 @@ class _$UserModelImpl extends _UserModel {
   @override
   final String? major;
   @override
-  final int? year;
+  @JsonKey(name: 'class')
+  final String? className;
   @override
   @JsonKey()
   final bool isEmailVerified;
@@ -405,7 +391,7 @@ class _$UserModelImpl extends _UserModel {
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, gender: $gender, bio: $bio, photos: $photos, interests: $interests, interestedIn: $interestedIn, studentId: $studentId, major: $major, year: $year, isEmailVerified: $isEmailVerified, isProfileComplete: $isProfileComplete, lastActive: $lastActive, isOnline: $isOnline)';
+    return 'UserModel(id: $id, email: $email, name: $name, dateOfBirth: $dateOfBirth, gender: $gender, bio: $bio, photos: $photos, interests: $interests, interestedIn: $interestedIn, studentId: $studentId, major: $major, className: $className, isEmailVerified: $isEmailVerified, isProfileComplete: $isProfileComplete, lastActive: $lastActive, isOnline: $isOnline)';
   }
 
   @override
@@ -415,10 +401,7 @@ class _$UserModelImpl extends _UserModel {
             other is _$UserModelImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.email, email) || other.email == email) &&
-            (identical(other.firstName, firstName) ||
-                other.firstName == firstName) &&
-            (identical(other.lastName, lastName) ||
-                other.lastName == lastName) &&
+            (identical(other.name, name) || other.name == name) &&
             (identical(other.dateOfBirth, dateOfBirth) ||
                 other.dateOfBirth == dateOfBirth) &&
             (identical(other.gender, gender) || other.gender == gender) &&
@@ -433,7 +416,8 @@ class _$UserModelImpl extends _UserModel {
             (identical(other.studentId, studentId) ||
                 other.studentId == studentId) &&
             (identical(other.major, major) || other.major == major) &&
-            (identical(other.year, year) || other.year == year) &&
+            (identical(other.className, className) ||
+                other.className == className) &&
             (identical(other.isEmailVerified, isEmailVerified) ||
                 other.isEmailVerified == isEmailVerified) &&
             (identical(other.isProfileComplete, isProfileComplete) ||
@@ -450,8 +434,7 @@ class _$UserModelImpl extends _UserModel {
     runtimeType,
     id,
     email,
-    firstName,
-    lastName,
+    name,
     dateOfBirth,
     gender,
     bio,
@@ -460,7 +443,7 @@ class _$UserModelImpl extends _UserModel {
     interestedIn,
     studentId,
     major,
-    year,
+    className,
     isEmailVerified,
     isProfileComplete,
     lastActive,
@@ -485,8 +468,7 @@ abstract class _UserModel extends UserModel {
   const factory _UserModel({
     @JsonKey(name: '_id') required final String id,
     required final String email,
-    final String? firstName,
-    final String? lastName,
+    final String? name,
     final String? dateOfBirth,
     final String? gender,
     final String? bio,
@@ -495,7 +477,7 @@ abstract class _UserModel extends UserModel {
     final String? interestedIn,
     final String? studentId,
     final String? major,
-    final int? year,
+    @JsonKey(name: 'class') final String? className,
     final bool isEmailVerified,
     final bool isProfileComplete,
     final String? lastActive,
@@ -512,9 +494,7 @@ abstract class _UserModel extends UserModel {
   @override
   String get email;
   @override
-  String? get firstName;
-  @override
-  String? get lastName;
+  String? get name;
   @override
   String? get dateOfBirth;
   @override
@@ -532,7 +512,8 @@ abstract class _UserModel extends UserModel {
   @override
   String? get major;
   @override
-  int? get year;
+  @JsonKey(name: 'class')
+  String? get className;
   @override
   bool get isEmailVerified;
   @override

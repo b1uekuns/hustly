@@ -3,6 +3,7 @@ import 'app_page.dart';
 import '../../../features/auth/presentation/pages/login_otp_page.dart';
 import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../../features/home/presentation/pages/home_page.dart';
+import '../../../features/profile_setup/presentation/pages/onboarding_page.dart';
 
 class AppRouter {
   AppRouter._(); // Private constructor
@@ -27,6 +28,13 @@ class AppRouter {
           final email = state.extra as String? ?? '';
           return LoginOTPPage(email: email);
         },
+      ),
+
+      // Onboarding (Complete Profile)
+      GoRoute(
+        name: AppPage.onboarding.toName,
+        path: AppPage.onboarding.toPath(),
+        builder: (context, state) => const OnboardingPage(),
       ),
 
       // Home

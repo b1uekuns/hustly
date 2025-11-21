@@ -21,13 +21,25 @@ import '../../features/auth/data/repositories/login_repository_impl.dart'
 import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
 import '../../features/auth/domain/usecases/auth_usecases.dart' as _i46;
 import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
+import '../../features/profile_setup/data/data_source/remote/user_api.dart'
+    as _i920;
+import '../../features/profile_setup/data/repositories/profile_repository_impl.dart'
+    as _i211;
+import '../../features/profile_setup/domain/repositories/profile_repository.dart'
+    as _i226;
+import '../../features/profile_setup/domain/usecases/complete_profile_usecase.dart'
+    as _i1006;
+import '../../features/profile_setup/presentation/bloc/profile_setup_bloc.dart'
+    as _i888;
 import '../error/handlers/token_provider.dart' as _i149;
 import '../error/handlers/token_provider_impl.dart' as _i547;
 import '../network/dio_client.dart' as _i667;
 import '../network/interceptors/logging_interceptor.dart' as _i344;
 import '../network/network_info.dart' as _i932;
+import '../services/image/image_picker_service.dart' as _i346;
 import '../services/storage/preferences_service.dart' as _i318;
 import '../services/storage/storage_service.dart' as _i968;
+import '../services/upload/upload_service.dart' as _i309;
 import 'modules/network_module.dart' as _i851;
 import 'modules/storage_module.dart' as _i148;
 
@@ -47,6 +59,9 @@ extension GetItInjectableX on _i174.GetIt {
     await gh.lazySingletonAsync<_i460.SharedPreferences>(
       () => storageModule.prefs,
       preResolve: true,
+    );
+    gh.lazySingleton<_i346.ImagePickerService>(
+      () => _i346.ImagePickerService(),
     );
     gh.lazySingleton<_i968.StorageService>(
       () => storageModule.storageService(gh<_i460.SharedPreferences>()),
@@ -72,17 +87,38 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       instanceName: 'mainDio',
     );
+    gh.lazySingleton<_i309.UploadService>(
+      () => _i309.UploadService(
+        gh<_i361.Dio>(instanceName: 'mainDio'),
+        gh<_i149.TokenProvider>(),
+      ),
+    );
     gh.lazySingleton<_i667.DioClient>(
       () => networkModule.dioClient(gh<_i361.Dio>(instanceName: 'mainDio')),
     );
     gh.lazySingleton<_i799.AuthApi>(
       () => networkModule.authApi(gh<_i361.Dio>(instanceName: 'mainDio')),
     );
+    gh.lazySingleton<_i920.UserApi>(
+      () => networkModule.userApi(gh<_i361.Dio>(instanceName: 'mainDio')),
+    );
+    gh.lazySingleton<_i226.ProfileRepository>(
+      () => _i211.ProfileRepositoryImpl(
+        gh<_i920.UserApi>(),
+        gh<_i149.TokenProvider>(),
+      ),
+    );
     gh.lazySingleton<_i787.AuthRepository>(
       () => _i327.AuthRepositoryImpl(
         gh<_i799.AuthApi>(),
         gh<_i149.TokenProvider>(),
       ),
+    );
+    gh.factory<_i1006.CompleteProfileUseCase>(
+      () => _i1006.CompleteProfileUseCase(gh<_i226.ProfileRepository>()),
+    );
+    gh.factory<_i1006.GetMyProfileUseCase>(
+      () => _i1006.GetMyProfileUseCase(gh<_i226.ProfileRepository>()),
     );
     gh.factory<_i46.SendOtpUseCase>(
       () => _i46.SendOtpUseCase(gh<_i787.AuthRepository>()),
@@ -98,6 +134,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i46.LogoutUseCase>(
       () => _i46.LogoutUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i888.ProfileSetupBloc>(
+      () => _i888.ProfileSetupBloc(
+        gh<_i1006.CompleteProfileUseCase>(),
+        gh<_i1006.GetMyProfileUseCase>(),
+      ),
     );
     gh.factory<_i797.AuthBloc>(
       () => _i797.AuthBloc(

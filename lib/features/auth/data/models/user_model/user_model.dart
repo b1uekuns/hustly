@@ -11,8 +11,7 @@ class UserModel with _$UserModel {
   const factory UserModel({
     @JsonKey(name: '_id') required String id,
     required String email,
-    String? firstName,
-    String? lastName,
+    String? name,
     String? dateOfBirth,
     String? gender,
     String? bio,
@@ -21,7 +20,7 @@ class UserModel with _$UserModel {
     String? interestedIn,
     String? studentId,
     String? major,
-    int? year,
+    @JsonKey(name: 'class') String? className,
     @Default(false) bool isEmailVerified,
     @Default(false) bool isProfileComplete,
     String? lastActive,
@@ -36,8 +35,8 @@ class UserModel with _$UserModel {
     return UserEntity(
       studentId: studentId ?? id,
       email: email,
-      name: '${firstName ?? ''} ${lastName ?? ''}'.trim().isNotEmpty 
-          ? '${firstName ?? ''} ${lastName ?? ''}'.trim() 
+      name: '$name'.isNotEmpty 
+          ? '$name' 
           : email.split('@').first,
       avatar: photos.isNotEmpty 
           ? photos.firstWhere((p) => p.isMain, orElse: () => photos.first).url 

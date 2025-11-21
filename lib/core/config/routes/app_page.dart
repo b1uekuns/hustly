@@ -1,4 +1,4 @@
-enum AppPage { splash, login, loginOtp, home }
+enum AppPage { splash, login, loginOtp, onboarding, home }
 
 extension AppPageExtension on AppPage {
   String toPath() {
@@ -9,6 +9,8 @@ extension AppPageExtension on AppPage {
         return '/';
       case AppPage.loginOtp:
         return '/login-otp';
+      case AppPage.onboarding:
+        return '/onboarding';
       case AppPage.home:
         return '/home';
     }
@@ -22,6 +24,8 @@ extension AppPageExtension on AppPage {
         return 'login';
       case AppPage.loginOtp:
         return 'login-otp';
+      case AppPage.onboarding:
+        return 'onboarding';
       case AppPage.home:
         return 'home';
     }

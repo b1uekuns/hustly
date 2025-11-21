@@ -11,6 +11,7 @@ import '../../network/interceptors/auth_interceptor.dart';
 import '../../network/interceptors/logging_interceptor.dart';
 import '../../error/handlers/token_provider.dart';
 import '../../../features/auth/data/data_sources/remote/auth_api.dart';
+import '../../../features/profile_setup/data/data_source/remote/user_api.dart';
 
 /// Module để register các dependencies liên quan đến Network
 @module
@@ -117,5 +118,11 @@ abstract class NetworkModule {
   @lazySingleton
   AuthApi authApi(@Named('mainDio') Dio dio) {
     return AuthApi(dio);
+  }
+
+  /// Provide UserApi for user profile endpoints
+  @lazySingleton
+  UserApi userApi(@Named('mainDio') Dio dio) {
+    return UserApi(dio);
   }
 }
