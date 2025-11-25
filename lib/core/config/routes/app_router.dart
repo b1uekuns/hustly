@@ -3,7 +3,11 @@ import 'app_page.dart';
 import '../../../features/auth/presentation/pages/login_otp_page.dart';
 import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../../features/home/presentation/pages/home_page.dart';
-import '../../../features/profile_setup/presentation/pages/onboarding_page.dart';
+import '../../../features/profile_setup/presentation/pages/step1_basic_info_page.dart';
+import '../../../features/profile_setup/presentation/pages/step2_photos_page.dart';
+import '../../../features/profile_setup/presentation/pages/step3_interests_page.dart';
+import '../../../features/profile_setup/presentation/pages/step4_interested_in_page.dart';
+import '../../../features/profile_setup/presentation/pages/pending_approval_page.dart';
 
 class AppRouter {
   AppRouter._(); // Private constructor
@@ -30,11 +34,39 @@ class AppRouter {
         },
       ),
 
-      // Onboarding (Complete Profile)
+      // Onboarding Step 1: Basic Info
       GoRoute(
         name: AppPage.onboarding.toName,
         path: AppPage.onboarding.toPath(),
-        builder: (context, state) => const OnboardingPage(),
+        builder: (context, state) => const Step1BasicInfoPage(),
+      ),
+
+      // Onboarding Step 2: Photos
+      GoRoute(
+        name: AppPage.onboardingPhotos.toName,
+        path: AppPage.onboardingPhotos.toPath(),
+        builder: (context, state) => const Step2PhotosPage(),
+      ),
+
+      // Onboarding Step 3: Interests
+      GoRoute(
+        name: AppPage.onboardingInterests.toName,
+        path: AppPage.onboardingInterests.toPath(),
+        builder: (context, state) => const Step3InterestsPage(),
+      ),
+
+      // Onboarding Step 4: Interested In
+      GoRoute(
+        name: AppPage.onboardingInterestedIn.toName,
+        path: AppPage.onboardingInterestedIn.toPath(),
+        builder: (context, state) => const Step4InterestedInPage(),
+      ),
+
+      // Onboarding Pending Approval
+      GoRoute(
+        name: AppPage.onboardingPending.toName,
+        path: AppPage.onboardingPending.toPath(),
+        builder: (context, state) => const PendingApprovalPage(),
       ),
 
       // Home

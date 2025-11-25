@@ -6,6 +6,22 @@ import 'package:injectable/injectable.dart';
 class ImagePickerService {
   final ImagePicker _picker = ImagePicker();
 
+  /// Pick single image with source selection
+  Future<XFile?> pickImage({ImageSource source = ImageSource.gallery}) async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 1920,
+        maxHeight: 1920,
+        imageQuality: 85,
+      );
+      return image;
+    } catch (e) {
+      print('[ImagePickerService] Error picking image: $e');
+      return null;
+    }
+  }
+
   /// Pick single image from gallery
   Future<File?> pickImageFromGallery() async {
     try {

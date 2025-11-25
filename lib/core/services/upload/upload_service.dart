@@ -1,6 +1,10 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
+import 'package:dartz/dartz.dart';
+import '../../error/failures/failure.dart';
+import '../../error/failures/server_failure.dart';
 import '../../error/handlers/token_provider.dart';
 
 @lazySingleton
@@ -10,28 +14,28 @@ class UploadService {
 
   UploadService(@Named('mainDio') this.dio, this.tokenProvider);
 
-  /// Upload single image to backend
-  Future<String?> uploadImage(File imageFile) async {
+  /// Upload single image to backend (returns Either for error handling)
+  Future<Either<Failure, String>> uploadImage(XFile imageFile) async {
     try {
       print('[UploadService] Uploading image: ${imageFile.path}');
 
       final token = await tokenProvider.getAccessToken();
       if (token == null) {
         print('[UploadService] No token found');
-        return null;
+        return const Left(ServerFailure('No authentication token'));
       }
 
       // Create multipart file
       final formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(
+        'photo': await MultipartFile.fromFile(
           imageFile.path,
-          filename: imageFile.path.split('/').last,
+          filename: imageFile.name,
         ),
       });
 
       // Upload to backend
       final response = await dio.post(
-        '/upload/image',
+        '/api/v1/upload/image',
         data: formData,
         options: Options(
           headers: {
@@ -43,15 +47,21 @@ class UploadService {
 
       if (response.statusCode == 200 && response.data['success'] == true) {
         final url = response.data['data']['url'] as String?;
-        print('[UploadService] Upload successful: $url');
-        return url;
+        if (url != null) {
+          print('[UploadService] Upload successful: $url');
+          return Right(url);
+        }
+        return const Left(ServerFailure('No URL in response'));
       }
 
       print('[UploadService] Upload failed: ${response.data}');
-      return null;
+      return Left(ServerFailure(response.data['error']?['message'] ?? 'Upload failed'));
+    } on DioException catch (e) {
+      print('[UploadService] DioException: ${e.message}');
+      return Left(ServerFailure(e.message ?? 'Network error'));
     } catch (e) {
       print('[UploadService] Error uploading image: $e');
-      return null;
+      return Left(ServerFailure(e.toString()));
     }
   }
 

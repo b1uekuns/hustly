@@ -27,7 +27,7 @@ dependencies:
   path_provider: ^2.1.5
   connectivity_plus: ^6.1.4
   url_launcher: ^6.3.1
-  intl: ^0.19.0
+  intl: ^0.20.2
 
   google_fonts: ^6.3.0
   auto_size_text: ^3.0.0
@@ -36,6 +36,7 @@ dependencies:
   flutter_svg: ^2.1.0
   lottie: ^3.2.0
   logger: ^2.6.0
+  table_calendar: ^3.2.0
 
   # Realtime (nếu dùng Node)
   socket_io_client: ^2.0.3

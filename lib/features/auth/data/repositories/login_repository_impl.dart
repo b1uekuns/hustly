@@ -57,6 +57,10 @@ class AuthRepositoryImpl implements AuthRepository {
           token: loginResponse.token,
           refreshToken: loginResponse.refreshToken,
           isNewUser: loginResponse.isNewUser,
+          needsApproval: loginResponse.needsApproval,
+          isApproved: loginResponse.isApproved,
+          isRejected: loginResponse.isRejected,
+          rejectionReason: loginResponse.rejectionReason,
         );
         
         return Right(entity);

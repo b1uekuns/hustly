@@ -77,6 +77,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             user: response.user,
             token: response.token,
             isNewUser: response.isNewUser,
+            needsApproval: response.needsApproval,
+            isApproved: response.isApproved,
+            isRejected: response.isRejected,
+            rejectionReason: response.rejectionReason,
           ),
         );
       },

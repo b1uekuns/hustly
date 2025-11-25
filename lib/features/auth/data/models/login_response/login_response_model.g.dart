@@ -13,6 +13,10 @@ _$LoginResponseModelImpl _$$LoginResponseModelImplFromJson(
   token: json['token'] as String,
   refreshToken: json['refreshToken'] as String,
   isNewUser: json['isNewUser'] as bool? ?? false,
+  needsApproval: json['needsApproval'] as bool? ?? false,
+  isApproved: json['isApproved'] as bool? ?? false,
+  isRejected: json['isRejected'] as bool? ?? false,
+  rejectionReason: json['rejectionReason'] as String?,
 );
 
 Map<String, dynamic> _$$LoginResponseModelImplToJson(
@@ -22,4 +26,8 @@ Map<String, dynamic> _$$LoginResponseModelImplToJson(
   'token': instance.token,
   'refreshToken': instance.refreshToken,
   'isNewUser': instance.isNewUser,
+  'needsApproval': instance.needsApproval,
+  'isApproved': instance.isApproved,
+  'isRejected': instance.isRejected,
+  'rejectionReason': instance.rejectionReason,
 };

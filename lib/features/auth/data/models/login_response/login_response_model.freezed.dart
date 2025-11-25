@@ -25,6 +25,10 @@ mixin _$LoginResponseModel {
   String get token => throw _privateConstructorUsedError;
   String get refreshToken => throw _privateConstructorUsedError;
   bool get isNewUser => throw _privateConstructorUsedError;
+  bool get needsApproval => throw _privateConstructorUsedError;
+  bool get isApproved => throw _privateConstructorUsedError;
+  bool get isRejected => throw _privateConstructorUsedError;
+  String? get rejectionReason => throw _privateConstructorUsedError;
 
   /// Serializes this LoginResponseModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,6 +52,10 @@ abstract class $LoginResponseModelCopyWith<$Res> {
     String token,
     String refreshToken,
     bool isNewUser,
+    bool needsApproval,
+    bool isApproved,
+    bool isRejected,
+    String? rejectionReason,
   });
 
   $UserModelCopyWith<$Res> get user;
@@ -72,6 +80,10 @@ class _$LoginResponseModelCopyWithImpl<$Res, $Val extends LoginResponseModel>
     Object? token = null,
     Object? refreshToken = null,
     Object? isNewUser = null,
+    Object? needsApproval = null,
+    Object? isApproved = null,
+    Object? isRejected = null,
+    Object? rejectionReason = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -91,6 +103,22 @@ class _$LoginResponseModelCopyWithImpl<$Res, $Val extends LoginResponseModel>
                 ? _value.isNewUser
                 : isNewUser // ignore: cast_nullable_to_non_nullable
                       as bool,
+            needsApproval: null == needsApproval
+                ? _value.needsApproval
+                : needsApproval // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            isApproved: null == isApproved
+                ? _value.isApproved
+                : isApproved // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            isRejected: null == isRejected
+                ? _value.isRejected
+                : isRejected // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            rejectionReason: freezed == rejectionReason
+                ? _value.rejectionReason
+                : rejectionReason // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -121,6 +149,10 @@ abstract class _$$LoginResponseModelImplCopyWith<$Res>
     String token,
     String refreshToken,
     bool isNewUser,
+    bool needsApproval,
+    bool isApproved,
+    bool isRejected,
+    String? rejectionReason,
   });
 
   @override
@@ -145,6 +177,10 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
     Object? token = null,
     Object? refreshToken = null,
     Object? isNewUser = null,
+    Object? needsApproval = null,
+    Object? isApproved = null,
+    Object? isRejected = null,
+    Object? rejectionReason = freezed,
   }) {
     return _then(
       _$LoginResponseModelImpl(
@@ -164,6 +200,22 @@ class __$$LoginResponseModelImplCopyWithImpl<$Res>
             ? _value.isNewUser
             : isNewUser // ignore: cast_nullable_to_non_nullable
                   as bool,
+        needsApproval: null == needsApproval
+            ? _value.needsApproval
+            : needsApproval // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        isApproved: null == isApproved
+            ? _value.isApproved
+            : isApproved // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        isRejected: null == isRejected
+            ? _value.isRejected
+            : isRejected // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        rejectionReason: freezed == rejectionReason
+            ? _value.rejectionReason
+            : rejectionReason // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -177,6 +229,10 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
     required this.token,
     required this.refreshToken,
     this.isNewUser = false,
+    this.needsApproval = false,
+    this.isApproved = false,
+    this.isRejected = false,
+    this.rejectionReason,
   });
 
   factory _$LoginResponseModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -191,10 +247,21 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
   @override
   @JsonKey()
   final bool isNewUser;
+  @override
+  @JsonKey()
+  final bool needsApproval;
+  @override
+  @JsonKey()
+  final bool isApproved;
+  @override
+  @JsonKey()
+  final bool isRejected;
+  @override
+  final String? rejectionReason;
 
   @override
   String toString() {
-    return 'LoginResponseModel(user: $user, token: $token, refreshToken: $refreshToken, isNewUser: $isNewUser)';
+    return 'LoginResponseModel(user: $user, token: $token, refreshToken: $refreshToken, isNewUser: $isNewUser, needsApproval: $needsApproval, isApproved: $isApproved, isRejected: $isRejected, rejectionReason: $rejectionReason)';
   }
 
   @override
@@ -207,13 +274,30 @@ class _$LoginResponseModelImpl implements _LoginResponseModel {
             (identical(other.refreshToken, refreshToken) ||
                 other.refreshToken == refreshToken) &&
             (identical(other.isNewUser, isNewUser) ||
-                other.isNewUser == isNewUser));
+                other.isNewUser == isNewUser) &&
+            (identical(other.needsApproval, needsApproval) ||
+                other.needsApproval == needsApproval) &&
+            (identical(other.isApproved, isApproved) ||
+                other.isApproved == isApproved) &&
+            (identical(other.isRejected, isRejected) ||
+                other.isRejected == isRejected) &&
+            (identical(other.rejectionReason, rejectionReason) ||
+                other.rejectionReason == rejectionReason));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, user, token, refreshToken, isNewUser);
+  int get hashCode => Object.hash(
+    runtimeType,
+    user,
+    token,
+    refreshToken,
+    isNewUser,
+    needsApproval,
+    isApproved,
+    isRejected,
+    rejectionReason,
+  );
 
   /// Create a copy of LoginResponseModel
   /// with the given fields replaced by the non-null parameter values.
@@ -238,6 +322,10 @@ abstract class _LoginResponseModel implements LoginResponseModel {
     required final String token,
     required final String refreshToken,
     final bool isNewUser,
+    final bool needsApproval,
+    final bool isApproved,
+    final bool isRejected,
+    final String? rejectionReason,
   }) = _$LoginResponseModelImpl;
 
   factory _LoginResponseModel.fromJson(Map<String, dynamic> json) =
@@ -251,6 +339,14 @@ abstract class _LoginResponseModel implements LoginResponseModel {
   String get refreshToken;
   @override
   bool get isNewUser;
+  @override
+  bool get needsApproval;
+  @override
+  bool get isApproved;
+  @override
+  bool get isRejected;
+  @override
+  String? get rejectionReason;
 
   /// Create a copy of LoginResponseModel
   /// with the given fields replaced by the non-null parameter values.

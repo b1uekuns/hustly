@@ -84,6 +84,10 @@ class AuthState with _$AuthState {
     required UserEntity user, // ✅ Use Domain entity
     required String token,
     required bool isNewUser,
+    @Default(false) bool needsApproval,
+    @Default(false) bool isApproved,
+    @Default(false) bool isRejected,
+    String? rejectionReason,
   }) = Authenticated;
   const factory AuthState.verifyOtpError(String message) = VerifyOtpError;
 

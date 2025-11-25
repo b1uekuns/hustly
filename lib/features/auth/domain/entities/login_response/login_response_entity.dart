@@ -12,6 +12,10 @@ class LoginResponseEntity with _$LoginResponseEntity {
     required String token,
     required String refreshToken,
     @Default(false) bool isNewUser,
+    @Default(false) bool needsApproval,
+    @Default(false) bool isApproved,
+    @Default(false) bool isRejected,
+    String? rejectionReason,
   }) = _LoginResponseEntity;
 }
 

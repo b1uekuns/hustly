@@ -138,7 +138,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i888.ProfileSetupBloc>(
       () => _i888.ProfileSetupBloc(
         gh<_i1006.CompleteProfileUseCase>(),
-        gh<_i1006.GetMyProfileUseCase>(),
+        gh<_i309.UploadService>(),
       ),
     );
     gh.factory<_i797.AuthBloc>(

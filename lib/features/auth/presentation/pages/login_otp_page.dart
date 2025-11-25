@@ -73,7 +73,7 @@ class _LoginOTPPageState extends State<LoginOTPPage> {
               type: SnackType.error,
             );
           },
-          authenticated: (user, token, isNewUser) {
+          authenticated: (user, token, isNewUser, needsApproval, isApproved, isRejected, rejectionReason) {
             AppSnackbar.showSnackBar(
               context,
               message: 'Đăng nhập thành công!',
@@ -82,9 +82,26 @@ class _LoginOTPPageState extends State<LoginOTPPage> {
             );
             Future.delayed(const Duration(seconds: 1), () {
               if (context.mounted) {
-                if (isNewUser) {
+                if (isRejected) {
+                  // Profile was rejected
+                  AppSnackbar.showSnackBar(
+                    context,
+                    title: 'Hồ sơ bị từ chối',
+                    message: rejectionReason ?? 'Vui lòng liên hệ admin',
+                    type: SnackType.error,
+                  );
+                  // Could navigate to a rejection page or show dialog
+                } else if (needsApproval) {
+                  // Profile is pending approval
+                  GoRouter.of(context).go(AppPage.onboardingPending.toPath());
+                } else if (isApproved) {
+                  // Profile approved, go to home
+                  GoRouter.of(context).go(AppPage.home.toPath());
+                } else if (isNewUser) {
+                  // New user, start onboarding
                   GoRouter.of(context).go(AppPage.onboarding.toPath());
                 } else {
+                  // Existing user with complete profile
                   GoRouter.of(context).go(AppPage.home.toPath());
                 }
               }

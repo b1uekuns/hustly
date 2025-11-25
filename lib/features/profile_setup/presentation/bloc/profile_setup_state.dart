@@ -5,8 +5,24 @@ part 'profile_setup_state.freezed.dart';
 
 @freezed
 class ProfileSetupState with _$ProfileSetupState {
-  const factory ProfileSetupState.initial() = ProfileSetupInitial;
+  const factory ProfileSetupState.initial({
+    @Default('') String name,
+    @Default('') String dateOfBirth,
+    @Default('') String gender,
+    @Default('') String major,
+    @Default('') String className,
+    @Default('') String studentId,
+    @Default([]) List<String> photoUrls,
+    @Default([]) List<String> interests,
+    @Default('') String bio,
+    @Default('') String interestedIn,
+    @Default(false) bool isUploading,
+    @Default(0.0) double uploadProgress,
+  }) = ProfileSetupInitial;
+  
   const factory ProfileSetupState.loading() = ProfileSetupLoading;
+  const factory ProfileSetupState.uploadingPhoto(double progress) = UploadingPhoto;
+  const factory ProfileSetupState.photoUploaded(String url) = PhotoUploaded;
   const factory ProfileSetupState.completed(UserEntity user) = ProfileSetupCompleted;
   const factory ProfileSetupState.error(String message) = ProfileSetupError;
 }

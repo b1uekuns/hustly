@@ -6,6 +6,7 @@ import 'core/di/injection.dart';
 import 'core/config/routes/app_router.dart';
 import 'core/resources/app_color.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/profile_setup/presentation/bloc/profile_setup_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,8 @@ class MyApp extends StatelessWidget {
       providers: [
         // Inject AuthBloc thông qua GetIt
         BlocProvider(create: (_) => getIt<AuthBloc>()),
+        // Inject ProfileSetupBloc
+        BlocProvider(create: (_) => getIt<ProfileSetupBloc>()),
       ],
       child: MaterialApp.router(
         title: 'Hustly',
