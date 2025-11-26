@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/config/routes/app_page.dart';
+import '../../../../core/resources/app_color.dart';
+import '../../../../core/resources/app_theme.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../bloc/profile_setup_bloc.dart';
 import '../bloc/profile_setup_event.dart';
@@ -30,7 +32,10 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
   @override
   void initState() {
     super.initState();
-    // Extract studentId from logged-in user's email
+    _extractStudentIdFromAuth();
+  }
+
+  void _extractStudentIdFromAuth() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authState = context.read<AuthBloc>().state;
       authState.maybeWhen(
@@ -57,62 +62,24 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
     });
   }
 
-  /// Extract student ID from email
-  /// Format: thao.lt231631@sis.hust.edu.vn -> 20231631
   String _extractStudentId(String email) {
-    if (email.isEmpty) return '';
-
     try {
-      // Get part before @
       final localPart = email.split('@').first;
 
-      // Pattern 1: After underscore (e.g., thao.lt_231631)
-      if (localPart.contains('_')) {
-        final afterUnderscore = localPart.split('_').last;
-        final match = RegExp(r'\d+').firstMatch(afterUnderscore);
-        if (match != null) {
-          final digits = match.group(0)!;
-          // If 6 digits, add '20' prefix
-          if (digits.length == 6) {
-            return '20$digits';
-          }
-          // If 8 digits, return as is
-          if (digits.length == 8) {
-            return digits;
-          }
-        }
-      }
-
-      // Pattern 2: After dot+letters (e.g., thao.lt231631)
+      //Tìm 6 chữ số sau dấu . cuối cùng
       final match = RegExp(
-        r'\.([a-z]+)(\d{6,8})',
+        r'\.([a-z]+)(\d{6})$',
         caseSensitive: false,
       ).firstMatch(localPart);
+
       if (match != null) {
         final digits = match.group(2)!;
-        // If 6 digits, add '20' prefix
-        if (digits.length == 6) {
-          return '20$digits';
-        }
-        // If 8 digits, return as is
-        if (digits.length == 8) {
-          return digits;
-        }
-      }
-
-      // Pattern 3: Any 6-8 consecutive digits
-      final digitsMatch = RegExp(r'\d{6,8}').firstMatch(localPart);
-      if (digitsMatch != null) {
-        final digits = digitsMatch.group(0)!;
-        if (digits.length == 6) {
-          return '20$digits';
-        }
-        return digits;
+        return '20$digits';
       }
 
       return '';
     } catch (e) {
-      print('[Step1] Error extracting student ID: $e');
+      debugPrint('[Step1] Error extracting student ID: $e');
       return '';
     }
   }
@@ -127,15 +94,18 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
     super.dispose();
   }
 
-  Future<DateTime?> showBirthdayPicker(BuildContext context) {
+  Future<DateTime?> _showBirthdayPicker() {
     return showModalBottomSheet<DateTime>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          color: AppColor.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(45)),
+        ),
+        child: const BirthdayPicker(),
       ),
-      builder: (_) => const BirthdayPicker(),
     );
   }
 
@@ -156,7 +126,15 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
       context.push(AppPage.onboardingPhotos.toPath());
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng điền đầy đủ thông tin')),
+        SnackBar(
+          content: const Text('Vui lòng điền đầy đủ thông tin'),
+          backgroundColor: AppColor.redPrimary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: const EdgeInsets.all(16),
+        ),
       );
     }
   }
@@ -164,11 +142,15 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Thông tin cá nhân'), centerTitle: true),
+      backgroundColor: AppColor.white,
+      appBar: AppBar(
+        title: const Text('Thông tin cá nhân'),
+        centerTitle: true,
+        backgroundColor: AppColor.white,
+      ),
       body: BlocBuilder<ProfileSetupBloc, ProfileSetupState>(
         builder: (context, state) {
           if (state is ProfileSetupInitial) {
-            // Pre-fill with existing data if any
             if (_studentIdController.text.isEmpty &&
                 state.studentId.isNotEmpty) {
               _studentIdController.text = state.studentId;
@@ -182,156 +164,274 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Bước 1/4',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Điền đúng thông tin để có trải nghiệm tốt nhất!',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 32),
+                  // Header
+                  _buildHeader(),
+                  const SizedBox(height: 40),
 
                   // Student ID (readonly)
-                  TextFormField(
-                    controller: _studentIdController,
-                    decoration: const InputDecoration(
-                      labelText: 'Mã sinh viên',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.badge),
-                      filled: true,
-                      fillColor: Color(0xFFF5F5F5),
-                    ),
-                    readOnly: true,
-                  ),
-                  const SizedBox(height: 16),
+                  _buildStudentIdField(),
+                  const SizedBox(height: 20),
 
                   // Name
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Họ và tên',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Vui lòng nhập họ tên';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                  _buildNameField(),
+                  const SizedBox(height: 20),
 
                   // Date of Birth
-                  TextFormField(
-                    controller: _dobController,
-                    decoration: const InputDecoration(
-                      labelText: 'Ngày sinh *',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.calendar_today),
-                      suffixIcon: Icon(Icons.arrow_drop_down),
-                    ),
-                    readOnly: true,
-                    onTap: () async {
-                      final birthday = await showBirthdayPicker(context);
-
-                      if (birthday != null) {
-                        setState(() {
-                          _selectedDate = birthday;
-                          _dobController.text = DateFormat(
-                            'dd/MM/yyyy',
-                          ).format(birthday);
-                        });
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                  _buildDateOfBirthField(),
+                  const SizedBox(height: 20),
 
                   // Gender
-                  DropdownButtonFormField<String>(
-                    value: _selectedGender,
-                    decoration: const InputDecoration(
-                      labelText: 'Giới tính *',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.wc),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: 'male', child: Text('Nam')),
-                      DropdownMenuItem(value: 'female', child: Text('Nữ')),
-                      DropdownMenuItem(value: 'other', child: Text('Khác')),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedGender = value;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Vui lòng chọn giới tính';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                  _buildGenderField(),
+                  const SizedBox(height: 20),
 
                   // Major
-                  TextFormField(
-                    controller: _majorController,
-                    decoration: const InputDecoration(
-                      labelText: 'Khoa/Viện *',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.school),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Vui lòng nhập khoa/viện';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                  _buildMajorField(),
+                  const SizedBox(height: 20),
 
                   // Class
-                  TextFormField(
-                    controller: _classController,
-                    decoration: const InputDecoration(
-                      labelText: 'Lớp *',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.class_),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Vui lòng nhập lớp';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 32),
+                  _buildClassField(),
+                  const SizedBox(height: 40),
 
                   // Next Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _onNext,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      child: const Text(
-                        'Tiếp theo',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ),
+                  _buildNextButton(),
+
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Progress badge
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+          decoration: BoxDecoration(
+            gradient: AppTheme.primaryGradient,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: AppColor.redPrimary.withOpacity(0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const Text(
+            'Bước 1/4',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Title with gradient
+        ShaderMask(
+          shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(
+            Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+          ),
+          child: const Text(
+            'Hãy cho chúng tôi\nbiết về bạn 💕',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              height: 1.3,
+              letterSpacing: -0.5,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+
+        // Subtitle
+        Text(
+          'Điền thông tin để bắt đầu hành trình tìm kiếm người ấy',
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColor.blackLight,
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStudentIdField() {
+    return TextFormField(
+      controller: _studentIdController,
+      decoration: AppTheme.customInput(
+        labelText: 'Mã sinh viên',
+        prefixIcon: Icons.badge_outlined,
+        readOnly: true,
+      ),
+      readOnly: true,
+      style: const TextStyle(
+        fontWeight: FontWeight.w600,
+        color: AppColor.redPrimarySecond,
+        fontSize: 15,
+      ),
+    );
+  }
+
+  Widget _buildNameField() {
+    return TextFormField(
+      controller: _nameController,
+      decoration: AppTheme.customInput(
+        labelText: 'Họ và tên',
+        prefixIcon: Icons.person_outline,
+      ),
+      textCapitalization: TextCapitalization.words,
+      style: const TextStyle(fontSize: 15, color: AppColor.blackPrimary),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Vui lòng nhập họ tên';
+        }
+        if (value.trim().length < 2) {
+          return 'Tên quá ngắn';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildDateOfBirthField() {
+    return TextFormField(
+      controller: _dobController,
+      decoration: AppTheme.customInput(
+        labelText: 'Ngày sinh',
+        prefixIcon: Icons.calendar_month_outlined,
+      ),
+      readOnly: true,
+      style: const TextStyle(
+        fontSize: 15,
+        color: AppColor.blackPrimary,
+        fontWeight: FontWeight.w500,
+      ),
+      onTap: () async {
+        final birthday = await _showBirthdayPicker();
+        if (birthday != null) {
+          setState(() {
+            _selectedDate = birthday;
+            _dobController.text = DateFormat('dd/MM/yyyy').format(birthday);
+          });
+        }
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Vui lòng chọn ngày sinh';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildGenderField() {
+    return DropdownButtonFormField<String>(
+      value: _selectedGender,
+      decoration: AppTheme.customInput(
+        labelText: 'Giới tính',
+        prefixIcon: Icons.wc_outlined,
+      ),
+      dropdownColor: AppColor.white,
+      icon: Icon(
+        Icons.keyboard_arrow_down_rounded,
+        color: AppColor.greyBold,
+        size: 24,
+      ),
+      style: const TextStyle(fontSize: 15, color: AppColor.blackPrimary),
+      items: const [
+        DropdownMenuItem(value: 'male', child: Text('Nam')),
+        DropdownMenuItem(value: 'female', child: Text('Nữ')),
+        DropdownMenuItem(value: 'other', child: Text('Khác')),
+      ],
+      onChanged: (value) {
+        setState(() {
+          _selectedGender = value;
+        });
+      },
+      validator: (value) {
+        if (value == null) {
+          return 'Vui lòng chọn giới tính';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildMajorField() {
+    return TextFormField(
+      controller: _majorController,
+      decoration: AppTheme.customInput(
+        labelText: 'Khoa/Viện',
+        prefixIcon: Icons.school_outlined,
+      ),
+      textCapitalization: TextCapitalization.words,
+      style: const TextStyle(fontSize: 15, color: AppColor.blackPrimary),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Vui lòng nhập khoa/viện';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildClassField() {
+    return TextFormField(
+      controller: _classController,
+      decoration: AppTheme.customInput(
+        labelText: 'Lớp',
+        prefixIcon: Icons.class_outlined,
+      ),
+      textCapitalization: TextCapitalization.characters,
+      style: const TextStyle(fontSize: 15, color: AppColor.blackPrimary),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Vui lòng nhập lớp';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildNextButton() {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: AppTheme.gradientButtonDecoration,
+      child: ElevatedButton(
+        onPressed: _onNext,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text(
+              'Tiếp theo',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

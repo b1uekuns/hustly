@@ -36,7 +36,6 @@ dependencies:
   flutter_svg: ^2.1.0
   lottie: ^3.2.0
   logger: ^2.6.0
-  table_calendar: ^3.2.0
 
   # Realtime (nếu dùng Node)
   socket_io_client: ^2.0.3
@@ -54,6 +53,7 @@ dev_dependencies:
   json_serializable: ^6.8.0
   injectable_generator: ^2.4.1
   retrofit_generator: ^9.7.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true

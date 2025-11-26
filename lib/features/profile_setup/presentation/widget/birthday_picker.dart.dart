@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -9,23 +10,17 @@ class BirthdayPicker extends StatefulWidget {
 }
 
 class _BirthdayPickerState extends State<BirthdayPicker> {
-  late DateTime selected;
-  late DateTime currentMonth;
+  DateTime? selected;
 
-  @override
-  void initState() {
-    super.initState();
+  static const minYear = 2000;
+  int get maxYear => DateTime.now().year - 18;
 
-    selected = DateTime(2000, 1, 1);
-    currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
-  }
+  late DateTime currentMonth = DateTime(maxYear, 1);
 
   List<DateTime?> daysInMonth(DateTime date) {
     final firstDay = DateTime(date.year, date.month, 1);
     final lastDay = DateTime(date.year, date.month + 1, 0);
-
     int offset = firstDay.weekday % 7;
-
     return [
       ...List.filled(offset, null),
       ...List.generate(
@@ -36,18 +31,31 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
   }
 
   bool _canGoPrevious() {
-    // Kiểm tra có thể lùi về tháng trước không
-    final minDate = DateTime(2000, 1); // Tháng 1/2000
+    final minDate = DateTime(minYear, 1);
     final prevMonth = DateTime(currentMonth.year, currentMonth.month - 1);
     return prevMonth.isAfter(minDate) || prevMonth.isAtSameMomentAs(minDate);
   }
 
   bool _canGoNext() {
-    // Kiểm tra có thể tiến tới tháng sau không
-    final now = DateTime.now();
-    final maxDate = DateTime(now.year, now.month); // Tháng hiện tại
+    final maxDate = DateTime(maxYear, 12);
     final nextMonth = DateTime(currentMonth.year, currentMonth.month + 1);
     return nextMonth.isBefore(maxDate) || nextMonth.isAtSameMomentAs(maxDate);
+  }
+
+  void _goPrevious() {
+    if (_canGoPrevious()) {
+      setState(() {
+        currentMonth = DateTime(currentMonth.year, currentMonth.month - 1);
+      });
+    }
+  }
+
+  void _goNext() {
+    if (_canGoNext()) {
+      setState(() {
+        currentMonth = DateTime(currentMonth.year, currentMonth.month + 1);
+      });
+    }
   }
 
   @override
@@ -59,7 +67,6 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Drag indicator
           Container(
             width: 40,
             height: 5,
@@ -69,28 +76,15 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // ==== Arrow LEFT ====
                 IconButton(
                   icon: const Icon(Icons.chevron_left),
-                  onPressed: _canGoPrevious()
-                      ? () {
-                          setState(() {
-                            currentMonth = DateTime(
-                              currentMonth.year,
-                              currentMonth.month - 1,
-                            );
-                          });
-                        }
-                      : null, // null = disabled
+                  onPressed: _canGoPrevious() ? _goPrevious : null,
                 ),
-
-                // ==== Year + Month ====
                 Expanded(
                   child: Column(
                     children: [
@@ -118,27 +112,14 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
                     ],
                   ),
                 ),
-
-                // ==== Arrow RIGHT ====
                 IconButton(
                   icon: const Icon(Icons.chevron_right),
-                  onPressed: _canGoNext()
-                      ? () {
-                          setState(() {
-                            currentMonth = DateTime(
-                              currentMonth.year,
-                              currentMonth.month + 1,
-                            );
-                          });
-                        }
-                      : null, // null = disabled
+                  onPressed: _canGoNext() ? _goNext : null,
                 ),
               ],
             ),
           ),
-
           const SizedBox(height: 10),
-          // Thêm trước GridView
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
@@ -158,56 +139,60 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
                 )
                 .toList(),
           ),
-
           const SizedBox(height: 10),
-
-          // ==== Calendar grid ====
-          GridView.count(
-            crossAxisCount: 7,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: days.map((day) {
-              if (day == null) {
-                return const SizedBox(); // Empty cell
+          // Swipe để đổi tháng
+          GestureDetector(
+            onHorizontalDragEnd: (details) {
+              if (details.primaryVelocity == null) return;
+              if (details.primaryVelocity! > 0) {
+                _goPrevious(); // Swipe phải → tháng trước
+              } else {
+                _goNext(); // Swipe trái → tháng sau
               }
+            },
+            child: GridView.count(
+              crossAxisCount: 7,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              children: days.map((day) {
+                if (day == null) return const SizedBox();
 
-              final selectedNow =
-                  selected.year == day.year &&
-                  selected.month == day.month &&
-                  selected.day == day.day;
+                final isSelected =
+                    selected != null &&
+                    selected!.year == day.year &&
+                    selected!.month == day.month &&
+                    selected!.day == day.day;
 
-              return GestureDetector(
-                onTap: () => setState(() => selected = day),
-                child: Center(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    decoration: selectedNow
-                        ? const BoxDecoration(
-                            color: Colors.redAccent,
-                            shape: BoxShape.circle,
-                          )
-                        : null,
-                    child: Center(
-                      child: Text(
-                        "${day.day}",
-                        style: TextStyle(
-                          color: selectedNow ? Colors.white : Colors.black87,
-                          fontWeight: selectedNow
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+                return GestureDetector(
+                  onTap: () => setState(() => selected = day),
+                  child: Center(
+                    child: Container(
+                      width: 38,
+                      height: 38,
+                      decoration: isSelected
+                          ? const BoxDecoration(
+                              color: Colors.redAccent,
+                              shape: BoxShape.circle,
+                            )
+                          : null,
+                      child: Center(
+                        child: Text(
+                          "${day.day}",
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black87,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
-
           const SizedBox(height: 25),
-
-          // ==== Button ====
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -225,7 +210,6 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
               ),
             ),
           ),
-
           const SizedBox(height: 20),
         ],
       ),
@@ -233,75 +217,150 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
   }
 
   Future<void> pickYear() async {
-    final now = DateTime.now();
-    final maxYear = now.year; // Năm hiện tại
-    final minYear = 2000; // Giới hạn từ 2000
+    final years = List.generate(maxYear - minYear + 1, (i) => maxYear - i);
 
-    final years = List.generate(
-      maxYear - minYear + 1,
-      (i) => maxYear - i, // Đảo ngược: năm gần nhất ở trên
-    );
-
-    final result = await showDialog<int>(
+    final result = await showModalBottomSheet<int>(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Chọn năm"),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 400,
-          child: ListView.builder(
-            itemCount: years.length,
-            itemBuilder: (context, index) {
-              final year = years[index];
-              final isSelected = year == currentMonth.year;
-
-              return ListTile(
-                title: Text(
-                  "$year",
-                  style: TextStyle(
-                    fontWeight: isSelected
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                    color: isSelected ? Colors.redAccent : Colors.black87,
-                  ),
-                ),
-                selected: isSelected,
-                selectedTileColor: Colors.red.shade50,
-                onTap: () => Navigator.pop(context, year),
-              );
-            },
-          ),
-        ),
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
+      builder: (_) {
+        int selectedYear = currentMonth.year;
+        return SizedBox(
+          height: 280,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Hủy'),
+                    ),
+                    const Text(
+                      'Chọn năm',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, selectedYear),
+                      child: const Text('Xong'),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: CupertinoPicker(
+                  scrollController: FixedExtentScrollController(
+                    initialItem: years.indexOf(currentMonth.year),
+                  ),
+                  itemExtent: 40,
+                  onSelectedItemChanged: (index) => selectedYear = years[index],
+                  children: years
+                      .map(
+                        (year) => Center(
+                          child: Text(
+                            '$year',
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
 
     if (result != null) {
-      setState(() {
-        currentMonth = DateTime(result, currentMonth.month, 1);
-      });
+      setState(() => currentMonth = DateTime(result, currentMonth.month, 1));
     }
   }
 
   Future<void> pickMonth() async {
     final months = List.generate(12, (i) => i + 1);
+    final monthNames = months
+        .map((m) => DateFormat("MMMM").format(DateTime(0, m)))
+        .toList();
 
-    final result = await showDialog<int>(
+    final result = await showModalBottomSheet<int>(
       context: context,
-      builder: (_) => SimpleDialog(
-        title: const Text("Chọn tháng"),
-        children: months.map((m) {
-          return SimpleDialogOption(
-            child: Text(DateFormat("MMMM").format(DateTime(0, m))),
-            onPressed: () => Navigator.pop(context, m),
-          );
-        }).toList(),
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
+      builder: (_) {
+        int selectedMonth = currentMonth.month;
+        return SizedBox(
+          height: 280,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Hủy'),
+                    ),
+                    const Text(
+                      'Chọn tháng',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, selectedMonth),
+                      child: const Text('Xong'),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: CupertinoPicker(
+                  scrollController: FixedExtentScrollController(
+                    initialItem: currentMonth.month - 1,
+                  ),
+                  itemExtent: 40,
+                  onSelectedItemChanged: (index) =>
+                      selectedMonth = months[index],
+                  children: monthNames
+                      .map(
+                        (name) => Center(
+                          child: Text(
+                            name,
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
 
     if (result != null) {
-      setState(() {
-        currentMonth = DateTime(currentMonth.year, result, 1);
-      });
+      setState(() => currentMonth = DateTime(currentMonth.year, result, 1));
     }
   }
 }
