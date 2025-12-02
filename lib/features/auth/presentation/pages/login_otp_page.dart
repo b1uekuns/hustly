@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hust_chill_app/core/resources/app_color.dart';
 import 'package:hust_chill_app/core/resources/app_style.dart';
 import 'package:hust_chill_app/core/resources/images_local.dart';
-import 'package:hust_chill_app/widgets/pin_put_otp/pin_put_widget.dart';
+import 'package:hust_chill_app/features/auth/presentation/widget/pin_put_otp/pin_put_widget.dart';
 import 'package:hust_chill_app/widgets/snackbar/app_snackbar.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/config/routes/app_page.dart';

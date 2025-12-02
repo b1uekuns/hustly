@@ -21,7 +21,6 @@ class EmailInputField extends StatelessWidget {
       decoration: const InputDecoration(
         border: InputBorder.none,
         hintText: 'Nhập Email HUST',
-        // Bỏ errorText khỏi đây để hiển thị bên ngoài
         contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       ),
       onChanged: onChanged,

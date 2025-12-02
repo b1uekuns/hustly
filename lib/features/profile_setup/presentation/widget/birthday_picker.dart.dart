@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hust_chill_app/core/resources/app_color.dart';
 import 'package:intl/intl.dart';
 
 class BirthdayPicker extends StatefulWidget {
@@ -61,7 +62,6 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
   @override
   Widget build(BuildContext context) {
     final days = daysInMonth(currentMonth);
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
@@ -95,7 +95,7 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
                           style: const TextStyle(
                             fontSize: 36,
                             fontWeight: FontWeight.bold,
-                            color: Colors.redAccent,
+                            color: AppColor.redPrimarySecond,
                           ),
                         ),
                       ),
@@ -145,9 +145,9 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
             onHorizontalDragEnd: (details) {
               if (details.primaryVelocity == null) return;
               if (details.primaryVelocity! > 0) {
-                _goPrevious(); // Swipe phải → tháng trước
+                _goPrevious();
               } else {
-                _goNext(); // Swipe trái → tháng sau
+                _goNext();
               }
             },
             child: GridView.count(
@@ -164,6 +164,7 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
                     selected!.day == day.day;
 
                 return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () => setState(() => selected = day),
                   child: Center(
                     child: Container(
@@ -171,13 +172,13 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
                       height: 38,
                       decoration: isSelected
                           ? const BoxDecoration(
-                              color: Colors.redAccent,
+                              color: AppColor.redPrimarySecond,
                               shape: BoxShape.circle,
                             )
                           : null,
                       child: Center(
                         child: Text(
-                          "${day.day}",
+                          day.day.toString().padLeft(2, '0'),
                           style: TextStyle(
                             color: isSelected ? Colors.white : Colors.black87,
                             fontWeight: isSelected
@@ -192,13 +193,13 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
               }).toList(),
             ),
           ),
-          const SizedBox(height: 25),
+          const SizedBox(height: 15),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context, selected),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
+                backgroundColor: AppColor.redPrimaryThird,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -210,77 +211,129 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
               ),
             ),
           ),
-          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
+  Widget _buildPickerSheet({
+    required String title,
+    required VoidCallback onCancel,
+    required VoidCallback onDone,
+    required Widget picker,
+  }) {
+    return SizedBox(
+      height: 220,
+      child: Column(
+        children: [
+          Container(
+            width: 36,
+            height: 4,
+            margin: const EdgeInsets.only(top: 10, bottom: 6),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: onCancel,
+                  child: const Text(
+                    'Hủy',
+                    style: TextStyle(color: AppColor.redPrimary, fontSize: 16),
+                  ),
+                ),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 17,
+                  ),
+                ),
+                TextButton(
+                  onPressed: onDone,
+                  child: const Text(
+                    'Xong',
+                    style: TextStyle(
+                      color: AppColor.yellowPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(child: picker),
+        ],
+      ),
+    );
+  }
+
+  CupertinoPicker _buildCupertinoPicker({
+    required int initialItem,
+    required ValueChanged<int> onChanged,
+    required List<String> labels,
+  }) {
+    return CupertinoPicker(
+      itemExtent: 40,
+      magnification: 1.1,
+      useMagnifier: true,
+      diameterRatio: 1.2,
+      squeeze: 1.05,
+      scrollController: FixedExtentScrollController(initialItem: initialItem),
+      selectionOverlay: Container(
+        decoration: BoxDecoration(
+          border: Border.symmetric(
+            horizontal: BorderSide(color: Colors.grey.shade300, width: 0.5),
+          ),
+        ),
+      ),
+      onSelectedItemChanged: onChanged,
+      children: labels
+          .map(
+            (label) => Center(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 17,
+                  color: CupertinoColors.label,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+
   Future<void> pickYear() async {
     final years = List.generate(maxYear - minYear + 1, (i) => maxYear - i);
+    int selectedYear = currentMonth.year;
 
     final result = await showModalBottomSheet<int>(
+      useSafeArea: true,
       context: context,
       backgroundColor: Colors.white,
+      barrierColor: Colors.black.withOpacity(0.2),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) {
-        int selectedYear = currentMonth.year;
-        return SizedBox(
-          height: 280,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Hủy'),
-                    ),
-                    const Text(
-                      'Chọn năm',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, selectedYear),
-                      child: const Text('Xong'),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
-              Expanded(
-                child: CupertinoPicker(
-                  scrollController: FixedExtentScrollController(
-                    initialItem: years.indexOf(currentMonth.year),
-                  ),
-                  itemExtent: 40,
-                  onSelectedItemChanged: (index) => selectedYear = years[index],
-                  children: years
-                      .map(
-                        (year) => Center(
-                          child: Text(
-                            '$year',
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+      builder: (_) => _buildPickerSheet(
+        title: 'Chọn năm',
+        onCancel: () => Navigator.pop(context),
+        onDone: () => Navigator.pop(context, selectedYear),
+        picker: _buildCupertinoPicker(
+          initialItem: years.indexOf(currentMonth.year),
+          onChanged: (index) => selectedYear = years[index],
+          labels: years.map((y) => '$y').toList(),
+        ),
+      ),
     );
 
     if (result != null) {
@@ -291,72 +344,28 @@ class _BirthdayPickerState extends State<BirthdayPicker> {
   Future<void> pickMonth() async {
     final months = List.generate(12, (i) => i + 1);
     final monthNames = months
-        .map((m) => DateFormat("MMMM").format(DateTime(0, m)))
+        .map((m) => DateFormat('MMMM').format(DateTime(0, m)))
         .toList();
+    int selectedMonth = currentMonth.month;
 
     final result = await showModalBottomSheet<int>(
+      useSafeArea: true,
       context: context,
       backgroundColor: Colors.white,
+      barrierColor: Colors.black.withOpacity(0.2),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) {
-        int selectedMonth = currentMonth.month;
-        return SizedBox(
-          height: 280,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Hủy'),
-                    ),
-                    const Text(
-                      'Chọn tháng',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, selectedMonth),
-                      child: const Text('Xong'),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
-              Expanded(
-                child: CupertinoPicker(
-                  scrollController: FixedExtentScrollController(
-                    initialItem: currentMonth.month - 1,
-                  ),
-                  itemExtent: 40,
-                  onSelectedItemChanged: (index) =>
-                      selectedMonth = months[index],
-                  children: monthNames
-                      .map(
-                        (name) => Center(
-                          child: Text(
-                            name,
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+      builder: (_) => _buildPickerSheet(
+        title: 'Chọn tháng',
+        onCancel: () => Navigator.pop(context),
+        onDone: () => Navigator.pop(context, selectedMonth),
+        picker: _buildCupertinoPicker(
+          initialItem: currentMonth.month - 1,
+          onChanged: (index) => selectedMonth = months[index],
+          labels: monthNames,
+        ),
+      ),
     );
 
     if (result != null) {
