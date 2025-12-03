@@ -114,6 +114,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i149.TokenProvider>(),
       ),
     );
+    gh.factory<_i1006.GetMajorsUseCase>(
+      () => _i1006.GetMajorsUseCase(gh<_i226.ProfileRepository>()),
+    );
     gh.factory<_i1006.CompleteProfileUseCase>(
       () => _i1006.CompleteProfileUseCase(gh<_i226.ProfileRepository>()),
     );
@@ -135,17 +138,19 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i46.LogoutUseCase>(
       () => _i46.LogoutUseCase(gh<_i787.AuthRepository>()),
     );
-    gh.factory<_i888.ProfileSetupBloc>(
-      () => _i888.ProfileSetupBloc(
-        gh<_i1006.CompleteProfileUseCase>(),
-        gh<_i309.UploadService>(),
-      ),
-    );
     gh.factory<_i797.AuthBloc>(
       () => _i797.AuthBloc(
         sendOtpUseCase: gh<_i46.SendOtpUseCase>(),
         verifyOtpUseCase: gh<_i46.VerifyOtpUseCase>(),
         tokenProvider: gh<_i149.TokenProvider>(),
+      ),
+    );
+    gh.factory<_i888.ProfileSetupBloc>(
+      () => _i888.ProfileSetupBloc(
+        gh<_i1006.CompleteProfileUseCase>(),
+        gh<_i1006.GetMajorsUseCase>(),
+        gh<_i309.UploadService>(),
+        gh<_i797.AuthBloc>(),
       ),
     );
     return this;

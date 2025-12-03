@@ -17,6 +17,19 @@ class ProfileRepositoryImpl implements ProfileRepository {
   ProfileRepositoryImpl(this.userApi, this.tokenProvider);
 
   @override
+  Future<Either<Failure, List<String>>> getMajors() async {
+    try {
+      print('[ProfileRepository] Fetching majors...');
+      final response = await userApi.getMajors();
+      print('[ProfileRepository] Got ${response.data.majors.length} majors');
+      return Right(response.data.majors);
+    } catch (e) {
+      print('[ProfileRepository] Error fetching majors: $e');
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, UserEntity>> completeProfile(
     CompleteProfileEntity profile,
   ) async {

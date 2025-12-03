@@ -6,6 +6,17 @@ import '../entities/complete_profile_entity.dart';
 import '../repositories/profile_repository.dart';
 
 @injectable
+class GetMajorsUseCase {
+  final ProfileRepository repository;
+
+  GetMajorsUseCase(this.repository);
+
+  Future<Either<Failure, List<String>>> call() async {
+    return await repository.getMajors();
+  }
+}
+
+@injectable
 class CompleteProfileUseCase {
   final ProfileRepository repository;
 

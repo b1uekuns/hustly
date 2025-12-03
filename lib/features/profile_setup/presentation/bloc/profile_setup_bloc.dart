@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../../core/services/upload/upload_service.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/entities/complete_profile_entity.dart';
 import '../../domain/usecases/complete_profile_usecase.dart';
 import 'profile_setup_event.dart';
@@ -9,12 +10,18 @@ import 'profile_setup_state.dart';
 @injectable
 class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
   final CompleteProfileUseCase completeProfileUseCase;
+  final GetMajorsUseCase getMajorsUseCase;
   final UploadService uploadService;
+  final AuthBloc authBloc;
 
   ProfileSetupBloc(
     this.completeProfileUseCase,
+    this.getMajorsUseCase,
     this.uploadService,
+    this.authBloc,
   ) : super(const ProfileSetupState.initial()) {
+    on<ProfileSetupStarted>(_onStarted);
+    on<FetchMajors>(_onFetchMajors);
     on<BasicInfoUpdated>(_onBasicInfoUpdated);
     on<UploadPhotoRequested>(_onUploadPhotoRequested);
     on<DeletePhotoRequested>(_onDeletePhotoRequested);
@@ -23,20 +30,89 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
     on<SubmitProfile>(_onSubmitProfile);
   }
 
+  void _onStarted(ProfileSetupStarted event, Emitter<ProfileSetupState> emit) {
+    final authState = authBloc.state;
+
+    // Kiểm tra xem user đã login chưa để lấy email
+    authState.maybeWhen(
+      authenticated: (user, _, __, ___, ____, _____, ______) {
+        final studentId = _extractStudentId(user.email);
+
+        // Nếu lấy được MSSV và state hiện tại đang là Initial thì update luôn
+        if (studentId.isNotEmpty && state is ProfileSetupInitial) {
+          final currentState = state as ProfileSetupInitial;
+          // Chỉ update nếu MSSV trong state chưa có (để tránh ghi đè nếu user đã sửa)
+          if (currentState.studentId.isEmpty) {
+            emit(currentState.copyWith(studentId: studentId));
+          }
+        }
+      },
+      orElse: () {},
+    );
+  }
+
+  Future<void> _onFetchMajors(
+    FetchMajors event,
+    Emitter<ProfileSetupState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is! ProfileSetupInitial) return;
+
+    // Set loading state
+    emit(currentState.copyWith(isMajorsLoading: true));
+
+    final result = await getMajorsUseCase();
+
+    result.fold(
+      (failure) {
+        print('[ProfileSetupBloc] Error fetching majors: ${failure.message}');
+        // Keep empty list on error
+        emit(currentState.copyWith(isMajorsLoading: false));
+      },
+      (majors) {
+        print('[ProfileSetupBloc] Loaded ${majors.length} majors');
+        emit(currentState.copyWith(
+          availableMajors: majors,
+          isMajorsLoading: false,
+        ));
+      },
+    );
+  }
+
+  String _extractStudentId(String email) {
+    try {
+      final localPart = email.split('@').first;
+      final match = RegExp(
+        r'\.([a-z]+)(\d{6})$',
+        caseSensitive: false,
+      ).firstMatch(localPart);
+
+      if (match != null) {
+        final digits = match.group(2)!;
+        return '20$digits';
+      }
+      return '';
+    } catch (e) {
+      return '';
+    }
+  }
+
   void _onBasicInfoUpdated(
     BasicInfoUpdated event,
     Emitter<ProfileSetupState> emit,
   ) {
     final currentState = state;
     if (currentState is ProfileSetupInitial) {
-      emit(currentState.copyWith(
-        name: event.name,
-        dateOfBirth: event.dateOfBirth,
-        gender: event.gender,
-        major: event.major,
-        className: event.className,
-        studentId: event.studentId,
-      ));
+      emit(
+        currentState.copyWith(
+          name: event.name,
+          dateOfBirth: event.dateOfBirth,
+          gender: event.gender,
+          major: event.major,
+          className: event.className,
+          studentId: event.studentId,
+        ),
+      );
     }
   }
 
@@ -82,10 +158,7 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
   ) {
     final currentState = state;
     if (currentState is ProfileSetupInitial) {
-      emit(currentState.copyWith(
-        interests: event.interests,
-        bio: event.bio,
-      ));
+      emit(currentState.copyWith(interests: event.interests, bio: event.bio));
     }
   }
 
@@ -123,10 +196,12 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
       photos: currentState.photoUrls
           .asMap()
           .entries
-          .map((entry) => PhotoEntity(
-                url: entry.value,
-                isMain: entry.key == 0, // First photo is main
-              ))
+          .map(
+            (entry) => PhotoEntity(
+              url: entry.value,
+              isMain: entry.key == 0, // First photo is main
+            ),
+          )
           .toList(),
     );
 
@@ -145,4 +220,3 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
     );
   }
 }
-

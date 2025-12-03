@@ -18,6 +18,8 @@ class ProfileSetupState with _$ProfileSetupState {
     @Default('') String interestedIn,
     @Default(false) bool isUploading,
     @Default(0.0) double uploadProgress,
+    @Default([]) List<String> availableMajors, // List of majors from backend
+    @Default(false) bool isMajorsLoading,
   }) = ProfileSetupInitial;
   
   const factory ProfileSetupState.loading() = ProfileSetupLoading;

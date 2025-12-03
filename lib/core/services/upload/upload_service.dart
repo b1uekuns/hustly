@@ -25,9 +25,9 @@ class UploadService {
         return const Left(ServerFailure('No authentication token'));
       }
 
-      // Create multipart file
+      // Create multipart file (field name must match backend: 'image')
       final formData = FormData.fromMap({
-        'photo': await MultipartFile.fromFile(
+        'image': await MultipartFile.fromFile(
           imageFile.path,
           filename: imageFile.name,
         ),

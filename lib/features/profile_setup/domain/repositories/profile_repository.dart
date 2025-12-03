@@ -4,6 +4,9 @@ import '../../../auth/domain/entities/user/user_entity.dart';
 import '../entities/complete_profile_entity.dart';
 
 abstract class ProfileRepository {
+  /// Get list of majors (Trường/Khoa)
+  Future<Either<Failure, List<String>>> getMajors();
+
   Future<Either<Failure, UserEntity>> completeProfile(
     CompleteProfileEntity profile,
   );

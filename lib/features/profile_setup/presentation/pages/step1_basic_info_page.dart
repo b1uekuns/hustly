@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hust_chill_app/features/profile_setup/presentation/widget/birthday_picker.dart.dart';
+import 'package:hust_chill_app/widgets/selection_bottom_sheet/selection_bottom_sheet.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/config/routes/app_page.dart';
 import '../../../../core/resources/app_color.dart';
@@ -29,8 +30,9 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
   String? _selectedMajor;
   DateTime? _selectedDate;
 
-  // Danh sách khoa/viện HUST
-  final List<String> _majors = [
+  AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
+
+  final List<String> _fallbackMajors = [
     'Trường Công nghệ thông tin và Truyền thông',
     'Trường Điện - Điện tử',
     'Trường Cơ khí',
@@ -47,34 +49,38 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
   @override
   void initState() {
     super.initState();
-    _extractStudentIdFromAuth();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeData();
+    });
   }
 
-  void _extractStudentIdFromAuth() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authState = context.read<AuthBloc>().state;
-      authState.maybeWhen(
-        authenticated:
-            (
-              user,
-              token,
-              isNewUser,
-              needsApproval,
-              isApproved,
-              isRejected,
-              rejectionReason,
-            ) {
-              final email = user.email;
-              final studentId = _extractStudentId(email);
-              if (studentId.isNotEmpty) {
-                setState(() {
-                  _studentIdController.text = studentId;
-                });
-              }
-            },
-        orElse: () {},
-      );
-    });
+  /// Initialize data: extract student ID and fetch majors
+  void _initializeData() {
+    // 1. Extract student ID from auth state
+    final authState = context.read<AuthBloc>().state;
+    authState.maybeWhen(
+      authenticated:
+          (
+            user,
+            token,
+            isNewUser,
+            needsApproval,
+            isApproved,
+            isRejected,
+            rejectionReason,
+          ) {
+            final studentId = _extractStudentId(user.email);
+            if (studentId.isNotEmpty) {
+              setState(() {
+                _studentIdController.text = studentId;
+              });
+            }
+          },
+      orElse: () {},
+    );
+
+    // 2. Fetch majors from backend
+    context.read<ProfileSetupBloc>().add(const ProfileSetupEvent.fetchMajors());
   }
 
   String _extractStudentId(String email) {
@@ -105,7 +111,13 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
     super.dispose();
   }
 
+  /// Unfocus any text field before showing picker
+  void _unfocusAll() {
+    FocusScope.of(context).unfocus();
+  }
+
   Future<DateTime?> _showBirthdayPicker() {
+    _unfocusAll(); // Unfocus text fields
     return showModalBottomSheet<DateTime>(
       context: context,
       isScrollControlled: true,
@@ -121,221 +133,87 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
   }
 
   Future<void> _showGenderPicker() async {
+    _unfocusAll(); // Unfocus TRƯỚC khi mở picker
+    
     final genders = [
       {'value': 'male', 'label': 'Nam', 'icon': Icons.male},
       {'value': 'female', 'label': 'Nữ', 'icon': Icons.female},
       {'value': 'other', 'label': 'Khác', 'icon': Icons.transgender},
     ];
 
-    final result = await showModalBottomSheet<String>(
-      useSafeArea: true,
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        decoration: const BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      builder: (_) => SelectionBottomSheet<Map<String, dynamic>>(
+        title: 'Chọn giới tính',
+        options: genders,
+        selectedItem: genders.firstWhere(
+          (g) => g['value'] == _selectedGender,
+          orElse: () => {},
         ),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Drag indicator
-            Container(
-              width: 40,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Chọn giới tính',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColor.blackPrimary,
-              ),
-            ),
-            const SizedBox(height: 10),
-            ...genders.map(
-              (g) => _buildOptionTile(
-                value: g['value'] as String,
-                label: g['label'] as String,
-                icon: g['icon'] as IconData,
-                isSelected: _selectedGender == g['value'],
-                onTap: () => Navigator.pop(context, g['value'] as String),
-              ),
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
+        labelBuilder: (item) => item['label'] as String,
+        iconBuilder: (item) => item['icon'] as IconData,
       ),
     );
 
+    _unfocusAll(); // Unfocus SAU KHI picker đóng
+
     if (result != null) {
-      setState(() => _selectedGender = result);
+      setState(() => _selectedGender = result['value'] as String);
+      if (_autovalidateMode == AutovalidateMode.onUserInteraction) {
+        _formKey.currentState?.validate();
+      }
     }
   }
 
   Future<void> _showMajorPicker() async {
+    _unfocusAll(); // Unfocus TRƯỚC khi mở picker
+    
+    // Get majors from state, fallback to hardcoded list if empty
+    final state = context.read<ProfileSetupBloc>().state;
+    List<String> majors = _fallbackMajors;
+
+    if (state is ProfileSetupInitial && state.availableMajors.isNotEmpty) {
+      majors = state.availableMajors;
+    }
+
     final result = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (_) => Container(
-        height: MediaQuery.of(context).size.height * 0.6,
-        decoration: const BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-            // Drag indicator
-            Container(
-              width: 40,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Chọn Khoa/Viện',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColor.blackPrimary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _majors.length,
-                itemBuilder: (context, index) {
-                  final major = _majors[index];
-                  final isSelected = _selectedMajor == major;
-                  return ListTile(
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColor.redPrimary.withOpacity(0.1)
-                            : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.school_outlined,
-                        color: isSelected ? AppColor.redPrimary : Colors.grey,
-                        size: 20,
-                      ),
-                    ),
-                    title: Text(
-                      major,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                        color: isSelected
-                            ? AppColor.redPrimary
-                            : AppColor.blackPrimary,
-                      ),
-                    ),
-                    trailing: isSelected
-                        ? const Icon(
-                            Icons.check_circle,
-                            color: AppColor.redPrimary,
-                          )
-                        : null,
-                    onTap: () => Navigator.pop(context, major),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+      builder: (context) => SelectionBottomSheet<String>(
+        title: 'Chọn Trường/Khoa',
+        options: majors,
+        selectedItem: _selectedMajor,
+        labelBuilder: (item) => item,
+        iconBuilder: (item) => Icons.school_outlined,
       ),
     );
+
+    _unfocusAll(); // Unfocus SAU KHI picker đóng
 
     if (result != null) {
       setState(() => _selectedMajor = result);
+      if (_autovalidateMode == AutovalidateMode.onUserInteraction) {
+        _formKey.currentState?.validate();
+      }
     }
   }
 
-  Widget _buildOptionTile({
-    required String value,
-    required String label,
-    required IconData icon,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColor.redPrimary.withOpacity(0.1)
-              : Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isSelected ? AppColor.redPrimary : Colors.transparent,
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColor.redPrimary.withOpacity(0.2)
-                    : Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                icon,
-                color: isSelected ? AppColor.redPrimary : Colors.grey,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected
-                      ? AppColor.redPrimary
-                      : AppColor.blackPrimary,
-                ),
-              ),
-            ),
-            if (isSelected)
-              const Icon(
-                Icons.check_circle,
-                color: AppColor.redPrimary,
-                size: 22,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _onNext() {
-    if (_formKey.currentState!.validate() &&
-        _selectedDate != null &&
+    // Enable auto-validate after first submit attempt
+    if (_autovalidateMode != AutovalidateMode.onUserInteraction) {
+      setState(() {
+        _autovalidateMode = AutovalidateMode.onUserInteraction;
+      });
+    }
+
+    final isFormValid = _formKey.currentState!.validate();
+    final isAllFieldsFilled = _selectedDate != null &&
         _selectedGender != null &&
-        _selectedMajor != null) {
+        _selectedMajor != null;
+
+    if (isFormValid && isAllFieldsFilled) {
       context.read<ProfileSetupBloc>().add(
         ProfileSetupEvent.basicInfoUpdated(
           name: _nameController.text.trim(),
@@ -384,6 +262,7 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
             padding: const EdgeInsets.all(24),
             child: Form(
               key: _formKey,
+              autovalidateMode: _autovalidateMode,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -445,11 +324,11 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
             Rect.fromLTWH(0, 0, bounds.width, bounds.height),
           ),
           child: const Text(
-            'Hãy cho chúng tôi\nbiết về bạn 💕',
+            'Hãy cho tớ biết về cậu 💕',
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 27,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: AppColor.white,
               height: 1.3,
               letterSpacing: -0.5,
             ),
@@ -465,22 +344,6 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
           ),
         ),
       ],
-    );
-  }
-
-  // Field với khung mềm mại
-  Widget _buildSoftField({
-    required String label,
-    required IconData icon,
-    required Widget child,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: child,
     );
   }
 
@@ -508,7 +371,11 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
         prefixIcon: Icons.person_outline,
       ),
       textCapitalization: TextCapitalization.words,
-      style: const TextStyle(fontSize: 15, color: AppColor.blackPrimary),
+      style: const TextStyle(
+        fontSize: 15,
+        color: AppColor.blackPrimary,
+        fontWeight: FontWeight.w500,
+      ),
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
           return 'Vui lòng nhập họ tên';
@@ -522,113 +389,120 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
   }
 
   Widget _buildDateOfBirthField() {
-    return TextFormField(
-      controller: _dobController,
-      decoration: _softInputDecoration(
-        labelText: 'Ngày sinh',
-        prefixIcon: Icons.calendar_month_outlined,
-        suffixIcon: Icons.keyboard_arrow_down_rounded,
-      ),
-      readOnly: true,
-      style: const TextStyle(
-        fontSize: 15,
-        color: AppColor.blackPrimary,
-        fontWeight: FontWeight.w500,
-      ),
-      onTap: () async {
-        final birthday = await _showBirthdayPicker();
-        if (birthday != null) {
-          setState(() {
-            _selectedDate = birthday;
-            _dobController.text = DateFormat('dd/MM/yyyy').format(birthday);
-          });
-        }
-      },
+    return FormField<DateTime>(
       validator: (value) {
-        if (value == null || value.isEmpty) {
+        if (_selectedDate == null) {
           return 'Vui lòng chọn ngày sinh';
         }
         return null;
+      },
+      builder: (FormFieldState<DateTime> state) {
+        return GestureDetector(
+          onTap: () async {
+            final birthday = await _showBirthdayPicker();
+            _unfocusAll(); // Unfocus SAU KHI picker đóng
+            if (birthday != null) {
+              setState(() {
+                _selectedDate = birthday;
+                _dobController.text = DateFormat('dd/MM/yyyy').format(birthday);
+              });
+              state.didChange(birthday);
+            }
+          },
+          child: InputDecorator(
+            decoration: _softInputDecoration(
+              labelText: 'Ngày sinh',
+              prefixIcon: Icons.calendar_month_outlined,
+              suffixIcon: Icons.keyboard_arrow_down_rounded,
+            ).copyWith(errorText: state.errorText),
+            isEmpty: _selectedDate == null,
+            child: Text(
+              _dobController.text.isNotEmpty ? _dobController.text : '',
+              style: const TextStyle(
+                fontSize: 15,
+                color: AppColor.blackPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        );
       },
     );
   }
 
   Widget _buildGenderField() {
-    return GestureDetector(
-      onTap: _showGenderPicker,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: Row(
+    return FormField<String>(
+      validator: (value) {
+        if (_selectedGender == null) {
+          return 'Vui lòng chọn giới tính';
+        }
+        return null;
+      },
+      builder: (FormFieldState<String> state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.wc_outlined, color: Colors.grey.shade600, size: 22),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                _selectedGender != null
-                    ? _getGenderLabel(_selectedGender!)
-                    : 'Giới tính',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: _selectedGender != null
-                      ? AppColor.blackPrimary
-                      : Colors.grey.shade500,
-                  fontWeight: _selectedGender != null
-                      ? FontWeight.w500
-                      : FontWeight.normal,
+            GestureDetector(
+              onTap: () async {
+                await _showGenderPicker();
+                state.didChange(_selectedGender);
+              },
+              child: InputDecorator(
+                decoration: _softInputDecoration(
+                  labelText: 'Giới tính',
+                  prefixIcon: Icons.wc_outlined,
+                  suffixIcon: Icons.keyboard_arrow_down_rounded,
+                ).copyWith(errorText: state.errorText),
+                isEmpty: _selectedGender == null,
+                child: Text(
+                  _selectedGender != null
+                      ? _getGenderLabel(_selectedGender!)
+                      : '',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: AppColor.blackPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
-            Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: Colors.grey.shade600,
-            ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget _buildMajorField() {
-    return GestureDetector(
-      onTap: _showMajorPicker,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.school_outlined, color: Colors.grey.shade600, size: 22),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                _selectedMajor ?? 'Khoa/Viện',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: _selectedMajor != null
-                      ? AppColor.blackPrimary
-                      : Colors.grey.shade500,
-                  fontWeight: _selectedMajor != null
-                      ? FontWeight.w500
-                      : FontWeight.normal,
-                ),
-                overflow: TextOverflow.ellipsis,
+    return FormField<String>(
+      validator: (value) {
+        if (_selectedMajor == null) return 'Vui lòng chọn Trường/Khoa';
+        return null;
+      },
+      builder: (FormFieldState<String> state) {
+        return GestureDetector(
+          onTap: () async {
+            await _showMajorPicker();
+            state.didChange(_selectedMajor);
+          },
+          child: InputDecorator(
+            decoration: _softInputDecoration(
+              labelText: 'Trường/Khoa',
+              prefixIcon: Icons.school_outlined,
+              suffixIcon: Icons.keyboard_arrow_down_rounded,
+            ).copyWith(errorText: state.errorText),
+            isEmpty: _selectedMajor == null,
+            child: Text(
+              _selectedMajor ?? '',
+              style: const TextStyle(
+                fontSize: 15,
+                color: AppColor.blackPrimary,
+                fontWeight: FontWeight.w500,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
-            Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: Colors.grey.shade600,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -640,7 +514,11 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
         prefixIcon: Icons.class_outlined,
       ),
       textCapitalization: TextCapitalization.characters,
-      style: const TextStyle(fontSize: 15, color: AppColor.blackPrimary),
+      style: const TextStyle(
+        fontSize: 15,
+        color: AppColor.blackPrimary,
+        fontWeight: FontWeight.w500,
+      ),
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
           return 'Vui lòng nhập lớp';
