@@ -31,8 +31,9 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
   DateTime? _selectedDate;
 
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
+  bool _isInitialized = false; // Flag để tránh initialize nhiều lần
 
-  final List<String> _fallbackMajors = [
+  static const List<String> _fallbackMajors = [
     'Trường Công nghệ thông tin và Truyền thông',
     'Trường Điện - Điện tử',
     'Trường Cơ khí',
@@ -249,15 +250,32 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
         centerTitle: true,
         backgroundColor: AppColor.white,
       ),
-      body: BlocBuilder<ProfileSetupBloc, ProfileSetupState>(
-        builder: (context, state) {
-          if (state is ProfileSetupInitial) {
-            if (_studentIdController.text.isEmpty &&
-                state.studentId.isNotEmpty) {
+      body: BlocConsumer<ProfileSetupBloc, ProfileSetupState>(
+        listenWhen: (previous, current) {
+          // Chỉ listen khi studentId thay đổi
+          if (previous is ProfileSetupInitial && current is ProfileSetupInitial) {
+            return previous.studentId != current.studentId;
+          }
+          return false;
+        },
+        listener: (context, state) {
+          // Update controller trong listener (không phải builder) để tránh rebuild
+          if (state is ProfileSetupInitial && !_isInitialized) {
+            if (state.studentId.isNotEmpty && _studentIdController.text.isEmpty) {
               _studentIdController.text = state.studentId;
+              _isInitialized = true;
             }
           }
-
+        },
+        buildWhen: (previous, current) {
+          // Chỉ rebuild khi cần thiết
+          if (previous is ProfileSetupInitial && current is ProfileSetupInitial) {
+            return previous.availableMajors != current.availableMajors ||
+                   previous.isMajorsLoading != current.isMajorsLoading;
+          }
+          return previous != current;
+        },
+        builder: (context, state) {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Form(
@@ -602,3 +620,4 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
     );
   }
 }
+

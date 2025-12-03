@@ -20,12 +20,19 @@ class Step2PhotosPage extends StatefulWidget {
 
 class _Step2PhotosPageState extends State<Step2PhotosPage> {
   static const int _maxPhotos = 6;
+  
+  // Cache để tránh tạo mới object mỗi lần build
+  late final ImagePickerService _imagePickerService;
+
+  @override
+  void initState() {
+    super.initState();
+    _imagePickerService = getIt<ImagePickerService>();
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      // Use getIt to get ImagePickerService
-      final picker = getIt<ImagePickerService>();
-      final image = await picker.pickImage(source: source);
+      final image = await _imagePickerService.pickImage(source: source);
 
       if (image != null && mounted) {
         debugPrint('[Step2] Image picked: ${image.path}');
@@ -175,6 +182,7 @@ class _Step2PhotosPageState extends State<Step2PhotosPage> {
         backgroundColor: AppColor.white,
       ),
       body: BlocConsumer<ProfileSetupBloc, ProfileSetupState>(
+        listenWhen: (previous, current) => current is ProfileSetupError,
         listener: (context, state) {
           if (state is ProfileSetupError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -189,6 +197,14 @@ class _Step2PhotosPageState extends State<Step2PhotosPage> {
               ),
             );
           }
+        },
+        buildWhen: (previous, current) {
+          // Chỉ rebuild khi photos thay đổi hoặc upload state thay đổi
+          if (previous is ProfileSetupInitial && current is ProfileSetupInitial) {
+            return previous.photoUrls != current.photoUrls;
+          }
+          // Rebuild khi chuyển state (uploading, error, etc.)
+          return previous.runtimeType != current.runtimeType;
         },
         builder: (context, state) {
           final photos = state is ProfileSetupInitial
