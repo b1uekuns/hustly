@@ -10,5 +10,8 @@ class UserEntity with _$UserEntity {
     required String name,
     String? avatar,
     @Default(false) bool isVerified,
+    // Approval status
+    String? approvalStatus, // 'pending', 'approved', 'rejected'
+    String? rejectionReason,
   }) = _UserEntity;
 }

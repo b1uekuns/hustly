@@ -32,6 +32,9 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       isProfileComplete: json['isProfileComplete'] as bool? ?? false,
       lastActive: json['lastActive'] as String?,
       isOnline: json['isOnline'] as bool? ?? false,
+      approvalStatus: json['approvalStatus'] as String?,
+      rejectionReason: json['rejectionReason'] as String?,
+      approvedAt: json['approvedAt'] as String?,
     );
 
 Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
@@ -52,6 +55,9 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'isProfileComplete': instance.isProfileComplete,
       'lastActive': instance.lastActive,
       'isOnline': instance.isOnline,
+      'approvalStatus': instance.approvalStatus,
+      'rejectionReason': instance.rejectionReason,
+      'approvedAt': instance.approvedAt,
     };
 
 _$PhotoModelImpl _$$PhotoModelImplFromJson(Map<String, dynamic> json) =>

@@ -6,6 +6,7 @@ import 'package:injectable/injectable.dart';
 import '../../domain/usecases/auth_usecases.dart';
 import '../../domain/entities/user/user_entity.dart';
 import '../../../../core/error/handlers/token_provider.dart';
+import '../../../profile_setup/domain/repositories/profile_repository.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -16,16 +17,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SendOtpUseCase sendOtpUseCase;
   final VerifyOtpUseCase verifyOtpUseCase;
   final TokenProvider tokenProvider;
+  final ProfileRepository profileRepository;
 
   AuthBloc({
     required this.sendOtpUseCase,
     required this.verifyOtpUseCase,
     required this.tokenProvider,
+    required this.profileRepository,
   }) : super(const AuthState.initial()) {
     on<SendOtpRequested>(_onSendOtpRequested);
     on<VerifyOtpRequested>(_onVerifyOtpRequested);
     on<ResendOtpRequested>(_onResendOtpRequested);
     on<LogoutRequested>(_onLogoutRequested);
+    on<AuthCheckRequested>(_onAuthCheckRequested);
   }
 
   Future<void> _onSendOtpRequested(
@@ -110,6 +114,54 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(const AuthState.unauthenticated());
     } catch (e) {
       emit(AuthState.sendOtpError('Logout failed: $e'));
+    }
+  }
+
+  Future<void> _onAuthCheckRequested(
+    AuthCheckRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    print('🔵 [AUTH_BLOC] AuthCheckRequested - checking approval status...');
+    
+    // Only check if we're in an authenticated state
+    final currentState = state;
+    if (currentState is! Authenticated) {
+      print('🔵 [AUTH_BLOC] Not authenticated, skipping check');
+      return;
+    }
+    
+    try {
+      final result = await profileRepository.getMyProfile();
+      
+      result.fold(
+        (failure) {
+          print('❌ [AUTH_BLOC] Failed to get profile: ${failure.message}');
+          // Don't change state on failure, just log it
+        },
+        (user) {
+          print('✅ [AUTH_BLOC] Got profile, approvalStatus: ${user.approvalStatus}');
+          
+          final isApproved = user.approvalStatus == 'approved';
+          final isRejected = user.approvalStatus == 'rejected';
+          final needsApproval = user.approvalStatus == 'pending';
+          
+          // Only emit new state if approval status changed
+          if (isApproved != currentState.isApproved || 
+              isRejected != currentState.isRejected) {
+            emit(AuthState.authenticated(
+              user: currentState.user,
+              token: currentState.token,
+              isNewUser: false,
+              needsApproval: needsApproval,
+              isApproved: isApproved,
+              isRejected: isRejected,
+              rejectionReason: user.rejectionReason,
+            ));
+          }
+        },
+      );
+    } catch (e) {
+      print('❌ [AUTH_BLOC] Exception checking auth: $e');
     }
   }
 }

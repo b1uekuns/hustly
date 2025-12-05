@@ -146,6 +146,7 @@ extension GetItInjectableX on _i174.GetIt {
         sendOtpUseCase: gh<_i46.SendOtpUseCase>(),
         verifyOtpUseCase: gh<_i46.VerifyOtpUseCase>(),
         tokenProvider: gh<_i149.TokenProvider>(),
+        profileRepository: gh<_i226.ProfileRepository>(),
       ),
     );
     gh.factory<_i888.ProfileSetupBloc>(

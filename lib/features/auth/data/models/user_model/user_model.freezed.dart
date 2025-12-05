@@ -38,7 +38,12 @@ mixin _$UserModel {
   bool get isEmailVerified => throw _privateConstructorUsedError;
   bool get isProfileComplete => throw _privateConstructorUsedError;
   String? get lastActive => throw _privateConstructorUsedError;
-  bool get isOnline => throw _privateConstructorUsedError;
+  bool get isOnline =>
+      throw _privateConstructorUsedError; // Approval status fields
+  String? get approvalStatus =>
+      throw _privateConstructorUsedError; // 'pending', 'approved', 'rejected'
+  String? get rejectionReason => throw _privateConstructorUsedError;
+  String? get approvedAt => throw _privateConstructorUsedError;
 
   /// Serializes this UserModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -72,6 +77,9 @@ abstract class $UserModelCopyWith<$Res> {
     bool isProfileComplete,
     String? lastActive,
     bool isOnline,
+    String? approvalStatus,
+    String? rejectionReason,
+    String? approvedAt,
   });
 }
 
@@ -106,6 +114,9 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? isProfileComplete = null,
     Object? lastActive = freezed,
     Object? isOnline = null,
+    Object? approvalStatus = freezed,
+    Object? rejectionReason = freezed,
+    Object? approvedAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -173,6 +184,18 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
                 ? _value.isOnline
                 : isOnline // ignore: cast_nullable_to_non_nullable
                       as bool,
+            approvalStatus: freezed == approvalStatus
+                ? _value.approvalStatus
+                : approvalStatus // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            rejectionReason: freezed == rejectionReason
+                ? _value.rejectionReason
+                : rejectionReason // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            approvedAt: freezed == approvedAt
+                ? _value.approvedAt
+                : approvedAt // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -205,6 +228,9 @@ abstract class _$$UserModelImplCopyWith<$Res>
     bool isProfileComplete,
     String? lastActive,
     bool isOnline,
+    String? approvalStatus,
+    String? rejectionReason,
+    String? approvedAt,
   });
 }
 
@@ -238,6 +264,9 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? isProfileComplete = null,
     Object? lastActive = freezed,
     Object? isOnline = null,
+    Object? approvalStatus = freezed,
+    Object? rejectionReason = freezed,
+    Object? approvedAt = freezed,
   }) {
     return _then(
       _$UserModelImpl(
@@ -305,6 +334,18 @@ class __$$UserModelImplCopyWithImpl<$Res>
             ? _value.isOnline
             : isOnline // ignore: cast_nullable_to_non_nullable
                   as bool,
+        approvalStatus: freezed == approvalStatus
+            ? _value.approvalStatus
+            : approvalStatus // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        rejectionReason: freezed == rejectionReason
+            ? _value.rejectionReason
+            : rejectionReason // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        approvedAt: freezed == approvedAt
+            ? _value.approvedAt
+            : approvedAt // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -330,6 +371,9 @@ class _$UserModelImpl extends _UserModel {
     this.isProfileComplete = false,
     this.lastActive,
     this.isOnline = false,
+    this.approvalStatus,
+    this.rejectionReason,
+    this.approvedAt,
   }) : _photos = photos,
        _interests = interests,
        super._();
@@ -388,10 +432,18 @@ class _$UserModelImpl extends _UserModel {
   @override
   @JsonKey()
   final bool isOnline;
+  // Approval status fields
+  @override
+  final String? approvalStatus;
+  // 'pending', 'approved', 'rejected'
+  @override
+  final String? rejectionReason;
+  @override
+  final String? approvedAt;
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, name: $name, dateOfBirth: $dateOfBirth, gender: $gender, bio: $bio, photos: $photos, interests: $interests, interestedIn: $interestedIn, studentId: $studentId, major: $major, className: $className, isEmailVerified: $isEmailVerified, isProfileComplete: $isProfileComplete, lastActive: $lastActive, isOnline: $isOnline)';
+    return 'UserModel(id: $id, email: $email, name: $name, dateOfBirth: $dateOfBirth, gender: $gender, bio: $bio, photos: $photos, interests: $interests, interestedIn: $interestedIn, studentId: $studentId, major: $major, className: $className, isEmailVerified: $isEmailVerified, isProfileComplete: $isProfileComplete, lastActive: $lastActive, isOnline: $isOnline, approvalStatus: $approvalStatus, rejectionReason: $rejectionReason, approvedAt: $approvedAt)';
   }
 
   @override
@@ -425,12 +477,18 @@ class _$UserModelImpl extends _UserModel {
             (identical(other.lastActive, lastActive) ||
                 other.lastActive == lastActive) &&
             (identical(other.isOnline, isOnline) ||
-                other.isOnline == isOnline));
+                other.isOnline == isOnline) &&
+            (identical(other.approvalStatus, approvalStatus) ||
+                other.approvalStatus == approvalStatus) &&
+            (identical(other.rejectionReason, rejectionReason) ||
+                other.rejectionReason == rejectionReason) &&
+            (identical(other.approvedAt, approvedAt) ||
+                other.approvedAt == approvedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     email,
@@ -448,7 +506,10 @@ class _$UserModelImpl extends _UserModel {
     isProfileComplete,
     lastActive,
     isOnline,
-  );
+    approvalStatus,
+    rejectionReason,
+    approvedAt,
+  ]);
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -482,6 +543,9 @@ abstract class _UserModel extends UserModel {
     final bool isProfileComplete,
     final String? lastActive,
     final bool isOnline,
+    final String? approvalStatus,
+    final String? rejectionReason,
+    final String? approvedAt,
   }) = _$UserModelImpl;
   const _UserModel._() : super._();
 
@@ -521,7 +585,13 @@ abstract class _UserModel extends UserModel {
   @override
   String? get lastActive;
   @override
-  bool get isOnline;
+  bool get isOnline; // Approval status fields
+  @override
+  String? get approvalStatus; // 'pending', 'approved', 'rejected'
+  @override
+  String? get rejectionReason;
+  @override
+  String? get approvedAt;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.

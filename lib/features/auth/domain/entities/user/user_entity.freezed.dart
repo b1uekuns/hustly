@@ -21,7 +21,10 @@ mixin _$UserEntity {
   String get email => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get avatar => throw _privateConstructorUsedError;
-  bool get isVerified => throw _privateConstructorUsedError;
+  bool get isVerified => throw _privateConstructorUsedError; // Approval status
+  String? get approvalStatus =>
+      throw _privateConstructorUsedError; // 'pending', 'approved', 'rejected'
+  String? get rejectionReason => throw _privateConstructorUsedError;
 
   /// Create a copy of UserEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -43,6 +46,8 @@ abstract class $UserEntityCopyWith<$Res> {
     String name,
     String? avatar,
     bool isVerified,
+    String? approvalStatus,
+    String? rejectionReason,
   });
 }
 
@@ -66,6 +71,8 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
     Object? name = null,
     Object? avatar = freezed,
     Object? isVerified = null,
+    Object? approvalStatus = freezed,
+    Object? rejectionReason = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -89,6 +96,14 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
                 ? _value.isVerified
                 : isVerified // ignore: cast_nullable_to_non_nullable
                       as bool,
+            approvalStatus: freezed == approvalStatus
+                ? _value.approvalStatus
+                : approvalStatus // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            rejectionReason: freezed == rejectionReason
+                ? _value.rejectionReason
+                : rejectionReason // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -110,6 +125,8 @@ abstract class _$$UserEntityImplCopyWith<$Res>
     String name,
     String? avatar,
     bool isVerified,
+    String? approvalStatus,
+    String? rejectionReason,
   });
 }
 
@@ -132,6 +149,8 @@ class __$$UserEntityImplCopyWithImpl<$Res>
     Object? name = null,
     Object? avatar = freezed,
     Object? isVerified = null,
+    Object? approvalStatus = freezed,
+    Object? rejectionReason = freezed,
   }) {
     return _then(
       _$UserEntityImpl(
@@ -155,6 +174,14 @@ class __$$UserEntityImplCopyWithImpl<$Res>
             ? _value.isVerified
             : isVerified // ignore: cast_nullable_to_non_nullable
                   as bool,
+        approvalStatus: freezed == approvalStatus
+            ? _value.approvalStatus
+            : approvalStatus // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        rejectionReason: freezed == rejectionReason
+            ? _value.rejectionReason
+            : rejectionReason // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -169,6 +196,8 @@ class _$UserEntityImpl implements _UserEntity {
     required this.name,
     this.avatar,
     this.isVerified = false,
+    this.approvalStatus,
+    this.rejectionReason,
   });
 
   @override
@@ -182,10 +211,16 @@ class _$UserEntityImpl implements _UserEntity {
   @override
   @JsonKey()
   final bool isVerified;
+  // Approval status
+  @override
+  final String? approvalStatus;
+  // 'pending', 'approved', 'rejected'
+  @override
+  final String? rejectionReason;
 
   @override
   String toString() {
-    return 'UserEntity(studentId: $studentId, email: $email, name: $name, avatar: $avatar, isVerified: $isVerified)';
+    return 'UserEntity(studentId: $studentId, email: $email, name: $name, avatar: $avatar, isVerified: $isVerified, approvalStatus: $approvalStatus, rejectionReason: $rejectionReason)';
   }
 
   @override
@@ -199,12 +234,24 @@ class _$UserEntityImpl implements _UserEntity {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.avatar, avatar) || other.avatar == avatar) &&
             (identical(other.isVerified, isVerified) ||
-                other.isVerified == isVerified));
+                other.isVerified == isVerified) &&
+            (identical(other.approvalStatus, approvalStatus) ||
+                other.approvalStatus == approvalStatus) &&
+            (identical(other.rejectionReason, rejectionReason) ||
+                other.rejectionReason == rejectionReason));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, studentId, email, name, avatar, isVerified);
+  int get hashCode => Object.hash(
+    runtimeType,
+    studentId,
+    email,
+    name,
+    avatar,
+    isVerified,
+    approvalStatus,
+    rejectionReason,
+  );
 
   /// Create a copy of UserEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -222,6 +269,8 @@ abstract class _UserEntity implements UserEntity {
     required final String name,
     final String? avatar,
     final bool isVerified,
+    final String? approvalStatus,
+    final String? rejectionReason,
   }) = _$UserEntityImpl;
 
   @override
@@ -233,7 +282,11 @@ abstract class _UserEntity implements UserEntity {
   @override
   String? get avatar;
   @override
-  bool get isVerified;
+  bool get isVerified; // Approval status
+  @override
+  String? get approvalStatus; // 'pending', 'approved', 'rejected'
+  @override
+  String? get rejectionReason;
 
   /// Create a copy of UserEntity
   /// with the given fields replaced by the non-null parameter values.

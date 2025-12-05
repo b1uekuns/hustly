@@ -25,6 +25,10 @@ class UserModel with _$UserModel {
     @Default(false) bool isProfileComplete,
     String? lastActive,
     @Default(false) bool isOnline,
+    // Approval status fields
+    String? approvalStatus, // 'pending', 'approved', 'rejected'
+    String? rejectionReason,
+    String? approvedAt,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -42,6 +46,8 @@ class UserModel with _$UserModel {
           ? photos.firstWhere((p) => p.isMain, orElse: () => photos.first).url 
           : null,
       isVerified: isEmailVerified,
+      approvalStatus: approvalStatus,
+      rejectionReason: rejectionReason,
     );
   }
 }
