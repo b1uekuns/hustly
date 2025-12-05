@@ -9,6 +9,9 @@ class ProfileSetupEvent with _$ProfileSetupEvent {
   
   /// Fetch list of majors from backend
   const factory ProfileSetupEvent.fetchMajors() = FetchMajors;
+  
+  /// Fetch list of interests from backend
+  const factory ProfileSetupEvent.fetchInterests() = FetchInterests;
 
   // Step 1: Basic Info
   const factory ProfileSetupEvent.basicInfoUpdated({

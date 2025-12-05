@@ -8,6 +8,7 @@ import '../../domain/entities/complete_profile_entity.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../data_source/remote/user_api.dart';
 import '../models/complete_profile_request.dart';
+import '../models/interests_response.dart';
 
 @LazySingleton(as: ProfileRepository)
 class ProfileRepositoryImpl implements ProfileRepository {
@@ -30,6 +31,19 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
+  Future<Either<Failure, List<InterestCategory>>> getInterests() async {
+    try {
+      print('[ProfileRepository] Fetching interests...');
+      final response = await userApi.getInterests();
+      print('[ProfileRepository] Got ${response.data.interests.length} categories');
+      return Right(response.data.interests);
+    } catch (e) {
+      print('[ProfileRepository] Error fetching interests: $e');
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, UserEntity>> completeProfile(
     CompleteProfileEntity profile,
   ) async {
@@ -45,25 +59,30 @@ class ProfileRepositoryImpl implements ProfileRepository {
         name: profile.name,
         dateOfBirth: _formatDate(profile.dateOfBirth),
         gender: profile.gender,
-        bio: profile.bio,
+        bio: profile.bio ?? '',  // Convert null to empty string
         interests: profile.interests,
         interestedIn: profile.interestedIn,
         studentId: profile.studentId ?? '',
         major: profile.major,
-        class_: profile.className,
+        classField: profile.className,
         photos: profile.photos
             .map((photo) => PhotoRequest(
                   url: photo.url,
-                  publicId: photo.publicId,
+                  publicId: photo.publicId ?? '',  // Convert null to empty string
                   isMain: photo.isMain,
                 ))
             .toList(),
       );
 
-      print('[ProfileRepository] Request: ${request.toJson()}');
+      final requestJson = request.toJson();
+      // Ensure photos are properly serialized as JSON objects
+      requestJson['photos'] = (requestJson['photos'] as List)
+          .map((p) => p is PhotoRequest ? p.toJson() : p)
+          .toList();
+      print('[ProfileRepository] Request JSON: $requestJson');
 
       final response = await userApi.completeProfile(
-        request,
+        requestJson,
         'Bearer $token',
       );
 

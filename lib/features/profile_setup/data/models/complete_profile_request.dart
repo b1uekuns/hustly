@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'complete_profile_request.freezed.dart';
 part 'complete_profile_request.g.dart';
@@ -14,7 +15,7 @@ class CompleteProfileRequest with _$CompleteProfileRequest {
     required String interestedIn,
     String? studentId,
     required String major,
-    required String class_,
+    @JsonKey(name: 'class') required String classField,
     required List<PhotoRequest> photos,
   }) = _CompleteProfileRequest;
 

@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../auth/domain/entities/user/user_entity.dart';
+import '../../data/models/interests_response.dart';
 
 part 'profile_setup_state.freezed.dart';
 
@@ -18,8 +19,10 @@ class ProfileSetupState with _$ProfileSetupState {
     @Default('') String interestedIn,
     @Default(false) bool isUploading,
     @Default(0.0) double uploadProgress,
-    @Default([]) List<String> availableMajors, // List of majors from backend
+    @Default([]) List<String> availableMajors,
     @Default(false) bool isMajorsLoading,
+    @Default([]) List<InterestCategory> availableInterests, // Interests from backend
+    @Default(false) bool isInterestsLoading,
   }) = ProfileSetupInitial;
   
   const factory ProfileSetupState.loading() = ProfileSetupLoading;

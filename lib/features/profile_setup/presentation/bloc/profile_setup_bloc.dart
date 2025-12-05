@@ -11,17 +11,20 @@ import 'profile_setup_state.dart';
 class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
   final CompleteProfileUseCase completeProfileUseCase;
   final GetMajorsUseCase getMajorsUseCase;
+  final GetInterestsUseCase getInterestsUseCase;
   final UploadService uploadService;
   final AuthBloc authBloc;
 
   ProfileSetupBloc(
     this.completeProfileUseCase,
     this.getMajorsUseCase,
+    this.getInterestsUseCase,
     this.uploadService,
     this.authBloc,
   ) : super(const ProfileSetupState.initial()) {
     on<ProfileSetupStarted>(_onStarted);
     on<FetchMajors>(_onFetchMajors);
+    on<FetchInterests>(_onFetchInterests);
     on<BasicInfoUpdated>(_onBasicInfoUpdated);
     on<UploadPhotoRequested>(_onUploadPhotoRequested);
     on<DeletePhotoRequested>(_onDeletePhotoRequested);
@@ -74,6 +77,32 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
         emit(currentState.copyWith(
           availableMajors: majors,
           isMajorsLoading: false,
+        ));
+      },
+    );
+  }
+
+  Future<void> _onFetchInterests(
+    FetchInterests event,
+    Emitter<ProfileSetupState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is! ProfileSetupInitial) return;
+
+    emit(currentState.copyWith(isInterestsLoading: true));
+
+    final result = await getInterestsUseCase();
+
+    result.fold(
+      (failure) {
+        print('[ProfileSetupBloc] Error fetching interests: ${failure.message}');
+        emit(currentState.copyWith(isInterestsLoading: false));
+      },
+      (interests) {
+        print('[ProfileSetupBloc] Loaded ${interests.length} interest categories');
+        emit(currentState.copyWith(
+          availableInterests: interests,
+          isInterestsLoading: false,
         ));
       },
     );

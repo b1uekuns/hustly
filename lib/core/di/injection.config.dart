@@ -114,6 +114,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i149.TokenProvider>(),
       ),
     );
+    gh.factory<_i1006.GetInterestsUseCase>(
+      () => _i1006.GetInterestsUseCase(gh<_i226.ProfileRepository>()),
+    );
     gh.factory<_i1006.GetMajorsUseCase>(
       () => _i1006.GetMajorsUseCase(gh<_i226.ProfileRepository>()),
     );
@@ -149,6 +152,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i888.ProfileSetupBloc(
         gh<_i1006.CompleteProfileUseCase>(),
         gh<_i1006.GetMajorsUseCase>(),
+        gh<_i1006.GetInterestsUseCase>(),
         gh<_i309.UploadService>(),
         gh<_i797.AuthBloc>(),
       ),

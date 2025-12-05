@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../core/config/routes/app_page.dart';
+import '../../../../core/resources/app_color.dart';
+import '../../../../core/resources/app_theme.dart';
 
 class PendingApprovalPage extends StatefulWidget {
   const PendingApprovalPage({super.key});
@@ -15,6 +18,7 @@ class _PendingApprovalPageState extends State<PendingApprovalPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _pulseAnimation;
+  Timer? _autoCheckTimer;
 
   @override
   void initState() {
@@ -25,210 +29,335 @@ class _PendingApprovalPageState extends State<PendingApprovalPage>
     )..repeat(reverse: true);
 
     _pulseAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
+
+    // Auto-check approval status every 30 seconds
+    _startAutoCheck();
+  }
+
+  void _startAutoCheck() {
+    _autoCheckTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) {
+        context.read<AuthBloc>().add(const AuthEvent.authCheckRequested());
+      }
+    });
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _autoCheckTimer?.cancel();
     super.dispose();
-  }
-
-  void _checkApprovalStatus() {
-    // Refresh user data to check approval status
-    context.read<AuthBloc>().add(const AuthEvent.authCheckRequested());
-  }
-
-  void _logout() {
-    context.read<AuthBloc>().add(const AuthEvent.logoutRequested());
-    context.go(AppPage.login.toPath());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(),
-              
-              // Animated Icon
-              ScaleTransition(
-                scale: _pulseAnimation,
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Colors.orange[100],
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.hourglass_empty,
-                    size: 60,
-                    color: Colors.orange[700],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 40),
-              
-              // Title
-              const Text(
-                'Đang chờ phê duyệt',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              
-              // Description
-              Text(
-                'Hồ sơ của bạn đang được admin xem xét. Chúng tôi sẽ thông báo cho bạn sớm nhất có thể!',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                  height: 1.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
-              
-              // Info Cards
-              _buildInfoCard(
-                icon: Icons.check_circle_outline,
-                title: 'Hồ sơ đã hoàn thiện',
-                subtitle: 'Thông tin của bạn đã được gửi thành công',
-                color: Colors.green,
-              ),
-              const SizedBox(height: 12),
-              _buildInfoCard(
-                icon: Icons.admin_panel_settings,
-                title: 'Đang chờ duyệt',
-                subtitle: 'Admin đang xem xét hồ sơ của bạn',
-                color: Colors.orange,
-              ),
-              const SizedBox(height: 12),
-              _buildInfoCard(
-                icon: Icons.notifications_active,
-                title: 'Chúng tôi sẽ thông báo',
-                subtitle: 'Bạn sẽ nhận được email khi được duyệt',
-                color: Colors.blue,
-              ),
-              
-              const Spacer(),
-              
-              // Buttons
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  onPressed: _checkApprovalStatus,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Kiểm tra trạng thái'),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is Authenticated) {
+          if (state.isApproved) {
+            // Navigate to home when approved
+            context.go(AppPage.home.toPath());
+          } else if (state.isRejected) {
+            // Show rejection message
+            _showRejectionDialog(
+              state.rejectionReason ?? 'Không có lý do cụ thể',
+            );
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColor.white,
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Animated Icon with Glow Effect
+                  ScaleTransition(
+                    scale: _pulseAnimation,
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        gradient: AppTheme.primaryGradient,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColor.redPrimary.withOpacity(0.4),
+                            blurRadius: 30,
+                            spreadRadius: 8,
+                          ),
+                          BoxShadow(
+                            color: AppColor.redLight.withOpacity(0.2),
+                            blurRadius: 50,
+                            spreadRadius: 15,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.hourglass_top_rounded,
+                        size: 75,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: OutlinedButton.icon(
-                  onPressed: _logout,
-                  icon: const Icon(Icons.logout),
-                  label: const Text('Đăng xuất'),
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+                  const SizedBox(height: 48),
+
+                  // Title with gradient
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [AppColor.redPrimary, AppColor.redLight],
+                    ).createShader(bounds),
+                    child: const Text(
+                      'Đang chờ phê duyệt',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+
+                  // Description
+                  Text(
+                    'Hồ sơ của bạn đang được xem xét.\nBạn sẽ tự động vào ứng dụng khi được duyệt!',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                      height: 1.6,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
+
+                  // Progress indicator
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildStepItem(
+                          icon: Icons.check_circle,
+                          title: 'Đăng ký thành công',
+                          isCompleted: true,
+                        ),
+                        _buildConnector(),
+                        _buildStepItem(
+                          icon: Icons.pending,
+                          title: 'Đang chờ admin duyệt',
+                          isCompleted: false,
+                          isActive: true,
+                        ),
+                        _buildConnector(),
+                        _buildStepItem(
+                          icon: Icons.home,
+                          title: 'Vào ứng dụng',
+                          isCompleted: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Auto-refresh indicator
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColor.redPrimary.withOpacity(0.6),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Tự động kiểm tra trạng thái...',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColor.blackLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Time estimate
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColor.redPrimary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColor.redPrimary.withOpacity(0.2),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 16,
+                          color: AppColor.redPrimary,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Thường mất 1-24 giờ',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColor.redPrimary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-              
-              // Footer Note
-              Text(
-                'Thời gian phê duyệt thường từ 1-24 giờ',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[500],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildInfoCard({
+  Widget _buildStepItem({
     required IconData icon,
     required String title,
-    required String subtitle,
-    required Color color,
+    required bool isCompleted,
+    bool isActive = false,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1,
+    final color = isCompleted
+        ? Colors.green
+        : isActive
+            ? AppColor.redPrimary
+            : Colors.grey.shade400;
+
+    return Row(
+      children: [
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            gradient: isCompleted
+                ? const LinearGradient(colors: [Colors.green, Colors.lightGreen])
+                : isActive
+                    ? AppTheme.primaryGradient
+                    : null,
+            color: !isCompleted && !isActive ? Colors.grey.shade200 : null,
+            shape: BoxShape.circle,
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: AppColor.redPrimary.withOpacity(0.3),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ]
+                : null,
+          ),
+          child: Icon(
+            icon,
+            color: isCompleted || isActive ? Colors.white : color,
+            size: 22,
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
+        const SizedBox(width: 16),
+        Expanded(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+              color: isCompleted || isActive
+                  ? AppColor.blackPrimary
+                  : Colors.grey.shade500,
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
+        ),
+        if (isActive)
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: AppColor.redPrimary,
             ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildConnector() {
+    return Container(
+      margin: const EdgeInsets.only(left: 19),
+      width: 2,
+      height: 24,
+      color: Colors.grey.shade300,
+    );
+  }
+
+  void _showRejectionDialog(String reason) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.shade100,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.close, color: Colors.red),
+            ),
+            const SizedBox(width: 12),
+            const Text('Hồ sơ bị từ chối'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Lý do:'),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(reason),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<AuthBloc>().add(const AuthEvent.logoutRequested());
+              context.go(AppPage.login.toPath());
+            },
+            child: const Text('Đăng nhập lại'),
           ),
         ],
       ),
     );
   }
 }
-
