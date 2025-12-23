@@ -251,7 +251,7 @@ class _Step2PhotosPageState extends State<Step2PhotosPage> {
             ],
           ),
           child: const Text(
-            'Bước 2/4',
+            'Bước 2/5',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,

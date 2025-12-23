@@ -6,6 +6,7 @@ enum AppPage {
   onboardingPhotos,
   onboardingInterests,
   onboardingInterestedIn,
+  onboardingStep5, // Dating Purpose
   onboardingPending,
   home 
 }
@@ -27,6 +28,8 @@ extension AppPageExtension on AppPage {
         return '/onboarding/interests';
       case AppPage.onboardingInterestedIn:
         return '/onboarding/interested-in';
+      case AppPage.onboardingStep5:
+        return '/onboarding/dating-purpose';
       case AppPage.onboardingPending:
         return '/onboarding/pending';
       case AppPage.home:
@@ -50,6 +53,8 @@ extension AppPageExtension on AppPage {
         return 'onboarding-interests';
       case AppPage.onboardingInterestedIn:
         return 'onboarding-interested-in';
+      case AppPage.onboardingStep5:
+        return 'onboarding-dating-purpose';
       case AppPage.onboardingPending:
         return 'onboarding-pending';
       case AppPage.home:

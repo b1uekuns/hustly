@@ -3,8 +3,6 @@ import '../user/user_entity.dart';
 
 part 'login_response_entity.freezed.dart';
 
-/// Login Response Entity (Domain Layer)
-/// Clean Architecture: Domain entity, independent of data implementation
 @freezed
 class LoginResponseEntity with _$LoginResponseEntity {
   const factory LoginResponseEntity({

@@ -12,6 +12,7 @@ import '../../network/interceptors/logging_interceptor.dart';
 import '../../error/handlers/token_provider.dart';
 import '../../../features/auth/data/data_sources/remote/auth_api.dart';
 import '../../../features/profile_setup/data/data_source/remote/user_api.dart';
+import '../../../features/home/data/data_sources/remote/discover_api.dart';
 
 /// Module để register các dependencies liên quan đến Network
 @module
@@ -124,5 +125,11 @@ abstract class NetworkModule {
   @lazySingleton
   UserApi userApi(@Named('mainDio') Dio dio) {
     return UserApi(dio);
+  }
+
+  /// Provide DiscoverApi for discover/matching endpoints
+  @lazySingleton
+  DiscoverApi discoverApi(@Named('mainDio') Dio dio) {
+    return DiscoverApi(dio);
   }
 }

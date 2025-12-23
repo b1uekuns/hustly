@@ -39,6 +39,10 @@ class ProfileSetupEvent with _$ProfileSetupEvent {
   const factory ProfileSetupEvent.interestedInUpdated(String interestedIn) =
       InterestedInUpdated;
 
+  // Step 5: Dating Purpose
+  const factory ProfileSetupEvent.datingPurposeUpdated(String datingPurpose) =
+      DatingPurposeUpdated;
+
   // Final: Submit
   const factory ProfileSetupEvent.submitProfile() = SubmitProfile;
 }

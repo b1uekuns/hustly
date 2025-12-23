@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:hust_chill_app/core/resources/app_color.dart';
-import 'package:hust_chill_app/core/resources/app_style.dart';
-import 'package:hust_chill_app/widgets/navBar/bottom_nav_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../widgets/navBar/bottom_nav_bar.dart';
+import '../../data/models/discover_user_model.dart';
+import '../bloc/discover_bloc.dart';
+import '../controllers/swipe_controller.dart';
+import '../widgets/empty_states.dart';
+import '../widgets/home_header.dart';
+import '../widgets/match_dialog.dart';
+import '../widgets/profile_card_content.dart';
+import '../widgets/swipe_action_buttons.dart';
+import '../widgets/swipe_indicator.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,371 +19,310 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
-  int _currentCardIndex = 0;
+class HomePageState extends State<HomePage>
+    with TickerProviderStateMixin, SwipeController {
+  int _navIndex = 0;
 
-  final List<ProfileCard> profiles = [
-    ProfileCard(
-      name: 'Maria',
-      year: 'K67',
-      profession: 'Model',
-      distance: '2 miles',
-      imageUrl:
-          'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    ),
-    ProfileCard(
-      name: 'Sophie',
-      year: 'K70',
-      profession: 'Trường Điện',
-      distance: '5 miles',
-      imageUrl:
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    ),
-    ProfileCard(
-      name: 'Emma',
-      year: 'K69',
-      profession: 'Trường Hóa và Khoa học sự sống',
-      distance: '3 miles',
-      imageUrl:
-          'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    ),
-    ProfileCard(
-      name: 'Lily',
-      year: 'K68',
-      profession: 'Khoa Khoa học và Công nghệ',
-      distance: '4 miles',
-      imageUrl:
-          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    ),
-    ProfileCard(
-      name: 'Anna',
-      year: 'K68',
-      profession: 'Trường Công nghệ thông tin và Truyền thông',
-      distance: '1 mile',
-      imageUrl:
-          'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    initSwipeController();
+  }
+
+  @override
+  void dispose() {
+    disposeSwipeController();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.pink.shade100,
-                        ),
-                        child: const Icon(
-                          Icons.favorite,
-                          color: AppColor.redPrimary,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'Hustly',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: AppColor.redPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColor.redExtraLight.withOpacity(0.4),
-                    ),
-                    child: Icon(
-                      Icons.tune,
-                      color: AppColor.redPrimary,
-                      size: 20,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Card Stack
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Stack(
-                  children: [
-                    for (int i = profiles.length - 1; i >= 0; i--)
-                      if (i >= _currentCardIndex)
-                        Positioned(
-                          top: (i - _currentCardIndex) * 4.0,
-                          left: (i - _currentCardIndex) * 2.0,
-                          right: (i - _currentCardIndex) * 2.0,
-                          bottom: 0,
-                          child: GestureDetector(
-                            onPanUpdate: i == _currentCardIndex
-                                ? _onPanUpdate
-                                : null,
-                            onPanEnd: i == _currentCardIndex ? _onPanEnd : null,
-                            child: Transform.scale(
-                              scale: 1.0 - (i - _currentCardIndex) * 0.02,
-                              child: _buildProfileCard(profiles[i]),
-                            ),
-                          ),
-                        ),
-                  ],
-                ),
-              ),
-            ),
-            // Action Buttons
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildActionButton(
-                    icon: Icons.close,
-                    color: Colors.grey.shade300,
-                    iconColor: Colors.grey.shade600,
-                    onTap: () => _handleSwipe(false),
-                  ),
-                  _buildActionButton(
-                    icon: Icons.favorite,
-                    color: Colors.pink.shade100,
-                    iconColor: Colors.pink,
-                    size: 60,
-                    onTap: () => _handleSwipe(true),
-                  ),
-                  _buildActionButton(
-                    icon: Icons.star,
-                    color: Colors.blue.shade100,
-                    iconColor: Colors.blue,
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return BlocProvider(
+      create: (_) =>
+          getIt<DiscoverBloc>()..add(const DiscoverEvent.loadDiscover()),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Column(
+            children: [
+              const HomeHeader(),
+              Expanded(child: _buildBody()),
+            ],
+          ),
+        ),
+        bottomNavigationBar: BottomNavBar(
+          selectedIndex: _navIndex,
+          onItemSelected: (i) => setState(() => _navIndex = i),
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        selectedIndex: _currentIndex,
-        onItemSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          // Xử lý chuyển tab nếu cần
+    );
+  }
+
+  Widget _buildBody() {
+    return BlocConsumer<DiscoverBloc, DiscoverState>(
+      listener: _handleStateChange,
+      builder: (context, state) {
+        // Loading state
+        if (state is Loading) return const LoadingState();
+
+        // Error state
+        if (state is DiscoverError) {
+          return ErrorState(
+            message: state.message,
+            onRetry: () => context.read<DiscoverBloc>().add(
+              const DiscoverEvent.loadDiscover(),
+            ),
+          );
+        }
+
+        // No more users
+        if (state is NoMoreUsers) {
+          return NoMoreUsersState(
+            onRefresh: () => context.read<DiscoverBloc>().add(
+              const DiscoverEvent.resetCards(),
+            ),
+          );
+        }
+
+        // Get users from state
+        final users = _getUsersFromState(state);
+        final index = _getIndexFromState(state);
+
+        if (users.isEmpty || index >= users.length) {
+          return NoMoreUsersState(
+            onRefresh: () => context.read<DiscoverBloc>().add(
+              const DiscoverEvent.resetCards(),
+            ),
+          );
+        }
+
+        return _buildCardStack(users, index, context);
+      },
+    );
+  }
+
+  void _handleStateChange(BuildContext context, DiscoverState state) {
+    if (state is Matched) {
+      _showMatchDialog(context, state.matchedUser);
+    }
+  }
+
+  List<DiscoverUserModel> _getUsersFromState(DiscoverState state) {
+    return state.maybeMap(
+      loaded: (s) => s.users,
+      interacting: (s) => s.users,
+      matched: (s) => s.users,
+      orElse: () => [],
+    );
+  }
+
+  int _getIndexFromState(DiscoverState state) {
+    return state.maybeMap(
+      loaded: (s) => s.currentIndex,
+      interacting: (s) => s.currentIndex,
+      matched: (s) => s.currentIndex,
+      orElse: () => 0,
+    );
+  }
+
+  Widget _buildCardStack(
+    List<DiscoverUserModel> users,
+    int index,
+    BuildContext context,
+  ) {
+    final user = users[index];
+
+    return Stack(
+      children: [
+        // Background cards
+        ..._buildBackgroundCards(users, index),
+
+        // Main card (flying or swipeable)
+        isFlying ? _buildFlyingCard(user) : _buildSwipeableCard(user, context),
+
+        // Action buttons
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 16,
+          child: SwipeActionButtons(
+            isDisabled: isFlying,
+            onPass: () => _handleAction(user, context, isLike: false),
+            onLike: () => _handleAction(user, context, isLike: true),
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildBackgroundCards(
+    List<DiscoverUserModel> users,
+    int currentIndex,
+  ) {
+    final cards = <Widget>[];
+    final maxIndex = (currentIndex + 2).clamp(0, users.length - 1);
+
+    for (int i = maxIndex; i > currentIndex; i--) {
+      cards.add(_BackgroundCard(user: users[i], stackIndex: i - currentIndex));
+    }
+
+    return cards;
+  }
+
+  Widget _buildFlyingCard(DiscoverUserModel user) {
+    return AnimatedBuilder(
+      animation: flyController,
+      builder: (_, __) => Transform.translate(
+        offset: flyAnimation.value,
+        child: Transform.rotate(
+          angle: flyDirection == 'right' ? 0.2 : -0.2,
+          child: _ProfileCard(user: user, scrollController: scrollController),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwipeableCard(DiscoverUserModel user, BuildContext context) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 80,
+      child: GestureDetector(
+        onPanStart: (_) => onPanStart(),
+        onPanUpdate: onPanUpdate,
+        onPanEnd: (details) => onPanEnd(
+          details,
+          () =>
+              context.read<DiscoverBloc>().add(DiscoverEvent.likeUser(user.id)),
+          () =>
+              context.read<DiscoverBloc>().add(DiscoverEvent.passUser(user.id)),
+        ),
+        child: Transform.translate(
+          offset: isDragging ? cardOffset : Offset.zero,
+          child: Transform.rotate(
+            angle: isDragging ? cardAngle : 0,
+            child: Stack(
+              children: [
+                _ProfileCard(user: user, scrollController: scrollController),
+                if (cardOffset.dx > 0)
+                  SwipeIndicator(
+                    type: SwipeType.like,
+                    opacity: indicatorOpacity,
+                  ),
+                if (cardOffset.dx < 0)
+                  SwipeIndicator(
+                    type: SwipeType.nope,
+                    opacity: indicatorOpacity,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleAction(
+    DiscoverUserModel user,
+    BuildContext context, {
+    required bool isLike,
+  }) {
+    handleButtonAction(isLike, () {
+      final event = isLike
+          ? DiscoverEvent.likeUser(user.id)
+          : DiscoverEvent.passUser(user.id);
+      context.read<DiscoverBloc>().add(event);
+    });
+  }
+
+  void _showMatchDialog(BuildContext context, MatchedUserData matchedUser) {
+    resetCard();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => MatchDialog(
+        matchedUser: matchedUser,
+        onSendMessage: () => Navigator.pop(context),
+        onKeepSwiping: () {
+          Navigator.pop(context);
+          context.read<DiscoverBloc>().add(const DiscoverEvent.nextCard());
         },
       ),
     );
   }
+}
 
-  Widget _buildProfileCard(ProfileCard profile) {
-    return Card(
-      elevation: 12,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-      margin: EdgeInsets.zero,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          image: DecorationImage(
-            image: NetworkImage(profile.imageUrl),
-            fit: BoxFit.cover,
-            //alignment: Alignment.topCenter,
+class _BackgroundCard extends StatelessWidget {
+  final DiscoverUserModel user;
+  final int stackIndex;
+
+  const _BackgroundCard({required this.user, required this.stackIndex});
+
+  @override
+  Widget build(BuildContext context) {
+    final scale = 1.0 - (stackIndex * 0.04);
+    final offset = stackIndex * 8.0;
+
+    return Positioned(
+      top: offset,
+      left: 8 + stackIndex * 4.0,
+      right: 8 + stackIndex * 4.0,
+      bottom: 80 + stackIndex * 4.0,
+      child: Transform.scale(
+        scale: scale,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.grey[300],
+            image: user.photos.isNotEmpty
+                ? DecorationImage(
+                    image: NetworkImage(user.photos.first.url),
+                    fit: BoxFit.cover,
+                  )
+                : null,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
         ),
-        child: Stack(
-          children: [
-            // Overlay màu hồng nhạt phía dưới
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: 160,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(32),
-                  ),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.pinkAccent.withOpacity(0.0),
-                      Colors.pinkAccent.withOpacity(0.7),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            // Icon location góc trên trái
-            Positioned(
-              top: 24,
-              left: 24,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.pinkAccent.withOpacity(0.2),
-                      blurRadius: 4,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.location_on, color: Colors.pinkAccent, size: 16),
-                    SizedBox(width: 4),
-                    Text(
-                      profile.distance,
-                      style: TextStyle(
-                        color: Colors.pinkAccent,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Info dưới cùng
-            Positioned(
-              left: 32,
-              right: 32,
-              bottom: 48,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${profile.name}, ${profile.year}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      shadows: [Shadow(color: Colors.black26, blurRadius: 8)],
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    profile.profession,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 16,
-                      shadows: [Shadow(color: Colors.black12, blurRadius: 6)],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Nút more góc phải
-            Positioned(
-              right: 32,
-              bottom: 48,
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.pinkAccent.withOpacity(0.2),
-                      blurRadius: 6,
-                    ),
-                  ],
-                ),
-                child: Icon(Icons.more_vert, color: Colors.white, size: 22),
-              ),
-            ),
-          ],
-        ),
       ),
     );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required Color color,
-    required Color iconColor,
-    double size = 50,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Icon(icon, color: iconColor, size: size * 0.5),
-      ),
-    );
-  }
-
-  void _onPanUpdate(DragUpdateDetails details) {
-    // Handle card dragging animation here if needed
-  }
-
-  void _onPanEnd(DragEndDetails details) {
-    const threshold = 100.0;
-    if (details.velocity.pixelsPerSecond.dx > threshold) {
-      _handleSwipe(true); // Swipe right (like)
-    } else if (details.velocity.pixelsPerSecond.dx < -threshold) {
-      _handleSwipe(false); // Swipe left (dislike)
-    }
-  }
-
-  void _handleSwipe(bool isLike) {
-    if (_currentCardIndex < profiles.length - 1) {
-      setState(() {
-        _currentCardIndex++;
-      });
-    } else {
-      // No more cards
-      setState(() {
-        _currentCardIndex = 0; // Reset for demo purposes
-      });
-    }
   }
 }
 
-class ProfileCard {
-  final String name;
-  final String year;
-  final String profession;
-  final String distance;
-  final String imageUrl;
+/// Profile card widget
+class _ProfileCard extends StatelessWidget {
+  final DiscoverUserModel user;
+  final ScrollController scrollController;
 
-  ProfileCard({
-    required this.name,
-    required this.year,
-    required this.profession,
-    required this.distance,
-    required this.imageUrl,
-  });
+  const _ProfileCard({required this.user, required this.scrollController});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: ProfileCardContent(
+          user: user,
+          scrollController: scrollController,
+        ),
+      ),
+    );
+  }
 }

@@ -17,6 +17,7 @@ class ProfileSetupState with _$ProfileSetupState {
     @Default([]) List<String> interests,
     @Default('') String bio,
     @Default('') String interestedIn,
+    @Default('') String datingPurpose, // Step 5: Dating purpose
     @Default(false) bool isUploading,
     @Default(0.0) double uploadProgress,
     @Default([]) List<String> availableMajors,

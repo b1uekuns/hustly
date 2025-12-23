@@ -197,7 +197,7 @@ class _Step3InterestsPageState extends State<Step3InterestsPage> {
             ],
           ),
           child: const Text(
-            'Bước 3/4',
+            'Bước 3/5',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,

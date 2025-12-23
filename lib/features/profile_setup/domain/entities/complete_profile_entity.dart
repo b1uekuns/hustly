@@ -11,6 +11,7 @@ class CompleteProfileEntity with _$CompleteProfileEntity {
     String? bio,
     required List<String> interests,
     required String interestedIn,
+    String? datingPurpose, // 'relationship', 'friends', 'casual', 'unsure'
     String? studentId,
     required String major,
     required String className,

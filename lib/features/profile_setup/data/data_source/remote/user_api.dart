@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
-import '../../models/complete_profile_request.dart';
 import '../../models/complete_profile_response.dart';
 import '../../models/majors_response.dart';
 import '../../models/interests_response.dart';

@@ -7,6 +7,7 @@ import '../../../features/profile_setup/presentation/pages/step1_basic_info_page
 import '../../../features/profile_setup/presentation/pages/step2_photos_page.dart';
 import '../../../features/profile_setup/presentation/pages/step3_interests_page.dart';
 import '../../../features/profile_setup/presentation/pages/step4_interested_in_page.dart';
+import '../../../features/profile_setup/presentation/pages/step5_dating_purpose_page.dart';
 import '../../../features/profile_setup/presentation/pages/pending_approval_page.dart';
 
 class AppRouter {
@@ -62,6 +63,13 @@ class AppRouter {
         builder: (context, state) => const Step4InterestedInPage(),
       ),
 
+      // Onboarding Step 5: Dating Purpose
+      GoRoute(
+        name: AppPage.onboardingStep5.toName,
+        path: AppPage.onboardingStep5.toPath(),
+        builder: (context, state) => const Step5DatingPurposePage(),
+      ),
+
       // Onboarding Pending Approval
       GoRoute(
         name: AppPage.onboardingPending.toName,
@@ -75,41 +83,6 @@ class AppRouter {
         path: AppPage.home.toPath(),
         builder: (context, state) => const HomePage(),
       ),
-
-      // Splash
-      // GoRoute(
-      //   name: AppPage.splash.toName,
-      //   path: AppPage.splash.toPath(),
-      //   builder: (context, state) => const SplashPage(),
-      // ),
     ],
-  
-    // // ✅ THÊM 2: Auth guard
-    // redirect: (context, state) {
-    //   // TODO: Get authentication from DI
-    //   // final tokenProvider = getIt<TokenProvider>();
-    //   // final isAuthenticated = await tokenProvider.hasAccessToken();
-      
-    //   final isAuthenticated = false; // Replace with actual check
-      
-    //   final isGoingToLogin = state.location == AppPage.login.toPath();
-    //   final isGoingToLoginOtp = state.location == AppPage.loginOtp.toPath();
-    //   final isGoingToSplash = state.location == AppPage.splash.toPath();
-      
-    //   // Not authenticated and not going to auth pages
-    //   if (!isAuthenticated && 
-    //       !isGoingToLogin && 
-    //       !isGoingToLoginOtp && 
-    //       !isGoingToSplash) {
-    //     return AppPage.login.toPath();
-    //   }
-      
-    //   // Authenticated and going to login page
-    //   if (isAuthenticated && isGoingToLogin) {
-    //     return AppPage.home.toPath();
-    //   }
-      
-    //   return null;
-    // },
   );
 }

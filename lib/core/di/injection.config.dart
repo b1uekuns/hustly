@@ -21,6 +21,13 @@ import '../../features/auth/data/repositories/login_repository_impl.dart'
 import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
 import '../../features/auth/domain/usecases/auth_usecases.dart' as _i46;
 import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
+import '../../features/home/data/data_sources/remote/discover_api.dart'
+    as _i971;
+import '../../features/home/data/repositories/discover_repository_impl.dart'
+    as _i90;
+import '../../features/home/domain/repositories/discover_repository.dart'
+    as _i952;
+import '../../features/home/presentation/bloc/discover_bloc.dart' as _i721;
 import '../../features/profile_setup/data/data_source/remote/user_api.dart'
     as _i920;
 import '../../features/profile_setup/data/repositories/profile_repository_impl.dart'
@@ -102,6 +109,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i920.UserApi>(
       () => networkModule.userApi(gh<_i361.Dio>(instanceName: 'mainDio')),
     );
+    gh.lazySingleton<_i971.DiscoverApi>(
+      () => networkModule.discoverApi(gh<_i361.Dio>(instanceName: 'mainDio')),
+    );
     gh.lazySingleton<_i226.ProfileRepository>(
       () => _i211.ProfileRepositoryImpl(
         gh<_i920.UserApi>(),
@@ -112,6 +122,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i327.AuthRepositoryImpl(
         gh<_i799.AuthApi>(),
         gh<_i149.TokenProvider>(),
+      ),
+    );
+    gh.lazySingleton<_i952.DiscoverRepository>(
+      () => _i90.DiscoverRepositoryImpl(
+        discoverApi: gh<_i971.DiscoverApi>(),
+        tokenProvider: gh<_i149.TokenProvider>(),
       ),
     );
     gh.factory<_i1006.GetInterestsUseCase>(
@@ -140,6 +156,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i46.LogoutUseCase>(
       () => _i46.LogoutUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i721.DiscoverBloc>(
+      () => _i721.DiscoverBloc(repository: gh<_i952.DiscoverRepository>()),
     );
     gh.factory<_i797.AuthBloc>(
       () => _i797.AuthBloc(

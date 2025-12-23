@@ -62,6 +62,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
         bio: profile.bio ?? '',  // Convert null to empty string
         interests: profile.interests,
         interestedIn: profile.interestedIn,
+        datingPurpose: profile.datingPurpose,
         studentId: profile.studentId ?? '',
         major: profile.major,
         classField: profile.className,

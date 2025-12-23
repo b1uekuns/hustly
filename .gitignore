@@ -68,3 +68,6 @@ Thumbs.db
 # Generated files (build_runner, freezed, json_serializable)
 *.g.dart
 *.freezed.dart
+
+# FVM Version Cache
+.fvm/

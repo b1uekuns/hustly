@@ -8,37 +8,48 @@ import '../bloc/profile_setup_bloc.dart';
 import '../bloc/profile_setup_event.dart';
 import '../bloc/profile_setup_state.dart';
 
-class Step4InterestedInPage extends StatefulWidget {
-  const Step4InterestedInPage({super.key});
+class Step5DatingPurposePage extends StatefulWidget {
+  const Step5DatingPurposePage({super.key});
 
   @override
-  State<Step4InterestedInPage> createState() => _Step4InterestedInPageState();
+  State<Step5DatingPurposePage> createState() => _Step5DatingPurposePageState();
 }
 
-class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
+class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
   String? _selectedOption;
 
-  static final List<Map<String, dynamic>> _options = [
+  static const List<Map<String, dynamic>> _options = [
     {
-      'value': 'women',
-      'icon': Icons.female,
+      'value': 'relationship',
+      'icon': Icons.favorite,
       'color': Colors.pink,
-      'title': 'Nữ',
-      'subtitle': 'Tìm kiếm bạn nữ',
+      'title': 'Tìm người yêu',
+      'subtitle': 'Mình đang tìm một mối quan hệ nghiêm túc',
+      'emoji': '💕',
     },
     {
-      'value': 'men',
-      'icon': Icons.male,
-      'color': Colors.blue,
-      'title': 'Nam',
-      'subtitle': 'Tìm kiếm bạn nam',
-    },
-    {
-      'value': 'everyone',
+      'value': 'friends',
       'icon': Icons.people,
+      'color': Colors.blue,
+      'title': 'Tìm bạn mới',
+      'subtitle': 'Muốn mở rộng mối quan hệ xã hội',
+      'emoji': '👋',
+    },
+    {
+      'value': 'casual',
+      'icon': Icons.local_fire_department,
+      'color': Colors.orange,
+      'title': 'Không ràng buộc',
+      'subtitle': 'Thoải mái, không áp lực',
+      'emoji': '🔥',
+    },
+    {
+      'value': 'unsure',
+      'icon': Icons.help_outline,
       'color': Colors.purple,
-      'title': 'Tất cả',
-      'subtitle': 'Tìm kiếm mọi người',
+      'title': 'Chưa rõ lắm',
+      'subtitle': 'Để xem duyên số thế nào đã',
+      'emoji': '🤔',
     },
   ];
 
@@ -46,12 +57,10 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
     if (_selectedOption == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Vui lòng chọn đối tượng quan tâm'),
+          content: const Text('Vui lòng chọn mục đích tìm kiếm'),
           backgroundColor: AppColor.redPrimary,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -59,11 +68,11 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
     }
 
     context.read<ProfileSetupBloc>().add(
-          ProfileSetupEvent.interestedInUpdated(_selectedOption!),
+          ProfileSetupEvent.datingPurposeUpdated(_selectedOption!),
         );
 
-    // Navigate to step 5
-    context.push(AppPage.onboardingStep5.toPath());
+    // Submit profile - final step
+    context.read<ProfileSetupBloc>().add(const ProfileSetupEvent.submitProfile());
   }
 
   @override
@@ -71,7 +80,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: AppBar(
-        title: const Text('Đối tượng quan tâm'),
+        title: const Text('Mục đích tìm kiếm'),
         centerTitle: true,
         backgroundColor: AppColor.white,
       ),
@@ -87,9 +96,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
                 content: Text(state.message),
                 backgroundColor: AppColor.redPrimary,
                 behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 margin: const EdgeInsets.all(16),
               ),
             );
@@ -104,8 +111,8 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
 
           // Pre-fill with existing data
           if (state is ProfileSetupInitial && _selectedOption == null) {
-            if (state.interestedIn.isNotEmpty) {
-              _selectedOption = state.interestedIn;
+            if (state.datingPurpose.isNotEmpty) {
+              _selectedOption = state.datingPurpose;
             }
           }
 
@@ -118,9 +125,9 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildHeader(),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 32),
                       _buildOptions(isLoading),
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 80),
                     ],
                   ),
                 ),
@@ -151,7 +158,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
             ],
           ),
           child: const Text(
-            'Bước 4/5',
+            'Bước 5/5',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -166,7 +173,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
             Rect.fromLTWH(0, 0, bounds.width, bounds.height),
           ),
           child: const Text(
-            'Cậu quan tâm đến ai? 💕',
+            'Bạn đang tìm gì? 🎯',
             style: TextStyle(
               fontSize: 27,
               fontWeight: FontWeight.bold,
@@ -178,7 +185,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
         ),
         const SizedBox(height: 10),
         Text(
-          'Chọn đối tượng bạn muốn kết nối',
+          'Điều này giúp mọi người hiểu mong muốn của bạn',
           style: TextStyle(
             fontSize: 14,
             color: AppColor.blackLight,
@@ -194,7 +201,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
       children: _options.map((option) {
         final isSelected = _selectedOption == option['value'];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.only(bottom: 14),
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: isLoading
@@ -202,15 +209,13 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
                 : () => setState(() => _selectedOption = option['value'] as String),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 gradient: isSelected ? AppTheme.primaryGradient : null,
                 color: isSelected ? null : Colors.grey.shade50,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected
-                      ? Colors.transparent
-                      : Colors.grey.shade200,
+                  color: isSelected ? Colors.transparent : Colors.grey.shade200,
                   width: 1.5,
                 ),
                 boxShadow: isSelected
@@ -226,32 +231,22 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
               child: Row(
                 children: [
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 56,
+                    height: 56,
                     decoration: BoxDecoration(
                       color: isSelected
                           ? Colors.white.withOpacity(0.2)
                           : (option['color'] as Color).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: !isSelected
-                          ? [
-                              BoxShadow(
-                                color: Colors.grey.shade200,
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : null,
                     ),
-                    child: Icon(
-                      option['icon'] as IconData,
-                      size: 32,
-                      color: isSelected
-                          ? Colors.white
-                          : option['color'] as Color,
+                    child: Center(
+                      child: Text(
+                        option['emoji'] as String,
+                        style: const TextStyle(fontSize: 28),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,7 +254,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
                         Text(
                           option['title'] as String,
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             color: isSelected ? Colors.white : AppColor.blackPrimary,
                           ),
@@ -279,20 +274,14 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
                   ),
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    width: 28,
-                    height: 28,
+                    width: 26,
+                    height: 26,
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.white
-                          : Colors.grey.shade200,
+                      color: isSelected ? Colors.white : Colors.grey.shade200,
                       shape: BoxShape.circle,
                     ),
                     child: isSelected
-                        ? const Icon(
-                            Icons.check,
-                            color: AppColor.redPrimary,
-                            size: 18,
-                          )
+                        ? const Icon(Icons.check, color: AppColor.redPrimary, size: 16)
                         : null,
                   ),
                 ],
@@ -334,9 +323,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
             disabledBackgroundColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           child: isLoading
               ? const SizedBox(
@@ -351,7 +338,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Tiếp tục',
+                      'Hoàn thành',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
@@ -361,11 +348,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
                     ),
                     if (isEnabled) ...[
                       const SizedBox(width: 8),
-                      const Icon(
-                        Icons.arrow_forward_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                      const Icon(Icons.check_circle_outline, color: Colors.white, size: 20),
                     ],
                   ],
                 ),

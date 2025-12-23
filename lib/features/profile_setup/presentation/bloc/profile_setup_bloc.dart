@@ -30,6 +30,7 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
     on<DeletePhotoRequested>(_onDeletePhotoRequested);
     on<InterestsUpdated>(_onInterestsUpdated);
     on<InterestedInUpdated>(_onInterestedInUpdated);
+    on<DatingPurposeUpdated>(_onDatingPurposeUpdated);
     on<SubmitProfile>(_onSubmitProfile);
   }
 
@@ -201,6 +202,16 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
     }
   }
 
+  void _onDatingPurposeUpdated(
+    DatingPurposeUpdated event,
+    Emitter<ProfileSetupState> emit,
+  ) {
+    final currentState = state;
+    if (currentState is ProfileSetupInitial) {
+      emit(currentState.copyWith(datingPurpose: event.datingPurpose));
+    }
+  }
+
   Future<void> _onSubmitProfile(
     SubmitProfile event,
     Emitter<ProfileSetupState> emit,
@@ -219,6 +230,7 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
       bio: currentState.bio.isEmpty ? null : currentState.bio,
       interests: currentState.interests,
       interestedIn: currentState.interestedIn,
+      datingPurpose: currentState.datingPurpose.isEmpty ? null : currentState.datingPurpose,
       studentId: currentState.studentId,
       major: currentState.major,
       className: currentState.className,

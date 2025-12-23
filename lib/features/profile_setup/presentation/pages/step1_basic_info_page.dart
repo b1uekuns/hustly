@@ -327,7 +327,7 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
             ],
           ),
           child: const Text(
-            'Bước 1/4',
+            'Bước 1/5',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
