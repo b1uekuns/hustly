@@ -1,9 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/resources/app_color.dart';
 import '../../../../core/resources/app_theme.dart';
 
 /// Widget hiển thị khi đang tải dữ liệu
 class LoadingState extends StatefulWidget {
+  // Animation constants
+  static const Duration _animationDuration = Duration(milliseconds: 1500);
+  static const double _pulseMin = 0.9;
+  static const double _pulseMax = 1.1;
+  static const double _fadeMin = 0.6;
+  static const double _fadeMax = 1.0;
+  static const double _containerPadding = 20.0;
+  static const double _iconSize = 28.0;
+  static const double _progressStrokeWidth = 3.0;
+  static const double _shadowBlur = 20.0;
+  static const double _shadowSpread = 5.0;
+  static const double _shadowOpacity = 0.3;
+  static const double _spacing = 20.0;
+  static const double _fontSize = 15.0;
+  static const String _loadingText = 'Đang tìm người phù hợp...';
+  static const String _semanticLabel = 'Đang tải danh sách người dùng';
+
   const LoadingState({super.key});
 
   @override
@@ -20,18 +38,18 @@ class _LoadingStateState extends State<LoadingState>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: LoadingState._animationDuration,
       vsync: this,
     )..repeat(reverse: true);
 
     _pulseAnimation = Tween<double>(
-      begin: 0.9,
-      end: 1.1,
+      begin: LoadingState._pulseMin,
+      end: LoadingState._pulseMax,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _fadeAnimation = Tween<double>(
-      begin: 0.6,
-      end: 1.0,
+      begin: LoadingState._fadeMin,
+      end: LoadingState._fadeMax,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
@@ -43,55 +61,61 @@ class _LoadingStateState extends State<LoadingState>
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _pulseAnimation.value,
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: AppTheme.primaryGradient,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColor.redPrimary.withOpacity(
-                          0.3 * _fadeAnimation.value,
+    return Semantics(
+      label: LoadingState._semanticLabel,
+      liveRegion: true,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _pulseAnimation.value,
+                  child: Container(
+                    padding: const EdgeInsets.all(
+                      LoadingState._containerPadding,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColor.redPrimary.withOpacity(
+                            LoadingState._shadowOpacity * _fadeAnimation.value,
+                          ),
+                          blurRadius: LoadingState._shadowBlur,
+                          spreadRadius: LoadingState._shadowSpread,
                         ),
-                        blurRadius: 20,
-                        spreadRadius: 5,
+                      ],
+                    ),
+                    child: const SizedBox(
+                      width: LoadingState._iconSize,
+                      height: LoadingState._iconSize,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: LoadingState._progressStrokeWidth,
                       ),
-                    ],
-                  ),
-                  child: const SizedBox(
-                    width: 28,
-                    height: 28,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 3,
                     ),
                   ),
+                );
+              },
+            ),
+            const SizedBox(height: LoadingState._spacing),
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: Text(
+                LoadingState._loadingText,
+                style: TextStyle(
+                  fontSize: LoadingState._fontSize,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
                 ),
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-          FadeTransition(
-            opacity: _fadeAnimation,
-            child: Text(
-              'Đang tìm người phù hợp...',
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -101,6 +125,26 @@ class _LoadingStateState extends State<LoadingState>
 class ErrorState extends StatefulWidget {
   final String message;
   final VoidCallback onRetry;
+
+  // Animation constants
+  static const Duration _animationDuration = Duration(milliseconds: 800);
+  static const double _scaleBegin = 0.5;
+  static const double _scaleEnd = 1.0;
+  static const double _fadeBegin = 0.0;
+  static const double _fadeEnd = 1.0;
+  static const double _iconSize = 56.0;
+  static const double _iconPadding = 16.0;
+  static const double _spacing = 24.0;
+  static const double _fontSize = 15.0;
+  static const double _buttonHorizontalPadding = 32.0;
+  static const double _buttonVerticalPadding = 14.0;
+  static const double _buttonBorderRadius = 12.0;
+  static const double _buttonElevation = 2.0;
+  static const double _contentPadding = 24.0;
+  static const String _retryButtonText = 'Thử lại';
+  static const String _semanticLabel = 'Đã xảy ra lỗi';
+  static const String _retryButtonSemanticLabel = 'Thử tải lại';
+  static const String _retryButtonTooltip = 'Nhấn để thử lại';
 
   const ErrorState({super.key, required this.message, required this.onRetry});
 
@@ -119,23 +163,31 @@ class _ErrorStateState extends State<ErrorState>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: ErrorState._animationDuration,
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
-      ),
-    );
+    _scaleAnimation =
+        Tween<double>(
+          begin: ErrorState._scaleBegin,
+          end: ErrorState._scaleEnd,
+        ).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
+          ),
+        );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
-      ),
-    );
+    _fadeAnimation =
+        Tween<double>(
+          begin: ErrorState._fadeBegin,
+          end: ErrorState._fadeEnd,
+        ).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+          ),
+        );
 
     _slideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
@@ -156,75 +208,88 @@ class _ErrorStateState extends State<ErrorState>
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ScaleTransition(
-                scale: _scaleAnimation,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.error_outline,
-                    size: 56,
-                    color: Colors.red.shade400,
+    return Semantics(
+      label: ErrorState._semanticLabel,
+      liveRegion: true,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(ErrorState._contentPadding),
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Container(
+                    padding: const EdgeInsets.all(ErrorState._iconPadding),
+                    decoration: BoxDecoration(
+                      color: AppColor.redLight.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.error_outline,
+                      size: ErrorState._iconSize,
+                      color: AppColor.redLight,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              SlideTransition(
-                position: _slideAnimation,
-                child: Column(
-                  children: [
-                    Text(
-                      'Oops!',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.message,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 15, color: Colors.grey[600]),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton.icon(
-                      onPressed: widget.onRetry,
-                      icon: const Icon(Icons.refresh, color: Colors.white),
-                      label: const Text(
-                        'Thử lại',
+                const SizedBox(height: ErrorState._spacing),
+                SlideTransition(
+                  position: _slideAnimation,
+                  child: Column(
+                    children: [
+                      Text(
+                        widget.message,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                          fontSize: ErrorState._fontSize,
+                          color: Colors.grey[600],
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor.redPrimary,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 14,
+                      const SizedBox(height: ErrorState._spacing),
+                      Tooltip(
+                        message: ErrorState._retryButtonTooltip,
+                        child: Semantics(
+                          label: ErrorState._retryButtonSemanticLabel,
+                          button: true,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              HapticFeedback.lightImpact();
+                              widget.onRetry();
+                            },
+                            icon: const Icon(
+                              Icons.refresh,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              ErrorState._retryButtonText,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColor.redPrimary,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: ErrorState._buttonHorizontalPadding,
+                                vertical: ErrorState._buttonVerticalPadding,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  ErrorState._buttonBorderRadius,
+                                ),
+                              ),
+                              elevation: ErrorState._buttonElevation,
+                            ),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 2,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -235,6 +300,40 @@ class _ErrorStateState extends State<ErrorState>
 /// Widget hiển thị khi hết người dùng
 class NoMoreUsersState extends StatefulWidget {
   final VoidCallback onRefresh;
+
+  // Animation constants
+  static const Duration _entranceDuration = Duration(milliseconds: 800);
+  static const Duration _bounceDuration = Duration(milliseconds: 2000);
+  static const double _scaleBegin = 0.5;
+  static const double _scaleEnd = 1.0;
+  static const double _fadeBegin = 0.0;
+  static const double _fadeEnd = 1.0;
+  static const double _bounceMin = 0.95;
+  static const double _bounceMax = 1.05;
+  static const double _iconSize = 64.0;
+  static const double _iconPadding = 20.0;
+  static const double _iconOpacity = 0.7;
+  static const double _containerOpacity = 0.1;
+  static const double _shadowOpacity = 0.3;
+  static const double _shadowBlur = 8.0;
+  static const double _spacing = 24.0;
+  static const double _spacingSmall = 8.0;
+  static const double _spacingLarge = 32.0;
+  static const double _titleFontSize = 24.0;
+  static const double _subtitleFontSize = 15.0;
+  static const double _buttonFontSize = 16.0;
+  static const double _textHeight = 1.5;
+  static const double _buttonHorizontalPadding = 32.0;
+  static const double _buttonVerticalPadding = 14.0;
+  static const double _buttonBorderRadius = 12.0;
+  static const double _contentPadding = 24.0;
+  static const String _title = 'Hết người rồi! 😅';
+  static const String _subtitle = 'Quay lại sau để khám phá thêm nhé!';
+  static const String _refreshButtonText = 'Tải lại';
+  static const String _semanticLabel = 'Đã hết người dùng để khám phá';
+  static const String _refreshButtonSemanticLabel =
+      'Tải lại danh sách người dùng';
+  static const String _refreshButtonTooltip = 'Nhấn để tải lại';
 
   const NoMoreUsersState({super.key, required this.onRefresh});
 
@@ -257,23 +356,31 @@ class _NoMoreUsersStateState extends State<NoMoreUsersState>
 
     // Main entrance animation
     _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: NoMoreUsersState._entranceDuration,
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _scaleController,
-        curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
-      ),
-    );
+    _scaleAnimation =
+        Tween<double>(
+          begin: NoMoreUsersState._scaleBegin,
+          end: NoMoreUsersState._scaleEnd,
+        ).animate(
+          CurvedAnimation(
+            parent: _scaleController,
+            curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
+          ),
+        );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _scaleController,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
-      ),
-    );
+    _fadeAnimation =
+        Tween<double>(
+          begin: NoMoreUsersState._fadeBegin,
+          end: NoMoreUsersState._fadeEnd,
+        ).animate(
+          CurvedAnimation(
+            parent: _scaleController,
+            curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+          ),
+        );
 
     _slideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
@@ -285,13 +392,17 @@ class _NoMoreUsersStateState extends State<NoMoreUsersState>
 
     // Continuous bounce animation for heart icon
     _bounceController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: NoMoreUsersState._bounceDuration,
       vsync: this,
     )..repeat(reverse: true);
 
-    _bounceAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
-      CurvedAnimation(parent: _bounceController, curve: Curves.easeInOut),
-    );
+    _bounceAnimation =
+        Tween<double>(
+          begin: NoMoreUsersState._bounceMin,
+          end: NoMoreUsersState._bounceMax,
+        ).animate(
+          CurvedAnimation(parent: _bounceController, curve: Curves.easeInOut),
+        );
 
     _scaleController.forward();
   }
@@ -305,105 +416,136 @@ class _NoMoreUsersStateState extends State<NoMoreUsersState>
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Animated heart icon
-              ScaleTransition(
-                scale: _scaleAnimation,
-                child: AnimatedBuilder(
-                  animation: _bounceAnimation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _bounceAnimation.value,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: AppColor.redPrimary.withOpacity(0.1),
-                          shape: BoxShape.circle,
+    return Semantics(
+      label: NoMoreUsersState._semanticLabel,
+      liveRegion: true,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(NoMoreUsersState._contentPadding),
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Animated heart icon
+                ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: AnimatedBuilder(
+                    animation: _bounceAnimation,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _bounceAnimation.value,
+                        child: Container(
+                          padding: const EdgeInsets.all(
+                            NoMoreUsersState._iconPadding,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColor.redPrimary.withOpacity(
+                              NoMoreUsersState._containerOpacity,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.favorite_border,
+                            size: NoMoreUsersState._iconSize,
+                            color: AppColor.redPrimary.withOpacity(
+                              NoMoreUsersState._iconOpacity,
+                            ),
+                          ),
                         ),
-                        child: Icon(
-                          Icons.favorite_border,
-                          size: 64,
-                          color: AppColor.redPrimary.withOpacity(0.7),
-                        ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: NoMoreUsersState._spacing),
 
-              // Text content with slide animation
-              SlideTransition(
-                position: _slideAnimation,
-                child: Column(
-                  children: [
-                    const Text(
-                      'Hết người rồi! 😅',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Bạn đã xem hết mọi người trong khu vực.\nQuay lại sau để khám phá thêm nhé!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.grey[600],
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Refresh button
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: AppTheme.primaryGradient,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColor.redPrimary.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton.icon(
-                        onPressed: widget.onRefresh,
-                        icon: const Icon(Icons.refresh, color: Colors.white),
-                        label: const Text(
-                          'Tải lại',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 14,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                // Text content with slide animation
+                SlideTransition(
+                  position: _slideAnimation,
+                  child: Column(
+                    children: [
+                      const Text(
+                        NoMoreUsersState._title,
+                        style: TextStyle(
+                          fontSize: NoMoreUsersState._titleFontSize,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: NoMoreUsersState._spacingSmall),
+                      Text(
+                        NoMoreUsersState._subtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: NoMoreUsersState._subtitleFontSize,
+                          color: Colors.grey[600],
+                          height: NoMoreUsersState._textHeight,
+                        ),
+                      ),
+                      const SizedBox(height: NoMoreUsersState._spacingLarge),
+
+                      // Refresh button
+                      Tooltip(
+                        message: NoMoreUsersState._refreshButtonTooltip,
+                        child: Semantics(
+                          label: NoMoreUsersState._refreshButtonSemanticLabel,
+                          button: true,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: AppTheme.primaryGradient,
+                              borderRadius: BorderRadius.circular(
+                                NoMoreUsersState._buttonBorderRadius,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColor.redPrimary.withOpacity(
+                                    NoMoreUsersState._shadowOpacity,
+                                  ),
+                                  blurRadius: NoMoreUsersState._shadowBlur,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                HapticFeedback.lightImpact();
+                                widget.onRefresh();
+                              },
+                              icon: const Icon(
+                                Icons.refresh,
+                                color: Colors.white,
+                              ),
+                              label: const Text(
+                                NoMoreUsersState._refreshButtonText,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: NoMoreUsersState._buttonFontSize,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal:
+                                      NoMoreUsersState._buttonHorizontalPadding,
+                                  vertical:
+                                      NoMoreUsersState._buttonVerticalPadding,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    NoMoreUsersState._buttonBorderRadius,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

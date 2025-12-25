@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../widgets/navBar/bottom_nav_bar.dart';
 import '../../data/models/discover_user_model.dart';
@@ -14,6 +14,9 @@ import '../widgets/profile_detail_sheet.dart';
 import '../widgets/swipe_action_buttons.dart';
 import '../widgets/swipe_indicator.dart';
 
+/// Home page - Main discovery/swipe screen
+/// Displays user profiles in a stack that can be swiped left (pass) or right (like)
+/// Integrates with SwipeController mixin for gesture handling
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 

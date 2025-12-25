@@ -8,6 +8,74 @@ import '../bloc/profile_setup_bloc.dart';
 import '../bloc/profile_setup_event.dart';
 import '../bloc/profile_setup_state.dart';
 
+/// Constants for Dating Purpose options
+class DatingPurposeConstants {
+  static const Map<String, Map<String, dynamic>> options = {
+    'relationship': {
+      'icon': Icons.favorite,
+      'color': Colors.pink,
+      'title': 'Tìm người yêu',
+      'subtitle': 'Mình đang tìm một mối quan hệ nghiêm túc',
+      'emoji': '💕',
+    },
+    'friends': {
+      'icon': Icons.people,
+      'color': Colors.blue,
+      'title': 'Tìm bạn mới',
+      'subtitle': 'Muốn mở rộng mối quan hệ xã hội',
+      'emoji': '👋',
+    },
+    'casual': {
+      'icon': Icons.local_fire_department,
+      'color': Colors.orange,
+      'title': 'Không ràng buộc',
+      'subtitle': 'Thoải mái, không áp lực',
+      'emoji': '🔥',
+    },
+    'unsure': {
+      'icon': Icons.help_outline,
+      'color': Colors.purple,
+      'title': 'Chưa rõ lắm',
+      'subtitle': 'Để xem duyên số thế nào đã',
+      'emoji': '🤔',
+    },
+  };
+
+  static String getEmoji(String? value) {
+    if (value == null || !options.containsKey(value)) return '🤔';
+    return options[value]!['emoji'] as String;
+  }
+
+  static String getTitle(String? value) {
+    if (value == null || !options.containsKey(value)) return 'Chưa rõ lắm';
+    return options[value]!['title'] as String;
+  }
+
+  static String getSubtitle(String? value) {
+    if (value == null || !options.containsKey(value)) return 'Để xem duyên số thế nào đã';
+    return options[value]!['subtitle'] as String;
+  }
+
+  static Color getColor(String? value) {
+    if (value == null || !options.containsKey(value)) return Colors.purple;
+    return options[value]!['color'] as Color;
+  }
+
+  static IconData getIcon(String? value) {
+    if (value == null || !options.containsKey(value)) return Icons.help_outline;
+    return options[value]!['icon'] as IconData;
+  }
+
+  static List<Map<String, dynamic>> get allOptions {
+    return options.entries.map((entry) {
+      return {
+        'value': entry.key,
+        ...entry.value,
+      };
+    }).toList();
+  }
+}
+
 class Step5DatingPurposePage extends StatefulWidget {
   const Step5DatingPurposePage({super.key});
 
@@ -18,41 +86,6 @@ class Step5DatingPurposePage extends StatefulWidget {
 class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
   String? _selectedOption;
 
-  static const List<Map<String, dynamic>> _options = [
-    {
-      'value': 'relationship',
-      'icon': Icons.favorite,
-      'color': Colors.pink,
-      'title': 'Tìm người yêu',
-      'subtitle': 'Mình đang tìm một mối quan hệ nghiêm túc',
-      'emoji': '💕',
-    },
-    {
-      'value': 'friends',
-      'icon': Icons.people,
-      'color': Colors.blue,
-      'title': 'Tìm bạn mới',
-      'subtitle': 'Muốn mở rộng mối quan hệ xã hội',
-      'emoji': '👋',
-    },
-    {
-      'value': 'casual',
-      'icon': Icons.local_fire_department,
-      'color': Colors.orange,
-      'title': 'Không ràng buộc',
-      'subtitle': 'Thoải mái, không áp lực',
-      'emoji': '🔥',
-    },
-    {
-      'value': 'unsure',
-      'icon': Icons.help_outline,
-      'color': Colors.purple,
-      'title': 'Chưa rõ lắm',
-      'subtitle': 'Để xem duyên số thế nào đã',
-      'emoji': '🤔',
-    },
-  ];
-
   void _onSubmit() {
     if (_selectedOption == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -60,7 +93,9 @@ class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
           content: const Text('Vui lòng chọn mục đích tìm kiếm'),
           backgroundColor: AppColor.redPrimary,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -68,11 +103,13 @@ class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
     }
 
     context.read<ProfileSetupBloc>().add(
-          ProfileSetupEvent.datingPurposeUpdated(_selectedOption!),
-        );
+      ProfileSetupEvent.datingPurposeUpdated(_selectedOption!),
+    );
 
     // Submit profile - final step
-    context.read<ProfileSetupBloc>().add(const ProfileSetupEvent.submitProfile());
+    context.read<ProfileSetupBloc>().add(
+      const ProfileSetupEvent.submitProfile(),
+    );
   }
 
   @override
@@ -96,7 +133,9 @@ class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
                 content: Text(state.message),
                 backgroundColor: AppColor.redPrimary,
                 behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 margin: const EdgeInsets.all(16),
               ),
             );
@@ -198,7 +237,7 @@ class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
 
   Widget _buildOptions(bool isLoading) {
     return Column(
-      children: _options.map((option) {
+      children: DatingPurposeConstants.allOptions.map((option) {
         final isSelected = _selectedOption == option['value'];
         return Padding(
           padding: const EdgeInsets.only(bottom: 14),
@@ -206,7 +245,9 @@ class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
             behavior: HitTestBehavior.opaque,
             onTap: isLoading
                 ? null
-                : () => setState(() => _selectedOption = option['value'] as String),
+                : () => setState(
+                    () => _selectedOption = option['value'] as String,
+                  ),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(18),
@@ -256,7 +297,9 @@ class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : AppColor.blackPrimary,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColor.blackPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -281,7 +324,11 @@ class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
                       shape: BoxShape.circle,
                     ),
                     child: isSelected
-                        ? const Icon(Icons.check, color: AppColor.redPrimary, size: 16)
+                        ? const Icon(
+                            Icons.check,
+                            color: AppColor.redPrimary,
+                            size: 16,
+                          )
                         : null,
                   ),
                 ],
@@ -323,7 +370,9 @@ class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
             disabledBackgroundColor: Colors.transparent,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
           child: isLoading
               ? const SizedBox(
@@ -348,7 +397,11 @@ class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
                     ),
                     if (isEnabled) ...[
                       const SizedBox(width: 8),
-                      const Icon(Icons.check_circle_outline, color: Colors.white, size: 20),
+                      const Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ],
                   ],
                 ),
@@ -357,4 +410,3 @@ class _Step5DatingPurposePageState extends State<Step5DatingPurposePage> {
     );
   }
 }
-
