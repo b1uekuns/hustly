@@ -6,28 +6,22 @@ import '../../../../core/resources/app_theme.dart';
 class HomeHeader extends StatelessWidget {
   final VoidCallback? onSettingsTap;
 
-  const HomeHeader({
-    super.key,
-    this.onSettingsTap,
-  });
+  const HomeHeader({super.key, this.onSettingsTap});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _buildLogo(),
-          _buildSettingsButton(),
-        ],
+        children: [_buildLogo(), _buildSettingsButton()],
       ),
     );
   }
 
   Widget _buildLogo() {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           padding: const EdgeInsets.all(8),
@@ -35,7 +29,7 @@ class HomeHeader extends StatelessWidget {
             gradient: AppTheme.primaryGradient,
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.favorite, color: Colors.white, size: 16),
+          child: const Icon(Icons.favorite, color: Colors.white, size: 14),
         ),
         const SizedBox(width: 8),
         ShaderMask(
@@ -45,9 +39,10 @@ class HomeHeader extends StatelessWidget {
           child: const Text(
             'Hustly',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: AppColor.white,
+              letterSpacing: 0.5,
             ),
           ),
         ),
@@ -56,17 +51,21 @@ class HomeHeader extends StatelessWidget {
   }
 
   Widget _buildSettingsButton() {
-    return GestureDetector(
-      onTap: onSettingsTap,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
-          shape: BoxShape.circle,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onSettingsTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: AppColor.redLight.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.tune, color: AppColor.redLight, size: 20),
         ),
-        child: Icon(Icons.tune, color: Colors.grey[700], size: 18),
       ),
     );
   }
 }
-

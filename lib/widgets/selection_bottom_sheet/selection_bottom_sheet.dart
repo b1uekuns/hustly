@@ -5,8 +5,8 @@ class SelectionBottomSheet<T> extends StatelessWidget {
   final String title;
   final List<T> options;
   final T? selectedItem;
-  final String Function(T) labelBuilder; // Hàm để lấy text hiển thị từ object T
-  final IconData Function(T)? iconBuilder; // Hàm để lấy icon (nếu có)
+  final String Function(T) labelBuilder;
+  final IconData Function(T)? iconBuilder;
 
   const SelectionBottomSheet({
     super.key,
@@ -19,7 +19,6 @@ class SelectionBottomSheet<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double heightFactor = options.length > 10 ? 0.6 : 0.0;
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.6,
@@ -95,7 +94,6 @@ class SelectionBottomSheet<T> extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Icon (nếu có iconBuilder)
             if (iconBuilder != null) ...[
               Container(
                 width: 40,
@@ -122,9 +120,7 @@ class SelectionBottomSheet<T> extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected
-                      ? AppColor.redPrimary
-                      : Colors.black, // Hoặc AppColor.blackPrimary
+                  color: isSelected ? AppColor.redPrimary : Colors.black,
                 ),
               ),
             ),

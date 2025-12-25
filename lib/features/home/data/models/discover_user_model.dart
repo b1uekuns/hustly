@@ -43,12 +43,21 @@ class DiscoverUserModel with _$DiscoverUserModel {
     int? age,
     String? mainPhoto,
     String? datingPurpose, // 'relationship', 'friends', 'casual', 'unsure'
+    int? distance, // Distance in km
+    String? education,
+    String? zodiac,
+    String? communicationStyle,
+    String? pets,
+    String? workout,
+    String? smoking,
+    String? drinking,
   }) = _DiscoverUserModel;
 
   factory DiscoverUserModel.fromJson(Map<String, dynamic> json) =>
       _$DiscoverUserModelFromJson(json);
 
-  String get displayPhoto => mainPhoto ?? (photos.isNotEmpty ? photos.first.url : '');
+  String get displayPhoto =>
+      mainPhoto ?? (photos.isNotEmpty ? photos.first.url : '');
 }
 
 @freezed
@@ -112,4 +121,3 @@ class MatchedUserData with _$MatchedUserData {
   factory MatchedUserData.fromJson(Map<String, dynamic> json) =>
       _$MatchedUserDataFromJson(json);
 }
-

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../widgets/navBar/bottom_nav_bar.dart';
 import '../../data/models/discover_user_model.dart';
@@ -9,6 +10,7 @@ import '../widgets/empty_states.dart';
 import '../widgets/home_header.dart';
 import '../widgets/match_dialog.dart';
 import '../widgets/profile_card_content.dart';
+import '../widgets/profile_detail_sheet.dart';
 import '../widgets/swipe_action_buttons.dart';
 import '../widgets/swipe_indicator.dart';
 
@@ -31,6 +33,7 @@ class HomePageState extends State<HomePage>
 
   @override
   void dispose() {
+    scrollController.dispose();
     disposeSwipeController();
     super.dispose();
   }
@@ -202,20 +205,16 @@ class HomePageState extends State<HomePage>
           offset: isDragging ? cardOffset : Offset.zero,
           child: Transform.rotate(
             angle: isDragging ? cardAngle : 0,
-            child: Stack(
-              children: [
-                _ProfileCard(user: user, scrollController: scrollController),
-                if (cardOffset.dx > 0)
-                  SwipeIndicator(
-                    type: SwipeType.like,
-                    opacity: indicatorOpacity,
-                  ),
-                if (cardOffset.dx < 0)
-                  SwipeIndicator(
-                    type: SwipeType.nope,
-                    opacity: indicatorOpacity,
-                  ),
-              ],
+            child: _ProfileCard(
+              user: user,
+              scrollController: scrollController,
+              swipeOpacity: isDragging ? indicatorOpacity : 0.0,
+              swipeType: isDragging && cardOffset.dx != 0
+                  ? (cardOffset.dx > 0 ? SwipeType.like : SwipeType.nope)
+                  : null,
+              onViewMore: () {
+                ProfileDetailSheet.show(context, user);
+              },
             ),
           ),
         ),
@@ -279,6 +278,7 @@ class _BackgroundCard extends StatelessWidget {
                 ? DecorationImage(
                     image: NetworkImage(user.photos.first.url),
                     fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
                   )
                 : null,
             boxShadow: [
@@ -299,8 +299,17 @@ class _BackgroundCard extends StatelessWidget {
 class _ProfileCard extends StatelessWidget {
   final DiscoverUserModel user;
   final ScrollController scrollController;
+  final VoidCallback? onViewMore;
+  final double swipeOpacity;
+  final SwipeType? swipeType;
 
-  const _ProfileCard({required this.user, required this.scrollController});
+  const _ProfileCard({
+    required this.user,
+    required this.scrollController,
+    this.onViewMore,
+    this.swipeOpacity = 0.0,
+    this.swipeType,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -320,7 +329,9 @@ class _ProfileCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: ProfileCardContent(
           user: user,
-          scrollController: scrollController,
+          onViewMore: onViewMore,
+          swipeOpacity: swipeOpacity,
+          swipeType: swipeType,
         ),
       ),
     );

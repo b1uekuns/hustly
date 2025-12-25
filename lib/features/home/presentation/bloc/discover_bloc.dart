@@ -12,7 +12,8 @@ part 'discover_bloc.freezed.dart';
 class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
   final DiscoverRepository repository;
 
-  DiscoverBloc({required this.repository}) : super(const DiscoverState.initial()) {
+  DiscoverBloc({required this.repository})
+    : super(const DiscoverState.initial()) {
     on<LoadDiscover>(_onLoadDiscover);
     on<LikeUser>(_onLikeUser);
     on<PassUser>(_onPassUser);
@@ -31,46 +32,51 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
 
     result.fold(
       (failure) => emit(DiscoverState.error(failure.message)),
-      (data) => emit(DiscoverState.loaded(
-        users: data.users,
-        currentIndex: 0,
-        pagination: data.pagination,
-      )),
+      (data) => emit(
+        DiscoverState.loaded(
+          users: data.users,
+          currentIndex: 0,
+          pagination: data.pagination,
+        ),
+      ),
     );
   }
 
-  Future<void> _onLikeUser(
-    LikeUser event,
-    Emitter<DiscoverState> emit,
-  ) async {
+  Future<void> _onLikeUser(LikeUser event, Emitter<DiscoverState> emit) async {
     final currentState = state;
     if (currentState is! Loaded) return;
 
     // Show liking state
-    emit(DiscoverState.interacting(
-      users: currentState.users,
-      currentIndex: currentState.currentIndex,
-      pagination: currentState.pagination,
-      action: 'like',
-    ));
+    emit(
+      DiscoverState.interacting(
+        users: currentState.users,
+        currentIndex: currentState.currentIndex,
+        pagination: currentState.pagination,
+        action: 'like',
+      ),
+    );
 
     final result = await repository.likeUser(event.userId);
 
     result.fold(
-      (failure) => emit(DiscoverState.loaded(
-        users: currentState.users,
-        currentIndex: currentState.currentIndex,
-        pagination: currentState.pagination,
-        error: failure.message,
-      )),
+      (failure) => emit(
+        DiscoverState.loaded(
+          users: currentState.users,
+          currentIndex: currentState.currentIndex,
+          pagination: currentState.pagination,
+          error: failure.message,
+        ),
+      ),
       (likeData) {
         if (likeData.isMatch) {
-          emit(DiscoverState.matched(
-            users: currentState.users,
-            currentIndex: currentState.currentIndex,
-            pagination: currentState.pagination,
-            matchedUser: likeData.matchedUser!,
-          ));
+          emit(
+            DiscoverState.matched(
+              users: currentState.users,
+              currentIndex: currentState.currentIndex,
+              pagination: currentState.pagination,
+              matchedUser: likeData.matchedUser!,
+            ),
+          );
         } else {
           // Move to next card
           _moveToNextCard(emit, currentState);
@@ -79,30 +85,31 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
     );
   }
 
-  Future<void> _onPassUser(
-    PassUser event,
-    Emitter<DiscoverState> emit,
-  ) async {
+  Future<void> _onPassUser(PassUser event, Emitter<DiscoverState> emit) async {
     final currentState = state;
     if (currentState is! Loaded) return;
 
     // Show passing state
-    emit(DiscoverState.interacting(
-      users: currentState.users,
-      currentIndex: currentState.currentIndex,
-      pagination: currentState.pagination,
-      action: 'pass',
-    ));
+    emit(
+      DiscoverState.interacting(
+        users: currentState.users,
+        currentIndex: currentState.currentIndex,
+        pagination: currentState.pagination,
+        action: 'pass',
+      ),
+    );
 
     final result = await repository.passUser(event.userId);
 
     result.fold(
-      (failure) => emit(DiscoverState.loaded(
-        users: currentState.users,
-        currentIndex: currentState.currentIndex,
-        pagination: currentState.pagination,
-        error: failure.message,
-      )),
+      (failure) => emit(
+        DiscoverState.loaded(
+          users: currentState.users,
+          currentIndex: currentState.currentIndex,
+          pagination: currentState.pagination,
+          error: failure.message,
+        ),
+      ),
       (_) => _moveToNextCard(emit, currentState),
     );
   }
@@ -115,30 +122,36 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
     if (currentState is! Loaded) return;
 
     // Show superlike state
-    emit(DiscoverState.interacting(
-      users: currentState.users,
-      currentIndex: currentState.currentIndex,
-      pagination: currentState.pagination,
-      action: 'superlike',
-    ));
+    emit(
+      DiscoverState.interacting(
+        users: currentState.users,
+        currentIndex: currentState.currentIndex,
+        pagination: currentState.pagination,
+        action: 'superlike',
+      ),
+    );
 
     final result = await repository.superlikeUser(event.userId);
 
     result.fold(
-      (failure) => emit(DiscoverState.loaded(
-        users: currentState.users,
-        currentIndex: currentState.currentIndex,
-        pagination: currentState.pagination,
-        error: failure.message,
-      )),
+      (failure) => emit(
+        DiscoverState.loaded(
+          users: currentState.users,
+          currentIndex: currentState.currentIndex,
+          pagination: currentState.pagination,
+          error: failure.message,
+        ),
+      ),
       (likeData) {
         if (likeData.isMatch) {
-          emit(DiscoverState.matched(
-            users: currentState.users,
-            currentIndex: currentState.currentIndex,
-            pagination: currentState.pagination,
-            matchedUser: likeData.matchedUser!,
-          ));
+          emit(
+            DiscoverState.matched(
+              users: currentState.users,
+              currentIndex: currentState.currentIndex,
+              pagination: currentState.pagination,
+              matchedUser: likeData.matchedUser!,
+            ),
+          );
         } else {
           _moveToNextCard(emit, currentState);
         }
@@ -151,17 +164,20 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
     if (currentState is Loaded) {
       _moveToNextCard(emit, currentState);
     } else if (currentState is Matched) {
-      _moveToNextCard(emit, Loaded(
-        users: currentState.users,
-        currentIndex: currentState.currentIndex,
-        pagination: currentState.pagination,
-      ));
+      _moveToNextCard(
+        emit,
+        Loaded(
+          users: currentState.users,
+          currentIndex: currentState.currentIndex,
+          pagination: currentState.pagination,
+        ),
+      );
     }
   }
 
   void _moveToNextCard(Emitter<DiscoverState> emit, Loaded currentState) {
     final nextIndex = currentState.currentIndex + 1;
-    
+
     if (nextIndex >= currentState.users.length) {
       // Check if there are more pages
       if (currentState.pagination?.hasNext ?? false) {
@@ -171,11 +187,13 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
         emit(const DiscoverState.noMoreUsers());
       }
     } else {
-      emit(DiscoverState.loaded(
-        users: currentState.users,
-        currentIndex: nextIndex,
-        pagination: currentState.pagination,
-      ));
+      emit(
+        DiscoverState.loaded(
+          users: currentState.users,
+          currentIndex: nextIndex,
+          pagination: currentState.pagination,
+        ),
+      );
     }
   }
 
@@ -183,4 +201,3 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
     add(const LoadDiscover(page: 1));
   }
 }
-

@@ -6,11 +6,7 @@ class SwipeIndicator extends StatelessWidget {
   final SwipeType type;
   final double opacity;
 
-  const SwipeIndicator({
-    super.key,
-    required this.type,
-    required this.opacity,
-  });
+  const SwipeIndicator({super.key, required this.type, required this.opacity});
 
   @override
   Widget build(BuildContext context) {
@@ -21,27 +17,39 @@ class SwipeIndicator extends StatelessWidget {
     final text = isLike ? 'LIKE' : 'NOPE';
     final angle = isLike ? -0.35 : 0.35;
 
+    final scale = 0.8 + (opacity * 0.2);
+
     return Positioned(
       top: 80,
       left: isLike ? 30 : null,
       right: isLike ? null : 30,
       child: Transform.rotate(
         angle: angle,
-        child: Opacity(
-          opacity: opacity,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              border: Border.all(color: color, width: 4),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              text,
-              style: TextStyle(
-                color: color,
-                fontSize: 42,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 2,
+        child: Transform.scale(
+          scale: scale,
+          child: Opacity(
+            opacity: opacity,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                border: Border.all(color: color, width: 4),
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.5 * opacity),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 42,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                ),
               ),
             ),
           ),
@@ -50,4 +58,3 @@ class SwipeIndicator extends StatelessWidget {
     );
   }
 }
-

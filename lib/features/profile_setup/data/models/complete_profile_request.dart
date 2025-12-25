@@ -13,7 +13,7 @@ class CompleteProfileRequest with _$CompleteProfileRequest {
     String? bio,
     required List<String> interests,
     required String interestedIn,
-    String? datingPurpose, // 'relationship', 'friends', 'casual', 'unsure'
+    String? datingPurpose,
     String? studentId,
     required String major,
     @JsonKey(name: 'class') required String classField,
@@ -35,4 +35,3 @@ class PhotoRequest with _$PhotoRequest {
   factory PhotoRequest.fromJson(Map<String, dynamic> json) =>
       _$PhotoRequestFromJson(json);
 }
-

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/resources/app_color.dart';
-import '../../../../core/resources/app_theme.dart';
 
 class SwipeActionButtons extends StatelessWidget {
   final VoidCallback? onPass;
@@ -17,24 +15,23 @@ class SwipeActionButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        // Pass button
+        // Pass button (X)
         _ActionButton(
           icon: Icons.close,
-          color: Colors.white,
-          iconColor: Colors.grey.shade600,
-          size: 60,
+          color: Colors.pink.shade300,
+          iconColor: Colors.white,
+          size: 56,
           onTap: isDisabled ? null : onPass,
         ),
-        const SizedBox(width: 24),
-        // Like button
+
+        // Like button (green heart)
         _ActionButton(
           icon: Icons.favorite,
-          gradient: AppTheme.primaryGradient,
+          color: Colors.green.shade400,
           iconColor: Colors.white,
-          size: 68,
-          shadowColor: AppColor.redPrimary,
+          size: 56,
           onTap: isDisabled ? null : onLike,
         ),
       ],
@@ -89,4 +86,3 @@ class _ActionButton extends StatelessWidget {
     );
   }
 }
-

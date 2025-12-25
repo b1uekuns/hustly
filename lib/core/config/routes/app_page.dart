@@ -8,7 +8,8 @@ enum AppPage {
   onboardingInterestedIn,
   onboardingStep5, // Dating Purpose
   onboardingPending,
-  home 
+  home,
+  profileDetail
 }
 
 extension AppPageExtension on AppPage {
@@ -34,6 +35,8 @@ extension AppPageExtension on AppPage {
         return '/onboarding/pending';
       case AppPage.home:
         return '/home';
+      case AppPage.profileDetail:
+        return '/profile/:userId';
     }
   }
 
@@ -59,6 +62,8 @@ extension AppPageExtension on AppPage {
         return 'onboarding-pending';
       case AppPage.home:
         return 'home';
+      case AppPage.profileDetail:
+        return 'profile-detail';
     }
   }
 }
