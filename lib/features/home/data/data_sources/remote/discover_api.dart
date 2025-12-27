@@ -30,13 +30,6 @@ abstract class DiscoverApi {
     @Header('Authorization') String authorization,
   );
 
-  /// Super like a user
-  @POST('api/v1/discover/{id}/superlike')
-  Future<LikeResponse> superlikeUser(
-    @Path('id') String userId,
-    @Header('Authorization') String authorization,
-  );
-
   /// Get matches
   @GET('api/v1/discover/matches')
   Future<DiscoverResponse> getMatches(

@@ -24,13 +24,17 @@ class DiscoverRepositoryImpl implements DiscoverRepository {
   }
 
   @override
-  Future<Either<Failure, DiscoverData>> getDiscover({int page = 1, int limit = 10}) async {
+  Future<Either<Failure, DiscoverData>> getDiscover({
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
       final auth = await _getAuthHeader();
       final response = await discoverApi.getDiscover(auth, page, limit);
       return Right(response.data);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? 'Lỗi khi lấy danh sách gợi ý';
+      final message =
+          e.response?.data?['message'] ?? 'Lỗi khi lấy danh sách gợi ý';
       return Left(ServerFailure(message));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -44,7 +48,8 @@ class DiscoverRepositoryImpl implements DiscoverRepository {
       final response = await discoverApi.likeUser(userId, auth);
       return Right(response.data);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? 'Lỗi khi thích người dùng';
+      final message =
+          e.response?.data?['message'] ?? 'Lỗi khi thích người dùng';
       return Left(ServerFailure(message));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -58,7 +63,8 @@ class DiscoverRepositoryImpl implements DiscoverRepository {
       await discoverApi.passUser(userId, auth);
       return const Right(null);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? 'Lỗi khi bỏ qua người dùng';
+      final message =
+          e.response?.data?['message'] ?? 'Lỗi khi bỏ qua người dùng';
       return Left(ServerFailure(message));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -66,31 +72,20 @@ class DiscoverRepositoryImpl implements DiscoverRepository {
   }
 
   @override
-  Future<Either<Failure, LikeData>> superlikeUser(String userId) async {
-    try {
-      final auth = await _getAuthHeader();
-      final response = await discoverApi.superlikeUser(userId, auth);
-      return Right(response.data);
-    } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? 'Lỗi khi super like';
-      return Left(ServerFailure(message));
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, DiscoverData>> getMatches({int page = 1, int limit = 20}) async {
+  Future<Either<Failure, DiscoverData>> getMatches({
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
       final auth = await _getAuthHeader();
       final response = await discoverApi.getMatches(auth, page, limit);
       return Right(response.data);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? 'Lỗi khi lấy danh sách match';
+      final message =
+          e.response?.data?['message'] ?? 'Lỗi khi lấy danh sách match';
       return Left(ServerFailure(message));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
   }
 }
-

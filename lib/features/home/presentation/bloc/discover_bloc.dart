@@ -17,7 +17,6 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
     on<LoadDiscover>(_onLoadDiscover);
     on<LikeUser>(_onLikeUser);
     on<PassUser>(_onPassUser);
-    on<SuperlikeUser>(_onSuperlikeUser);
     on<NextCard>(_onNextCard);
     on<ResetCards>(_onResetCards);
   }
@@ -46,40 +45,26 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
     final currentState = state;
     if (currentState is! Loaded) return;
 
-    // Show liking state
-    emit(
-      DiscoverState.interacting(
-        users: currentState.users,
-        currentIndex: currentState.currentIndex,
-        pagination: currentState.pagination,
-        action: 'like',
-      ),
-    );
+    // Optimistic next card
+    _moveToNextCard(emit, currentState);
 
     final result = await repository.likeUser(event.userId);
 
     result.fold(
-      (failure) => emit(
-        DiscoverState.loaded(
-          users: currentState.users,
-          currentIndex: currentState.currentIndex,
-          pagination: currentState.pagination,
-          error: failure.message,
-        ),
-      ),
+      (failure) {
+        // Optional: show toast/snackbar
+        emit(DiscoverState.error(failure.message));
+      },
       (likeData) {
         if (likeData.isMatch) {
           emit(
             DiscoverState.matched(
               users: currentState.users,
-              currentIndex: currentState.currentIndex,
+              currentIndex: currentState.currentIndex + 1,
               pagination: currentState.pagination,
               matchedUser: likeData.matchedUser!,
             ),
           );
-        } else {
-          // Move to next card
-          _moveToNextCard(emit, currentState);
         }
       },
     );
@@ -95,7 +80,7 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
         users: currentState.users,
         currentIndex: currentState.currentIndex,
         pagination: currentState.pagination,
-        action: 'pass',
+        action: SwipeAction.pass,
       ),
     );
 
@@ -111,51 +96,6 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
         ),
       ),
       (_) => _moveToNextCard(emit, currentState),
-    );
-  }
-
-  Future<void> _onSuperlikeUser(
-    SuperlikeUser event,
-    Emitter<DiscoverState> emit,
-  ) async {
-    final currentState = state;
-    if (currentState is! Loaded) return;
-
-    // Show superlike state
-    emit(
-      DiscoverState.interacting(
-        users: currentState.users,
-        currentIndex: currentState.currentIndex,
-        pagination: currentState.pagination,
-        action: 'superlike',
-      ),
-    );
-
-    final result = await repository.superlikeUser(event.userId);
-
-    result.fold(
-      (failure) => emit(
-        DiscoverState.loaded(
-          users: currentState.users,
-          currentIndex: currentState.currentIndex,
-          pagination: currentState.pagination,
-          error: failure.message,
-        ),
-      ),
-      (likeData) {
-        if (likeData.isMatch) {
-          emit(
-            DiscoverState.matched(
-              users: currentState.users,
-              currentIndex: currentState.currentIndex,
-              pagination: currentState.pagination,
-              matchedUser: likeData.matchedUser!,
-            ),
-          );
-        } else {
-          _moveToNextCard(emit, currentState);
-        }
-      },
     );
   }
 
