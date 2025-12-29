@@ -193,14 +193,11 @@ class ProfileDetailSheet extends StatelessWidget {
                         // Action buttons
                         _buildActionButtons(context),
 
-                        const SizedBox(height: _bottomSpacing),
+                        const SizedBox(height: _profileHeaderSpacing),
                       ],
                     ),
                   ),
                 ),
-
-                // Bottom action buttons
-                _buildBottomActions(context),
               ],
             ),
           ),

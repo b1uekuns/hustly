@@ -1,11 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../widgets/navBar/bottom_nav_bar.dart';
 import '../../data/models/discover_user_model.dart';
 import '../bloc/discover_bloc.dart';
 import '../controllers/swipe_controller.dart';
 import '../widgets/empty_states.dart';
+import '../widgets/filter_sheet.dart';
 import '../widgets/home_header.dart';
 import '../widgets/match_dialog.dart';
 import '../widgets/profile_card_content.dart';
@@ -47,7 +50,7 @@ class HomePageState extends State<HomePage>
         body: SafeArea(
           child: Column(
             children: [
-              const HomeHeader(),
+              HomeHeader(onSettingsTap: () => FilterBottomSheet.show(context)),
               Expanded(child: _buildBody()),
             ],
           ),
@@ -99,6 +102,12 @@ class HomePageState extends State<HomePage>
           );
         }
 
+        if (users.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _precacheNextImages(context, users, index);
+          });
+        }
+
         return _buildCardStack(users, index, context);
       },
     );
@@ -107,6 +116,20 @@ class HomePageState extends State<HomePage>
   void _handleStateChange(BuildContext context, DiscoverState state) {
     if (state is Matched) {
       _showMatchDialog(context, state.matchedUser);
+    }
+  }
+
+  void _precacheNextImages(
+    BuildContext context,
+    List<DiscoverUserModel> users,
+    int currentIndex,
+  ) {
+    final nextIndex = currentIndex + 1;
+    if (nextIndex < users.length) {
+      precacheImage(
+        CachedNetworkImageProvider(users[nextIndex].photos.first.url),
+        context,
+      );
     }
   }
 
@@ -273,14 +296,7 @@ class _BackgroundCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: Colors.grey[300],
-            image: user.photos.isNotEmpty
-                ? DecorationImage(
-                    image: NetworkImage(user.photos.first.url),
-                    fit: BoxFit.cover,
-                    alignment: Alignment.topCenter,
-                  )
-                : null,
+            color: Colors.grey[300], // Màu nền khi chưa có ảnh
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -288,6 +304,26 @@ class _BackgroundCard extends StatelessWidget {
                 offset: const Offset(0, 4),
               ),
             ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: user.photos.isNotEmpty
+                ? CachedNetworkImage(
+                    imageUrl: user.photos.first.url,
+                    fit: BoxFit.cover,
+
+                    //Hiển thị khi đang tải ảnh
+                    placeholder: (context, url) => Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(color: Colors.white),
+                    ),
+                    //Hiển thị khi tải ảnh lỗi
+                    errorWidget: (context, url, error) => const Center(
+                      child: Icon(Icons.broken_image, color: Colors.grey),
+                    ),
+                  )
+                : const Center(child: Icon(Icons.person, color: Colors.grey)),
           ),
         ),
       ),
