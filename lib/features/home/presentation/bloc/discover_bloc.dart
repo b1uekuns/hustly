@@ -74,29 +74,14 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
     final currentState = state;
     if (currentState is! Loaded) return;
 
-    // Show passing state
-    emit(
-      DiscoverState.interacting(
-        users: currentState.users,
-        currentIndex: currentState.currentIndex,
-        pagination: currentState.pagination,
-        action: SwipeAction.pass,
-      ),
-    );
+    _moveToNextCard(emit, currentState);
 
     final result = await repository.passUser(event.userId);
 
-    result.fold(
-      (failure) => emit(
-        DiscoverState.loaded(
-          users: currentState.users,
-          currentIndex: currentState.currentIndex,
-          pagination: currentState.pagination,
-          error: failure.message,
-        ),
-      ),
-      (_) => _moveToNextCard(emit, currentState),
-    );
+    result.fold((failure) {
+      // Show toast/snackbar cho error
+      emit(DiscoverState.error(failure.message));
+    }, (_) {});
   }
 
   void _onNextCard(NextCard event, Emitter<DiscoverState> emit) {
