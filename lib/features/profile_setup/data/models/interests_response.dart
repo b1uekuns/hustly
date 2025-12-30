@@ -49,4 +49,3 @@ class InterestItem with _$InterestItem {
   factory InterestItem.fromJson(Map<String, dynamic> json) =>
       _$InterestItemFromJson(json);
 }
-

@@ -16,4 +16,3 @@ class LoginResponseEntity with _$LoginResponseEntity {
     String? rejectionReason,
   }) = _LoginResponseEntity;
 }
-

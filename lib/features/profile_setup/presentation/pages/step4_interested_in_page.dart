@@ -59,8 +59,8 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
     }
 
     context.read<ProfileSetupBloc>().add(
-          ProfileSetupEvent.interestedInUpdated(_selectedOption!),
-        );
+      ProfileSetupEvent.interestedInUpdated(_selectedOption!),
+    );
 
     // Navigate to step 5
     context.push(AppPage.onboardingStep5.toPath());
@@ -199,7 +199,9 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
             behavior: HitTestBehavior.opaque,
             onTap: isLoading
                 ? null
-                : () => setState(() => _selectedOption = option['value'] as String),
+                : () => setState(
+                    () => _selectedOption = option['value'] as String,
+                  ),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(20),
@@ -208,9 +210,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
                 color: isSelected ? null : Colors.grey.shade50,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected
-                      ? Colors.transparent
-                      : Colors.grey.shade200,
+                  color: isSelected ? Colors.transparent : Colors.grey.shade200,
                   width: 1.5,
                 ),
                 boxShadow: isSelected
@@ -261,7 +261,9 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : AppColor.blackPrimary,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColor.blackPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -282,9 +284,7 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
                     width: 28,
                     height: 28,
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.white
-                          : Colors.grey.shade200,
+                      color: isSelected ? Colors.white : Colors.grey.shade200,
                       shape: BoxShape.circle,
                     ),
                     child: isSelected
@@ -374,4 +374,3 @@ class _Step4InterestedInPageState extends State<Step4InterestedInPage> {
     );
   }
 }
-

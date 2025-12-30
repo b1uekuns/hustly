@@ -75,10 +75,12 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
       },
       (majors) {
         print('[ProfileSetupBloc] Loaded ${majors.length} majors');
-        emit(currentState.copyWith(
-          availableMajors: majors,
-          isMajorsLoading: false,
-        ));
+        emit(
+          currentState.copyWith(
+            availableMajors: majors,
+            isMajorsLoading: false,
+          ),
+        );
       },
     );
   }
@@ -96,15 +98,21 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
 
     result.fold(
       (failure) {
-        print('[ProfileSetupBloc] Error fetching interests: ${failure.message}');
+        print(
+          '[ProfileSetupBloc] Error fetching interests: ${failure.message}',
+        );
         emit(currentState.copyWith(isInterestsLoading: false));
       },
       (interests) {
-        print('[ProfileSetupBloc] Loaded ${interests.length} interest categories');
-        emit(currentState.copyWith(
-          availableInterests: interests,
-          isInterestsLoading: false,
-        ));
+        print(
+          '[ProfileSetupBloc] Loaded ${interests.length} interest categories',
+        );
+        emit(
+          currentState.copyWith(
+            availableInterests: interests,
+            isInterestsLoading: false,
+          ),
+        );
       },
     );
   }
@@ -230,7 +238,9 @@ class ProfileSetupBloc extends Bloc<ProfileSetupEvent, ProfileSetupState> {
       bio: currentState.bio.isEmpty ? null : currentState.bio,
       interests: currentState.interests,
       interestedIn: currentState.interestedIn,
-      datingPurpose: currentState.datingPurpose.isEmpty ? null : currentState.datingPurpose,
+      datingPurpose: currentState.datingPurpose.isEmpty
+          ? null
+          : currentState.datingPurpose,
       studentId: currentState.studentId,
       major: currentState.major,
       className: currentState.className,

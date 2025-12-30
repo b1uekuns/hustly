@@ -135,7 +135,7 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
 
   Future<void> _showGenderPicker() async {
     _unfocusAll(); // Unfocus TRƯỚC khi mở picker
-    
+
     final genders = [
       {'value': 'male', 'label': 'Nam', 'icon': Icons.male},
       {'value': 'female', 'label': 'Nữ', 'icon': Icons.female},
@@ -169,7 +169,7 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
 
   Future<void> _showMajorPicker() async {
     _unfocusAll(); // Unfocus TRƯỚC khi mở picker
-    
+
     // Get majors from state, fallback to hardcoded list if empty
     final state = context.read<ProfileSetupBloc>().state;
     List<String> majors = _fallbackMajors;
@@ -210,7 +210,8 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
     }
 
     final isFormValid = _formKey.currentState!.validate();
-    final isAllFieldsFilled = _selectedDate != null &&
+    final isAllFieldsFilled =
+        _selectedDate != null &&
         _selectedGender != null &&
         _selectedMajor != null;
 
@@ -253,7 +254,8 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
       body: BlocConsumer<ProfileSetupBloc, ProfileSetupState>(
         listenWhen: (previous, current) {
           // Chỉ listen khi studentId thay đổi
-          if (previous is ProfileSetupInitial && current is ProfileSetupInitial) {
+          if (previous is ProfileSetupInitial &&
+              current is ProfileSetupInitial) {
             return previous.studentId != current.studentId;
           }
           return false;
@@ -261,7 +263,8 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
         listener: (context, state) {
           // Update controller trong listener (không phải builder) để tránh rebuild
           if (state is ProfileSetupInitial && !_isInitialized) {
-            if (state.studentId.isNotEmpty && _studentIdController.text.isEmpty) {
+            if (state.studentId.isNotEmpty &&
+                _studentIdController.text.isEmpty) {
               _studentIdController.text = state.studentId;
               _isInitialized = true;
             }
@@ -269,9 +272,10 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
         },
         buildWhen: (previous, current) {
           // Chỉ rebuild khi cần thiết
-          if (previous is ProfileSetupInitial && current is ProfileSetupInitial) {
+          if (previous is ProfileSetupInitial &&
+              current is ProfileSetupInitial) {
             return previous.availableMajors != current.availableMajors ||
-                   previous.isMajorsLoading != current.isMajorsLoading;
+                previous.isMajorsLoading != current.isMajorsLoading;
           }
           return previous != current;
         },
@@ -620,4 +624,3 @@ class _Step1BasicInfoPageState extends State<Step1BasicInfoPage> {
     );
   }
 }
-

@@ -17,11 +17,8 @@ class MajorsResponse with _$MajorsResponse {
 
 @freezed
 class MajorsData with _$MajorsData {
-  const factory MajorsData({
-    required List<String> majors,
-  }) = _MajorsData;
+  const factory MajorsData({required List<String> majors}) = _MajorsData;
 
   factory MajorsData.fromJson(Map<String, dynamic> json) =>
       _$MajorsDataFromJson(json);
 }
-

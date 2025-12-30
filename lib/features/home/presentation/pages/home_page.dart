@@ -1,8 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/config/routes/app_page.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/usecases/app_usecases.dart';
+import '../../../../features/chat/domain/entities/conversation_entity.dart';
+import '../../../../features/chat/domain/usecases/create_conversation_usecase.dart';
 import '../../../../widgets/navBar/bottom_nav_bar.dart';
 import '../../data/models/discover_user_model.dart';
 import '../bloc/discover_bloc.dart';
@@ -265,12 +270,60 @@ class HomePageState extends State<HomePage>
       barrierDismissible: false,
       builder: (_) => MatchDialog(
         matchedUser: matchedUser,
-        onSendMessage: () => Navigator.pop(context),
+        onSendMessage: () async {
+          Navigator.pop(context);
+          await _navigateToChat(context, matchedUser);
+        },
         onKeepSwiping: () {
           Navigator.pop(context);
           context.read<DiscoverBloc>().add(const DiscoverEvent.nextCard());
         },
       ),
+    );
+  }
+
+  Future<void> _navigateToChat(
+    BuildContext context,
+    MatchedUserData matchedUser,
+  ) async {
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    // Create conversation
+    final createConversationUseCase = getIt<CreateConversationUseCase>();
+    final result = await createConversationUseCase(
+      CreateConversationParams(matchedUser.id),
+    );
+
+    if (!context.mounted) return;
+
+    // Hide loading
+    Navigator.pop(context);
+
+    result.fold(
+      (failure) {
+        // Show error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(failure.message ?? 'An error occurred'), backgroundColor: Colors.red),
+        );
+      },
+      (conversationId) {
+        // Navigate to chat room
+        final conversation = ConversationEntity(
+          id: conversationId,
+          otherUser: UserPreview(
+            id: matchedUser.id,
+            name: matchedUser.name,
+            avatar: matchedUser.mainPhoto,
+          ),
+          matchedAt: DateTime.now(),
+        );
+        context.go(AppPage.chatRoom.toPath(), extra: conversation);
+      },
     );
   }
 }

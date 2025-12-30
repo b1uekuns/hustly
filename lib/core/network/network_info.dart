@@ -23,7 +23,6 @@ class NetworkInfo {
   }
 }
 
-
 // Usage in BLoC:
 // class AppBloc extends Bloc<AppEvent, AppState> {
 //   AppBloc(this._networkInfo) {

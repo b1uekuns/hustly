@@ -38,7 +38,9 @@ class DioExceptionMapper {
             code: status,
             original: error,
             stackTrace: st,
-            details: respData is Map ? Map<String, dynamic>.from(respData) : null,
+            details: respData is Map
+                ? Map<String, dynamic>.from(respData)
+                : null,
           );
         }
         return ServerException(
@@ -66,7 +68,9 @@ class DioExceptionMapper {
       case DioExceptionType.connectionError:
       case DioExceptionType.unknown:
         if (underlying is SocketException) {
-          final msg = underlying.message.isNotEmpty ? underlying.message : 'Lỗi kết nối mạng';
+          final msg = underlying.message.isNotEmpty
+              ? underlying.message
+              : 'Lỗi kết nối mạng';
           return NetworkException(
             message: msg,
             original: underlying,

@@ -55,7 +55,9 @@ class UploadService {
       }
 
       print('[UploadService] Upload failed: ${response.data}');
-      return Left(ServerFailure(response.data['error']?['message'] ?? 'Upload failed'));
+      return Left(
+        ServerFailure(response.data['error']?['message'] ?? 'Upload failed'),
+      );
     } on DioException catch (e) {
       print('[UploadService] DioException: ${e.message}');
       return Left(ServerFailure(e.message ?? 'Network error'));
@@ -79,15 +81,15 @@ class UploadService {
       // Create multipart files
       final List<MultipartFile> files = [];
       for (final file in imageFiles) {
-        files.add(await MultipartFile.fromFile(
-          file.path,
-          filename: file.path.split('/').last,
-        ));
+        files.add(
+          await MultipartFile.fromFile(
+            file.path,
+            filename: file.path.split('/').last,
+          ),
+        );
       }
 
-      final formData = FormData.fromMap({
-        'images': files,
-      });
+      final formData = FormData.fromMap({'images': files});
 
       // Upload to backend
       final response = await dio.post(
@@ -116,4 +118,3 @@ class UploadService {
     }
   }
 }
-

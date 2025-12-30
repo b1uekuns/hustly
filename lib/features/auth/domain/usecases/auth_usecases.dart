@@ -46,12 +46,15 @@ class SendOtpUseCase implements UseCase<void, SendOtpParams> {
 
 // 2. Verify OTP
 @injectable
-class VerifyOtpUseCase implements UseCase<LoginResponseEntity, VerifyOtpParams> {
+class VerifyOtpUseCase
+    implements UseCase<LoginResponseEntity, VerifyOtpParams> {
   final AuthRepository repository;
   VerifyOtpUseCase(this.repository);
 
   @override
-  Future<Either<Failure, LoginResponseEntity>> call(VerifyOtpParams params) async {
+  Future<Either<Failure, LoginResponseEntity>> call(
+    VerifyOtpParams params,
+  ) async {
     return await repository.verifyOtp(params.email, params.otp);
   }
 }
@@ -70,12 +73,15 @@ class GetCurrentUserUseCase implements UseCase<UserEntity, NoParams> {
 
 // 4. Refresh Token
 @injectable
-class RefreshTokenUseCase implements UseCase<RefreshTokenEntity, RefreshTokenParams> {
+class RefreshTokenUseCase
+    implements UseCase<RefreshTokenEntity, RefreshTokenParams> {
   final AuthRepository repository;
   RefreshTokenUseCase(this.repository);
 
   @override
-  Future<Either<Failure, RefreshTokenEntity>> call(RefreshTokenParams params) async {
+  Future<Either<Failure, RefreshTokenEntity>> call(
+    RefreshTokenParams params,
+  ) async {
     return await repository.refreshToken(params.refreshToken);
   }
 }

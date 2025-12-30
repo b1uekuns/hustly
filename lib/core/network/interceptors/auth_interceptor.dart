@@ -23,7 +23,10 @@ class AuthInterceptor extends Interceptor {
   });
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     try {
       final token = await getAccessToken();
       if (token != null && token.isNotEmpty) {
@@ -72,7 +75,9 @@ class AuthInterceptor extends Interceptor {
       } on DioException catch (e) {
         return handler.next(e);
       } catch (e) {
-        return handler.next(DioException(requestOptions: requestOptions, error: e));
+        return handler.next(
+          DioException(requestOptions: requestOptions, error: e),
+        );
       }
     }
 
@@ -105,7 +110,9 @@ class AuthInterceptor extends Interceptor {
       } on DioException catch (e) {
         return handler.next(e);
       } catch (e) {
-        return handler.next(DioException(requestOptions: requestOptions, error: e));
+        return handler.next(
+          DioException(requestOptions: requestOptions, error: e),
+        );
       }
     } catch (refreshError) {
       // Refresh failed

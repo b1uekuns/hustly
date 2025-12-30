@@ -11,7 +11,10 @@ abstract class AuthRepository {
   Future<Either<Failure, void>> sendOtp(String email);
 
   /// Verify OTP and login - Returns LoginResponseEntity (Domain entity)
-  Future<Either<Failure, LoginResponseEntity>> verifyOtp(String email, String otp);
+  Future<Either<Failure, LoginResponseEntity>> verifyOtp(
+    String email,
+    String otp,
+  );
 
   /// Resend OTP
   Future<Either<Failure, void>> resendOtp(String email);

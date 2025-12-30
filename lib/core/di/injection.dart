@@ -15,9 +15,9 @@ final getIt = GetIt.instance;
 /// }
 /// ```
 @InjectableInit(
-  initializerName: 'init',           // Tên hàm generated
-  preferRelativeImports: true,        // Dùng relative imports
-  asExtension: true,                  // Generate as extension
+  initializerName: 'init', // Tên hàm generated
+  preferRelativeImports: true, // Dùng relative imports
+  asExtension: true, // Generate as extension
 )
 Future<void> configureDependencies() async {
   await getIt.init();

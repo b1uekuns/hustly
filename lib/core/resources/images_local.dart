@@ -2,7 +2,7 @@ class ImageLocal {
   //icon svg
 
   //icon png
-  static const String iconButtonArrow ='assets/svg/arrow_right.svg';
+  static const String iconButtonArrow = 'assets/svg/arrow_right.svg';
 
   //image
   static const String iconLogin = 'assets/images/login.png';

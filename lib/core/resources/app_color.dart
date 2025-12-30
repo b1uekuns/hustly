@@ -17,11 +17,14 @@ class AppColor {
   static const Color redSecondary = Color(0xFFD32E3E);
   static const Color redLight = Color(0xFFD84553);
   static const Color redExtraLight = Color(0xFFDD5C69);
+  static const Color redIcon = Color(0xFFE94057);
 
   // Container - Glass effect với red tint
   static const Color containerGlass = Color(0x25FFFFFF); // White glass
   static const Color containerTint = Color(0x15FF6B6B); // Red tint nhẹ
-  static const Color containerBorder = Color(0x30FFFFFF); // Glass border// Orange-Red
+  static const Color containerBorder = Color(
+    0x30FFFFFF,
+  ); // Glass border// Orange-Red
 
   // Text colors
   static const Color textWhite = Color(0xFFFFFFFF);
@@ -47,5 +50,4 @@ class AppColor {
   static const Color orangeSecond = Color(0xFFF68C37);
   static const Color orangeLight = Color(0xFFF7994D);
   static const Color orangeExtraLight = Color(0xFFF8A663);
-
 }

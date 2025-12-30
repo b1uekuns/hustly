@@ -15,16 +15,13 @@ class BaseResponse<T> with _$BaseResponse<T> {
   factory BaseResponse.fromJson(
     Map<String, dynamic> json,
     T Function(Object?) fromJsonT,
-  ) =>
-      _$BaseResponseFromJson(json, fromJsonT);
+  ) => _$BaseResponseFromJson(json, fromJsonT);
 }
 
 @freezed
 class ErrorResponse with _$ErrorResponse {
-  const factory ErrorResponse({
-    required String message,
-    String? stack,
-  }) = _ErrorResponse;
+  const factory ErrorResponse({required String message, String? stack}) =
+      _ErrorResponse;
 
   factory ErrorResponse.fromJson(Map<String, dynamic> json) =>
       _$ErrorResponseFromJson(json);

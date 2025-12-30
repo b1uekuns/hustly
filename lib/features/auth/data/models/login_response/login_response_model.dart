@@ -15,9 +15,8 @@ class LoginResponseModel with _$LoginResponseModel {
     @Default(false) bool isApproved,
     @Default(false) bool isRejected,
     String? rejectionReason,
-  }) = _LoginResponseModel; 
+  }) = _LoginResponseModel;
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) =>
       _$LoginResponseModelFromJson(json);
 }
-

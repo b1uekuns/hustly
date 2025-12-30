@@ -7,7 +7,7 @@ part 'refresh_token_model.g.dart';
 @freezed
 class RefreshTokenModel with _$RefreshTokenModel {
   const RefreshTokenModel._(); // Add private constructor
-  
+
   const factory RefreshTokenModel({
     @JsonKey(name: 'token') required String accessToken,
     required String refreshToken,
@@ -16,7 +16,7 @@ class RefreshTokenModel with _$RefreshTokenModel {
 
   factory RefreshTokenModel.fromJson(Map<String, dynamic> json) =>
       _$RefreshTokenModelFromJson(json);
-  
+
   // Convert to Entity
   RefreshTokenEntity toEntity() {
     return RefreshTokenEntity(

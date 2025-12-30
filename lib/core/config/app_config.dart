@@ -11,11 +11,11 @@ class AppConfig {
   static const String appVersion = '1.0.0';
 
   // ==================== API ====================
-  static const String baseUrl = 'http://localhost:3000';  // Change khi deploy
-  
+  static const String baseUrl = 'http://localhost:3000'; // Change khi deploy
+
   // ==================== Dev Features ====================
   static final bool isDevMode = kDebugMode;
-  static final bool skipAuthGuard = isDevMode;  // Used in app_router
+  static final bool skipAuthGuard = isDevMode; // Used in app_router
 
   // ==================== Common Constants ====================
   static const int pageSize = 20;

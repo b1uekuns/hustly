@@ -22,14 +22,16 @@ class ProfileSetupState with _$ProfileSetupState {
     @Default(0.0) double uploadProgress,
     @Default([]) List<String> availableMajors,
     @Default(false) bool isMajorsLoading,
-    @Default([]) List<InterestCategory> availableInterests, // Interests from backend
+    @Default([])
+    List<InterestCategory> availableInterests, // Interests from backend
     @Default(false) bool isInterestsLoading,
   }) = ProfileSetupInitial;
-  
+
   const factory ProfileSetupState.loading() = ProfileSetupLoading;
-  const factory ProfileSetupState.uploadingPhoto(double progress) = UploadingPhoto;
+  const factory ProfileSetupState.uploadingPhoto(double progress) =
+      UploadingPhoto;
   const factory ProfileSetupState.photoUploaded(String url) = PhotoUploaded;
-  const factory ProfileSetupState.completed(UserEntity user) = ProfileSetupCompleted;
+  const factory ProfileSetupState.completed(UserEntity user) =
+      ProfileSetupCompleted;
   const factory ProfileSetupState.error(String message) = ProfileSetupError;
 }
-

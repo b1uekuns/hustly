@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'refresh_token_entities.freezed.dart'; 
+part 'refresh_token_entities.freezed.dart';
 
 @freezed
 class RefreshTokenEntity with _$RefreshTokenEntity {

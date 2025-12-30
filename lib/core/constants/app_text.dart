@@ -6,7 +6,7 @@ class AppStrings {
   static const String resendOtp = 'Gửi lại mã OTP';
   static const String resendOtpIn = 'Gửi lại sau';
   static const String seconds = 'giây';
-  
+
   // Errors
   static const String errorTitle = 'Lỗi';
   static const String emailEmpty = 'Vui lòng nhập email';

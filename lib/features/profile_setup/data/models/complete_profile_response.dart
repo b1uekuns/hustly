@@ -15,4 +15,3 @@ class CompleteProfileResponse with _$CompleteProfileResponse {
   factory CompleteProfileResponse.fromJson(Map<String, dynamic> json) =>
       _$CompleteProfileResponseFromJson(json);
 }
-

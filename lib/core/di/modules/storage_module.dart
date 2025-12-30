@@ -13,12 +13,12 @@ abstract class StorageModule {
   /// StorageService - Generic wrapper cho SharedPreferences
   /// Low-level, dùng để build các service khác
   @lazySingleton
-  StorageService storageService(SharedPreferences prefs) => 
+  StorageService storageService(SharedPreferences prefs) =>
       StorageService(prefs);
 
   /// PreferencesService - High-level service cho app settings
   /// Dùng cho: theme, language, notifications, etc.
   @lazySingleton
-  PreferencesService preferencesService(StorageService storage) => 
+  PreferencesService preferencesService(StorageService storage) =>
       PreferencesService(storage);
 }

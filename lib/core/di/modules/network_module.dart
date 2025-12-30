@@ -13,6 +13,7 @@ import '../../error/handlers/token_provider.dart';
 import '../../../features/auth/data/data_sources/remote/auth_api.dart';
 import '../../../features/profile_setup/data/data_source/remote/user_api.dart';
 import '../../../features/home/data/data_sources/remote/discover_api.dart';
+import '../../../features/chat/data/data_sources/remote/chat_api.dart';
 
 /// Module để register các dependencies liên quan đến Network
 @module
@@ -35,7 +36,7 @@ abstract class NetworkModule {
   @Named('refreshDio')
   Dio provideRefreshDio(LoggingInterceptor loggingInterceptor) {
     final baseUrl = dotenv.get('BASE_URL', fallback: 'http://localhost:5000/');
-    
+
     final dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
@@ -57,7 +58,7 @@ abstract class NetworkModule {
     TokenProvider tokenProvider,
   ) {
     final baseUrl = dotenv.get('BASE_URL', fallback: 'http://localhost:5000/');
-    
+
     final dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
@@ -131,5 +132,11 @@ abstract class NetworkModule {
   @lazySingleton
   DiscoverApi discoverApi(@Named('mainDio') Dio dio) {
     return DiscoverApi(dio);
+  }
+
+  /// Provide ChatApi for chat/messaging endpoints
+  @lazySingleton
+  ChatApi chatApi(@Named('mainDio') Dio dio) {
+    return ChatApi(dio);
   }
 }

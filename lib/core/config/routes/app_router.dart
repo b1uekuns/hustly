@@ -9,6 +9,9 @@ import '../../../features/profile_setup/presentation/pages/step3_interests_page.
 import '../../../features/profile_setup/presentation/pages/step4_interested_in_page.dart';
 import '../../../features/profile_setup/presentation/pages/step5_dating_purpose_page.dart';
 import '../../../features/profile_setup/presentation/pages/pending_approval_page.dart';
+import '../../../features/chat/presentation/pages/chat_list_page.dart';
+import '../../../features/chat/presentation/pages/chat_room_page.dart';
+import '../../../features/chat/domain/entities/conversation_entity.dart';
 
 class AppRouter {
   AppRouter._(); // Private constructor
@@ -82,6 +85,23 @@ class AppRouter {
         name: AppPage.home.toName,
         path: AppPage.home.toPath(),
         builder: (context, state) => const HomePage(),
+      ),
+
+      // Chat List
+      GoRoute(
+        name: AppPage.chatList.toName,
+        path: AppPage.chatList.toPath(),
+        builder: (context, state) => const ChatListPage(),
+      ),
+
+      // Chat Room
+      GoRoute(
+        name: AppPage.chatRoom.toName,
+        path: AppPage.chatRoom.toPath(),
+        builder: (context, state) {
+          final conversation = state.extra as ConversationEntity;
+          return ChatRoomPage(conversation: conversation);
+        },
       ),
     ],
   );

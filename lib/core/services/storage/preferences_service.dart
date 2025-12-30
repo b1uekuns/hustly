@@ -4,10 +4,10 @@ import 'package:injectable/injectable.dart';
 import 'storage_service.dart';
 
 /// Service để quản lý app preferences/settings
-/// 
+///
 /// Chỉ lo về: theme, language, notifications, font size, etc.
 /// KHÔNG lo về: tokens (tokens sẽ dùng TokenProvider)
-/// 
+///
 /// Không cần @injectable vì đã register trong StorageModule
 class PreferencesService {
   final StorageService _storage;
@@ -78,7 +78,7 @@ class PreferencesService {
   }
 
   // ========== Helper Methods ==========
-  
+
   /// Get theme mode with default
   Future<String> getThemeModeWithDefault() async {
     return await getThemeMode() ?? 'system'; // system, light, dark

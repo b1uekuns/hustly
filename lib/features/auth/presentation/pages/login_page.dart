@@ -11,7 +11,6 @@ import 'package:hust_chill_app/widgets/textField/email_input_field.dart';
 
 import '../bloc/auth_bloc.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -40,10 +39,9 @@ class _LoginPageState extends State<LoginPage> {
               duration: const Duration(milliseconds: 1500),
               onDismissed: () {
                 if (context.mounted) {
-                  GoRouter.of(context).push(
-                    AppPage.loginOtp.toPath(),
-                    extra: email,
-                  );
+                  GoRouter.of(
+                    context,
+                  ).push(AppPage.loginOtp.toPath(), extra: email);
                 }
               },
             );
@@ -238,7 +236,9 @@ class _LoginPageState extends State<LoginPage> {
                                       _emailError = null;
                                       // Gửi OTP nếu hợp lệ
                                       context.read<AuthBloc>().add(
-                                        AuthEvent.sendOtpRequested(email: email),
+                                        AuthEvent.sendOtpRequested(
+                                          email: email,
+                                        ),
                                       );
                                       //_emailController.clear();
                                     }

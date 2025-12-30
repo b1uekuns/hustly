@@ -35,7 +35,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
     try {
       print('[ProfileRepository] Fetching interests...');
       final response = await userApi.getInterests();
-      print('[ProfileRepository] Got ${response.data.interests.length} categories');
+      print(
+        '[ProfileRepository] Got ${response.data.interests.length} categories',
+      );
       return Right(response.data.interests);
     } catch (e) {
       print('[ProfileRepository] Error fetching interests: $e');
@@ -49,7 +51,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   ) async {
     try {
       print('[ProfileRepository] Completing profile...');
-      
+
       final token = await tokenProvider.getAccessToken();
       if (token == null) {
         return Left(ServerFailure('No authentication token'));
@@ -59,7 +61,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
         name: profile.name,
         dateOfBirth: _formatDate(profile.dateOfBirth),
         gender: profile.gender,
-        bio: profile.bio ?? '',  // Convert null to empty string
+        bio: profile.bio ?? '', // Convert null to empty string
         interests: profile.interests,
         interestedIn: profile.interestedIn,
         datingPurpose: profile.datingPurpose,
@@ -67,11 +69,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
         major: profile.major,
         classField: profile.className,
         photos: profile.photos
-            .map((photo) => PhotoRequest(
-                  url: photo.url,
-                  publicId: photo.publicId ?? '',  // Convert null to empty string
-                  isMain: photo.isMain,
-                ))
+            .map(
+              (photo) => PhotoRequest(
+                url: photo.url,
+                publicId: photo.publicId ?? '', // Convert null to empty string
+                isMain: photo.isMain,
+              ),
+            )
             .toList(),
       );
 
@@ -121,10 +125,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
         return Left(ServerFailure('No authentication token'));
       }
 
-      final response = await userApi.updateProfile(
-        updates,
-        'Bearer $token',
-      );
+      final response = await userApi.updateProfile(updates, 'Bearer $token');
       return Right(response.data.toEntity());
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -135,4 +136,3 @@ class ProfileRepositoryImpl implements ProfileRepository {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 }
-

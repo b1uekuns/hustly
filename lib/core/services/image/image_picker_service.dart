@@ -94,4 +94,3 @@ class ImagePickerService {
     return null;
   }
 }
-

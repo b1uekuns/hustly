@@ -3,12 +3,13 @@ import 'package:flutter/services.dart';
 
 /// Mixin để quản lý logic swipe card
 /// Tách riêng để home_page.dart gọn hơn và dễ test
-/// 
+///
 /// Requirements:
 /// - State phải implement TickerProviderStateMixin
 /// - Gọi initSwipeController() trong initState()
 /// - Gọi disposeSwipeController() trong dispose()
-mixin SwipeController<T extends StatefulWidget> on State<T>, TickerProviderStateMixin<T> {
+mixin SwipeController<T extends StatefulWidget>
+    on State<T>, TickerProviderStateMixin<T> {
   // Animation controllers
   late AnimationController flyController;
   late Animation<Offset> flyAnimation;
@@ -45,18 +46,16 @@ mixin SwipeController<T extends StatefulWidget> on State<T>, TickerProviderState
   static const double _indicatorMaxOpacity = 1.0;
 
   /// Threshold để bắt đầu swipe (dựa trên screen width)
-  double get swipeThreshold => MediaQuery.of(context).size.width * _swipeThresholdRatio;
-  
+  double get swipeThreshold =>
+      MediaQuery.of(context).size.width * _swipeThresholdRatio;
+
   /// Kiểm tra có thể swipe không (dựa trên scroll offset)
   bool get canSwipe => scrollOffset < _swipeLockThreshold;
 
   /// Khởi tạo controllers
   /// Gọi trong initState() của widget
   void initSwipeController() {
-    flyController = AnimationController(
-      vsync: this,
-      duration: _flyDuration,
-    );
+    flyController = AnimationController(vsync: this, duration: _flyDuration);
     scrollController.addListener(_onScrollChanged);
   }
 
@@ -77,7 +76,7 @@ mixin SwipeController<T extends StatefulWidget> on State<T>, TickerProviderState
   /// Reset card về vị trí ban đầu
   void resetCard() {
     if (!mounted) return;
-    
+
     setState(() {
       cardOffset = Offset.zero;
       cardAngle = 0;
@@ -122,7 +121,7 @@ mixin SwipeController<T extends StatefulWidget> on State<T>, TickerProviderState
   /// [onComplete] - Callback khi animation hoàn thành
   void flyCardAway(String direction, VoidCallback onComplete) {
     if (!mounted) return;
-    
+
     // Haptic feedback khi card bay đi
     HapticFeedback.mediumImpact();
 
@@ -132,17 +131,14 @@ mixin SwipeController<T extends StatefulWidget> on State<T>, TickerProviderState
     });
 
     final screenWidth = MediaQuery.of(context).size.width;
-    final targetX = direction == 'right' 
-        ? screenWidth * _flyMultiplier 
+    final targetX = direction == 'right'
+        ? screenWidth * _flyMultiplier
         : -screenWidth * _flyMultiplier;
 
     flyAnimation = Tween<Offset>(
       begin: cardOffset,
       end: Offset(targetX, cardOffset.dy + _flyVerticalOffset),
-    ).animate(CurvedAnimation(
-      parent: flyController,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: flyController, curve: Curves.easeOut));
 
     flyController.forward(from: 0).then((_) {
       if (mounted) {
@@ -170,7 +166,8 @@ mixin SwipeController<T extends StatefulWidget> on State<T>, TickerProviderState
     if (!canSwipe || !mounted) return;
 
     // Chỉ nhận swipe ngang mạnh hơn dọc
-    if (details.delta.dx.abs() > details.delta.dy.abs() * _horizontalDominanceRatio) {
+    if (details.delta.dx.abs() >
+        details.delta.dy.abs() * _horizontalDominanceRatio) {
       setState(() {
         cardOffset += Offset(details.delta.dx, 0);
         cardAngle = cardOffset.dx * _angleMultiplier;
@@ -180,7 +177,11 @@ mixin SwipeController<T extends StatefulWidget> on State<T>, TickerProviderState
 
   /// Xử lý khi kết thúc drag
   /// Quyết định xem card có bay đi hay quay về
-  void onPanEnd(DragEndDetails details, VoidCallback onLike, VoidCallback onPass) {
+  void onPanEnd(
+    DragEndDetails details,
+    VoidCallback onLike,
+    VoidCallback onPass,
+  ) {
     if (!canSwipe || !mounted) return;
 
     setState(() => isDragging = false);
@@ -188,12 +189,10 @@ mixin SwipeController<T extends StatefulWidget> on State<T>, TickerProviderState
     final velocity = details.velocity.pixelsPerSecond.dx;
 
     // Strong swipe detection - dựa trên velocity hoặc distance
-    if (velocity.abs() > _velocityThreshold || cardOffset.dx.abs() > swipeThreshold) {
+    if (velocity.abs() > _velocityThreshold ||
+        cardOffset.dx.abs() > swipeThreshold) {
       final isLike = cardOffset.dx > 0 || velocity > _velocityThreshold;
-      flyCardAway(
-        isLike ? 'right' : 'left',
-        isLike ? onLike : onPass,
-      );
+      flyCardAway(isLike ? 'right' : 'left', isLike ? onLike : onPass);
     } else {
       // Card chưa đủ threshold, quay về
       HapticFeedback.lightImpact();
@@ -205,8 +204,10 @@ mixin SwipeController<T extends StatefulWidget> on State<T>, TickerProviderState
   /// Trả về giá trị từ 0.0 đến 1.0 dựa trên khoảng cách swipe
   double get indicatorOpacity {
     final progress = cardOffset.dx.abs() / swipeThreshold;
-    return (progress - _indicatorStartThreshold)
-        .clamp(_indicatorMinOpacity, _indicatorMaxOpacity);
+    return (progress - _indicatorStartThreshold).clamp(
+      _indicatorMinOpacity,
+      _indicatorMaxOpacity,
+    );
   }
 
   /// Xử lý khi nhấn nút action (like/pass buttons)
@@ -232,4 +233,3 @@ mixin SwipeController<T extends StatefulWidget> on State<T>, TickerProviderState
     });
   }
 }
-

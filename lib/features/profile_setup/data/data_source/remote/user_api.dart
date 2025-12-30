@@ -35,4 +35,3 @@ abstract class UserApi {
     @Header('Authorization') String authorization,
   );
 }
-

@@ -6,10 +6,10 @@ part 'profile_setup_event.freezed.dart';
 @freezed
 class ProfileSetupEvent with _$ProfileSetupEvent {
   const factory ProfileSetupEvent.started() = ProfileSetupStarted;
-  
+
   /// Fetch list of majors from backend
   const factory ProfileSetupEvent.fetchMajors() = FetchMajors;
-  
+
   /// Fetch list of interests from backend
   const factory ProfileSetupEvent.fetchInterests() = FetchInterests;
 

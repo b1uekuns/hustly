@@ -46,11 +46,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
       if (response.response.statusCode == 200 && response.data.success) {
         final loginResponse = response.data.data!;
-        
+
         // Save tokens after successful verification
         await _tokenProvider.setAccessToken(loginResponse.token);
         await _tokenProvider.setRefreshToken(loginResponse.refreshToken);
-        
+
         // Convert Data model → Domain entity
         final entity = LoginResponseEntity(
           user: loginResponse.user.toEntity(),
@@ -62,7 +62,7 @@ class AuthRepositoryImpl implements AuthRepository {
           isRejected: loginResponse.isRejected,
           rejectionReason: loginResponse.rejectionReason,
         );
-        
+
         return Right(entity);
       } else {
         return Left(
@@ -119,14 +119,18 @@ class AuthRepositoryImpl implements AuthRepository {
     String refreshToken,
   ) async {
     try {
-      final response = await _authApi.refreshToken({'refreshToken': refreshToken});
+      final response = await _authApi.refreshToken({
+        'refreshToken': refreshToken,
+      });
 
       if (response.response.statusCode == 200 && response.data.success) {
         final tokenModel = response.data.data!;
         return Right(tokenModel.toEntity());
       } else {
         return Left(
-          ServerFailure(response.data.error?.message ?? 'Failed to refresh token'),
+          ServerFailure(
+            response.data.error?.message ?? 'Failed to refresh token',
+          ),
         );
       }
     } catch (e) {

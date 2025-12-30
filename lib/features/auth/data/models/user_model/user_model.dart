@@ -7,7 +7,7 @@ part 'user_model.g.dart';
 @freezed
 class UserModel with _$UserModel {
   const UserModel._();
-  
+
   const factory UserModel({
     @JsonKey(name: '_id') required String id,
     required String email,
@@ -33,17 +33,15 @@ class UserModel with _$UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
-  
+
   // Convert to Entity
   UserEntity toEntity() {
     return UserEntity(
       studentId: studentId ?? id,
       email: email,
-      name: '$name'.isNotEmpty 
-          ? '$name' 
-          : email.split('@').first,
-      avatar: photos.isNotEmpty 
-          ? photos.firstWhere((p) => p.isMain, orElse: () => photos.first).url 
+      name: '$name'.isNotEmpty ? '$name' : email.split('@').first,
+      avatar: photos.isNotEmpty
+          ? photos.firstWhere((p) => p.isMain, orElse: () => photos.first).url
           : null,
       isVerified: isEmailVerified,
       approvalStatus: approvalStatus,
@@ -63,4 +61,3 @@ class PhotoModel with _$PhotoModel {
   factory PhotoModel.fromJson(Map<String, dynamic> json) =>
       _$PhotoModelFromJson(json);
 }
-

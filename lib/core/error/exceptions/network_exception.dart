@@ -8,10 +8,10 @@ class NetworkException extends AppException {
     StackTrace? stackTrace,
     Map<String, dynamic>? details,
   }) : super(
-          message: message,
-          code: code,
-          original: original,
-          stackTrace: stackTrace,
-          details: details,
-        );
+         message: message,
+         code: code,
+         original: original,
+         stackTrace: stackTrace,
+         details: details,
+       );
 }

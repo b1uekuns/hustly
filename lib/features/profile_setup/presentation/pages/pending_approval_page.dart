@@ -244,8 +244,8 @@ class _PendingApprovalPageState extends State<PendingApprovalPage>
     final color = isCompleted
         ? Colors.green
         : isActive
-            ? AppColor.redPrimary
-            : Colors.grey.shade400;
+        ? AppColor.redPrimary
+        : Colors.grey.shade400;
 
     return Row(
       children: [
@@ -254,10 +254,12 @@ class _PendingApprovalPageState extends State<PendingApprovalPage>
           height: 44,
           decoration: BoxDecoration(
             gradient: isCompleted
-                ? const LinearGradient(colors: [Colors.green, Colors.lightGreen])
+                ? const LinearGradient(
+                    colors: [Colors.green, Colors.lightGreen],
+                  )
                 : isActive
-                    ? AppTheme.primaryGradient
-                    : null,
+                ? AppTheme.primaryGradient
+                : null,
             color: !isCompleted && !isActive ? Colors.grey.shade200 : null,
             shape: BoxShape.circle,
             boxShadow: isActive

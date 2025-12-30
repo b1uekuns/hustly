@@ -1,15 +1,17 @@
-enum AppPage { 
-  splash, 
-  login, 
-  loginOtp, 
-  onboarding, 
+enum AppPage {
+  splash,
+  login,
+  loginOtp,
+  onboarding,
   onboardingPhotos,
   onboardingInterests,
   onboardingInterestedIn,
   onboardingStep5, // Dating Purpose
   onboardingPending,
   home,
-  profileDetail
+  profileDetail,
+  chatList,
+  chatRoom,
 }
 
 extension AppPageExtension on AppPage {
@@ -37,6 +39,10 @@ extension AppPageExtension on AppPage {
         return '/home';
       case AppPage.profileDetail:
         return '/profile/:userId';
+      case AppPage.chatList:
+        return '/chat';
+      case AppPage.chatRoom:
+        return '/chat/:conversationId';
     }
   }
 
@@ -64,6 +70,10 @@ extension AppPageExtension on AppPage {
         return 'home';
       case AppPage.profileDetail:
         return 'profile-detail';
+      case AppPage.chatList:
+        return 'chat-list';
+      case AppPage.chatRoom:
+        return 'chat-room';
     }
   }
 }

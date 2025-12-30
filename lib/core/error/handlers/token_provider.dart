@@ -1,7 +1,7 @@
 // lib/core/error/handlers/token_provider.dart
 
 /// Interface để quản lý access token và refresh token
-/// 
+///
 /// Implementation sẽ dùng StorageService
 /// Tách riêng interface để dễ test và dễ thay đổi implementation sau này
 abstract class TokenProvider {

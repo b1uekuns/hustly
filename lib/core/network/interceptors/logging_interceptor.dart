@@ -2,7 +2,6 @@ import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-
 class LoggingInterceptor extends Interceptor {
   /// If provided, overrides default behavior (default: enabled in debug).
   final bool? enableLogging;
@@ -38,7 +37,10 @@ class LoggingInterceptor extends Interceptor {
         developer.log('Query: ${options.queryParameters}', name: 'ApiRequest');
       }
       if (options.data != null) {
-        developer.log('Request body: ${_truncate(options.data)}', name: 'ApiRequest');
+        developer.log(
+          'Request body: ${_truncate(options.data)}',
+          name: 'ApiRequest',
+        );
       }
     }
 
@@ -48,7 +50,9 @@ class LoggingInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     final start = response.requestOptions.extra['_startTime'] as int?;
-    final elapsed = start != null ? (DateTime.now().millisecondsSinceEpoch - start) : null;
+    final elapsed = start != null
+        ? (DateTime.now().millisecondsSinceEpoch - start)
+        : null;
 
     if (_shouldLog) {
       developer.log(
@@ -57,7 +61,10 @@ class LoggingInterceptor extends Interceptor {
         name: 'ApiResponse',
       );
       if (response.data != null) {
-        developer.log('Response body: ${_truncate(response.data)}', name: 'ApiResponse');
+        developer.log(
+          'Response body: ${_truncate(response.data)}',
+          name: 'ApiResponse',
+        );
       }
     } else {
       // in release: log only non-2xx
@@ -76,7 +83,9 @@ class LoggingInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final req = err.requestOptions;
     final start = req.extra['_startTime'] as int?;
-    final elapsed = start != null ? (DateTime.now().millisecondsSinceEpoch - start) : null;
+    final elapsed = start != null
+        ? (DateTime.now().millisecondsSinceEpoch - start)
+        : null;
 
     // prepare masked headers
     final headersToLog = Map<String, dynamic>.from(req.headers);
@@ -99,7 +108,10 @@ class LoggingInterceptor extends Interceptor {
         developer.log('Request body: ${_truncate(req.data)}', name: 'ApiError');
       }
       if (err.response?.data != null) {
-        developer.log('Error response: ${_truncate(err.response!.data)}', name: 'ApiError');
+        developer.log(
+          'Error response: ${_truncate(err.response!.data)}',
+          name: 'ApiError',
+        );
       }
     } else {
       // minimal error info in release

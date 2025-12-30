@@ -2,11 +2,11 @@ import 'package:dartz/dartz.dart';
 import '../error/failures/failure.dart';
 
 /// Abstract base class cho tất cả use cases
-/// 
+///
 /// UseCase đại diện cho 1 business logic operation
 /// Input: Params (parameters cần thiết)
 /// Output: Either<Failure, Type> (Success or Failure)
-/// 
+///
 /// [Type] - Return type khi thành công
 /// [Params] - Input parameters
 abstract class UseCase<Type, Params> {

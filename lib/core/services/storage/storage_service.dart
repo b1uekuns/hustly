@@ -3,7 +3,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service để quản lý local storage (wrapper cho SharedPreferences)
-/// 
+///
 /// Low-level service - Dùng để build các service khác
 /// Không cần @injectable vì đã register trong StorageModule
 class StorageService {

@@ -27,4 +27,3 @@ class PhotoEntity with _$PhotoEntity {
     @Default(false) bool isMain,
   }) = _PhotoEntity;
 }
-

@@ -52,7 +52,8 @@ class DatingPurposeConstants {
   }
 
   static String getSubtitle(String? value) {
-    if (value == null || !options.containsKey(value)) return 'Để xem duyên số thế nào đã';
+    if (value == null || !options.containsKey(value))
+      return 'Để xem duyên số thế nào đã';
     return options[value]!['subtitle'] as String;
   }
 
@@ -68,10 +69,7 @@ class DatingPurposeConstants {
 
   static List<Map<String, dynamic>> get allOptions {
     return options.entries.map((entry) {
-      return {
-        'value': entry.key,
-        ...entry.value,
-      };
+      return {'value': entry.key, ...entry.value};
     }).toList();
   }
 }

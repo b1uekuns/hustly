@@ -21,4 +21,3 @@ abstract class ProfileRepository {
     Map<String, dynamic> updates,
   );
 }
-

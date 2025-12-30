@@ -122,41 +122,45 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     print('🔵 [AUTH_BLOC] AuthCheckRequested - checking approval status...');
-    
+
     // Only check if we're in an authenticated state
     final currentState = state;
     if (currentState is! Authenticated) {
       print('🔵 [AUTH_BLOC] Not authenticated, skipping check');
       return;
     }
-    
+
     try {
       final result = await profileRepository.getMyProfile();
-      
+
       result.fold(
         (failure) {
           print('❌ [AUTH_BLOC] Failed to get profile: ${failure.message}');
           // Don't change state on failure, just log it
         },
         (user) {
-          print('✅ [AUTH_BLOC] Got profile, approvalStatus: ${user.approvalStatus}');
-          
+          print(
+            '✅ [AUTH_BLOC] Got profile, approvalStatus: ${user.approvalStatus}',
+          );
+
           final isApproved = user.approvalStatus == 'approved';
           final isRejected = user.approvalStatus == 'rejected';
           final needsApproval = user.approvalStatus == 'pending';
-          
+
           // Only emit new state if approval status changed
-          if (isApproved != currentState.isApproved || 
+          if (isApproved != currentState.isApproved ||
               isRejected != currentState.isRejected) {
-            emit(AuthState.authenticated(
-              user: currentState.user,
-              token: currentState.token,
-              isNewUser: false,
-              needsApproval: needsApproval,
-              isApproved: isApproved,
-              isRejected: isRejected,
-              rejectionReason: user.rejectionReason,
-            ));
+            emit(
+              AuthState.authenticated(
+                user: currentState.user,
+                token: currentState.token,
+                isNewUser: false,
+                needsApproval: needsApproval,
+                isApproved: isApproved,
+                isRejected: isRejected,
+                rejectionReason: user.rejectionReason,
+              ),
+            );
           }
         },
       );

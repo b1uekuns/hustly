@@ -51,4 +51,3 @@ class GetMyProfileUseCase {
     return await repository.getMyProfile();
   }
 }
-
