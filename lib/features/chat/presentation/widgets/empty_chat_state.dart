@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hust_chill_app/core/resources/app_color.dart';
 import 'package:hust_chill_app/core/resources/app_style.dart';
+
+import '../../../../core/config/routes/app_page.dart';
 
 class EmptyChatState extends StatelessWidget {
   const EmptyChatState({super.key});
@@ -37,7 +40,7 @@ class EmptyChatState extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () {
                 // Navigate to discover page
-                Navigator.pushReplacementNamed(context, '/home');
+                context.go(AppPage.home.toPath());
               },
               icon: const Icon(Icons.explore),
               label: const Text('Khám phá ngay'),

@@ -10,6 +10,7 @@ import '../../../../features/chat/domain/entities/conversation_entity.dart';
 import '../../../../features/chat/domain/usecases/create_conversation_usecase.dart';
 import '../../../../widgets/navBar/bottom_nav_bar.dart';
 import '../../data/models/discover_user_model.dart';
+import '../../domain/repositories/discover_repository.dart';
 import '../bloc/discover_bloc.dart';
 import '../controllers/swipe_controller.dart';
 import '../widgets/empty_states.dart';
@@ -32,15 +33,67 @@ class HomePageState extends State<HomePage>
     with TickerProviderStateMixin, SwipeController {
   int _navIndex = 0;
 
+  DateTime? _lastMatchCheckTime;
+
   @override
   void initState() {
     super.initState();
     initSwipeController();
+    // Check for new matches when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForNewMatches();
+    });
+  }
+
+  Future<void> _checkForNewMatches() async {
+    try {
+      final repository = getIt<DiscoverRepository>();
+      final result = await repository.getMatches(page: 1, limit: 1);
+      
+      result.fold(
+        (failure) {
+          // Silently fail - don't show error for background check
+          print('Failed to check new matches: ${failure.message}');
+        },
+        (data) {
+          if (data.users.isNotEmpty && mounted) {
+            final latestMatch = data.users.first;
+            // Check if this match is recent (within last 5 minutes)
+            if (latestMatch.matchedAt != null) {
+              final matchTime = DateTime.parse(latestMatch.matchedAt!);
+              final now = DateTime.now();
+              final diff = now.difference(matchTime);
+              
+              // If match is within last 5 minutes and we haven't shown it yet
+              if (diff.inMinutes < 5 && 
+                  (_lastMatchCheckTime == null || matchTime.isAfter(_lastMatchCheckTime!))) {
+                _lastMatchCheckTime = now;
+                
+                // Show match dialog
+                final matchedUser = MatchedUserData(
+                  id: latestMatch.id,
+                  name: latestMatch.name,
+                  mainPhoto: latestMatch.mainPhoto,
+                );
+                
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    _showMatchDialog(context, matchedUser);
+                  }
+                });
+              }
+            }
+          }
+        },
+      );
+    } catch (e) {
+      // Silently fail - don't show error for background check
+      print('Error checking new matches: $e');
+    }
   }
 
   @override
   void dispose() {
-    scrollController.dispose();
     disposeSwipeController();
     super.dispose();
   }
@@ -308,7 +361,10 @@ class HomePageState extends State<HomePage>
       (failure) {
         // Show error
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(failure.message ?? 'An error occurred'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(failure.message ?? 'An error occurred'),
+            backgroundColor: Colors.red,
+          ),
         );
       },
       (conversationId) {

@@ -147,21 +147,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           final isRejected = user.approvalStatus == 'rejected';
           final needsApproval = user.approvalStatus == 'pending';
 
-          // Only emit new state if approval status changed
-          if (isApproved != currentState.isApproved ||
-              isRejected != currentState.isRejected) {
-            emit(
-              AuthState.authenticated(
-                user: currentState.user,
-                token: currentState.token,
-                isNewUser: false,
-                needsApproval: needsApproval,
-                isApproved: isApproved,
-                isRejected: isRejected,
-                rejectionReason: user.rejectionReason,
-              ),
-            );
-          }
+          // Always emit new state with updated user to ensure UI reflects latest status
+          emit(
+            AuthState.authenticated(
+              user: user, // Update with fresh user data
+              token: currentState.token,
+              isNewUser: false,
+              needsApproval: needsApproval,
+              isApproved: isApproved,
+              isRejected: isRejected,
+              rejectionReason: user.rejectionReason,
+            ),
+          );
         },
       );
     } catch (e) {

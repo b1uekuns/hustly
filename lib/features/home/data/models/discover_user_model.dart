@@ -44,6 +44,7 @@ class DiscoverUserModel with _$DiscoverUserModel {
     String? mainPhoto,
     String? datingPurpose, // 'relationship', 'friends', 'casual', 'unsure'
     int? distance, // Distance in km
+    String? matchedAt, // ISO date string for when match occurred
     String? education,
     String? zodiac,
     String? communicationStyle,
