@@ -20,4 +20,7 @@ abstract class DiscoverRepository {
     int page = 1,
     int limit = 20,
   });
+
+  /// Mark match as seen
+  Future<Either<Failure, void>> markMatchAsSeen(String matchId);
 }

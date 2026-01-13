@@ -1,7 +1,9 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:confetti/confetti.dart';
+import '../../../../core/resources/app_assets.dart';
 import '../../../../core/resources/app_color.dart';
-import '../../../../core/resources/app_theme.dart';
 import '../../data/models/discover_user_model.dart';
 
 class MatchDialog extends StatefulWidget {
@@ -9,56 +11,6 @@ class MatchDialog extends StatefulWidget {
   final String? currentUserPhoto;
   final VoidCallback onSendMessage;
   final VoidCallback onKeepSwiping;
-
-  // Animation constants
-  static const Duration _animationDuration = Duration(milliseconds: 600);
-  static const double _scaleBegin = 0.5;
-  static const double _scaleEnd = 1.0;
-  static const double _fadeBegin = 0.0;
-  static const double _fadeEnd = 1.0;
-
-  // Layout constants
-  static const double _dialogPadding = 24.0;
-  static const double _dialogBorderRadius = 28.0;
-  static const double _shadowBlur = 30.0;
-  static const double _shadowSpread = 5.0;
-  static const double _shadowOpacity = 0.3;
-
-  static const double _heartIconPadding = 16.0;
-  static const double _heartIconSize = 48.0;
-  static const double _spacing = 24.0;
-  static const double _spacingSmall = 12.0;
-  static const double _spacingMedium = 16.0;
-  static const double _spacingLarge = 32.0;
-
-  static const double _titleFontSize = 32.0;
-  static const double _subtitleFontSize = 16.0;
-
-  static const double _profilePhotoSize = 80.0;
-  static const double _profileBorderWidth = 3.0;
-  static const double _profileShadowBlur = 10.0;
-  static const double _profileShadowSpread = 2.0;
-  static const double _profileShadowOpacity = 0.2;
-
-  static const double _centerHeartPadding = 8.0;
-  static const double _centerHeartSize = 24.0;
-  static const double _centerHeartOpacity = 0.1;
-
-  static const double _buttonVerticalPadding = 14.0;
-  static const double _buttonBorderRadius = 12.0;
-  static const double _buttonSpacing = 12.0;
-  static const double _buttonShadowBlur = 8.0;
-  static const double _buttonShadowOpacity = 0.3;
-
-  static const double _placeholderIconSize = 40.0;
-
-  // Text constants
-  static const String _titleText = "It's a Match! 💕";
-  static const String _keepSwipingText = 'Tiếp tục';
-  static const String _sendMessageText = 'Nhắn tin';
-  static const String _keepSwipingTooltip = 'Tiếp tục tìm kiếm';
-  static const String _sendMessageTooltip = 'Gửi tin nhắn cho người này';
-  static const String _dialogSemanticLabel = 'Đã ghép đôi thành công';
 
   const MatchDialog({
     super.key,
@@ -73,282 +25,411 @@ class MatchDialog extends StatefulWidget {
 }
 
 class _MatchDialogState extends State<MatchDialog>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+    with TickerProviderStateMixin {
+  late AnimationController _entryController;
+  late ConfettiController _confettiWidgetController;
+
   late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideLeftAnimation;
+  late Animation<Offset> _slideRightAnimation;
 
   @override
   void initState() {
     super.initState();
-    HapticFeedback.mediumImpact(); // Celebrate the match!
-    _controller = AnimationController(
-      duration: MatchDialog._animationDuration,
+    HapticFeedback.mediumImpact();
+
+    // Controller cho hiệu ứng xuất hiện
+    _entryController = AnimationController(
+      duration: const Duration(milliseconds: 1200), // Tăng thời gian
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(
-      begin: MatchDialog._scaleBegin,
-      end: MatchDialog._scaleEnd,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
-    _fadeAnimation = Tween<double>(
-      begin: MatchDialog._fadeBegin,
-      end: MatchDialog._fadeEnd,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
-    _controller.forward();
+
+    // AVATAR TRÁI: Trượt vào -> Va chạm (overlap nhiều) -> Nảy lại
+    _slideLeftAnimation = TweenSequence<Offset>([
+      // Giai đoạn 1: Trượt vào nhanh (0% -> 70%)
+      TweenSequenceItem(
+        tween: Tween<Offset>(
+          begin: const Offset(-2.0, 0.0),
+          end: const Offset(0.05, 0.0), // Chồng LÊN giữa màn hình
+        ).chain(CurveTween(curve: Curves.easeOutCubic)),
+        weight: 70,
+      ),
+      // Giai đoạn 2: Nảy lại một chút (70% -> 100%)
+      TweenSequenceItem(
+        tween: Tween<Offset>(
+          begin: const Offset(0.05, 0.0),
+          end: const Offset(-0.05, 0.0), // Nảy ra về trái
+        ).chain(CurveTween(curve: Curves.elasticOut)),
+        weight: 30,
+      ),
+    ]).animate(_entryController);
+
+    // AVATAR PHẢI: Tương tự nhưng ngược chiều
+    _slideRightAnimation = TweenSequence<Offset>([
+      TweenSequenceItem(
+        tween: Tween<Offset>(
+          begin: const Offset(2.0, 0.0),
+          end: const Offset(
+            -0.05,
+            0.0,
+          ), // Chồng LÊN giữa màn hình (ngược chiều)
+        ).chain(CurveTween(curve: Curves.easeOutCubic)),
+        weight: 70,
+      ),
+      TweenSequenceItem(
+        tween: Tween<Offset>(
+          begin: const Offset(-0.05, 0.0),
+          end: const Offset(0.05, 0.0), // Nảy ra về phải
+        ).chain(CurveTween(curve: Curves.elasticOut)),
+        weight: 30,
+      ),
+    ]).animate(_entryController);
+
+    // Scale animation cho title và heart
+    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _entryController,
+        curve: const Interval(0.5, 1.0, curve: Curves.elasticOut),
+      ),
+    );
+
+    // Controller cho pháo giấy
+    _confettiWidgetController = ConfettiController(
+      duration: const Duration(seconds: 3),
+    );
+
+    // Chạy animation
+    _entryController.forward().then((_) {
+      _confettiWidgetController.play();
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _entryController.dispose();
+    _confettiWidgetController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      label: MatchDialog._dialogSemanticLabel,
-      child: Dialog(
-        backgroundColor: Colors.transparent,
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: Container(
-              padding: const EdgeInsets.all(MatchDialog._dialogPadding),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(
-                  MatchDialog._dialogBorderRadius,
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Dialog chính
+        Dialog(
+          backgroundColor: const Color.fromARGB(150, 0, 0, 0),
+          insetPadding: const EdgeInsets.all(20),
+          elevation: 0,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              // Lớp nền mờ (Glassmorphism)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                  ),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColor.redPrimary.withOpacity(
-                      MatchDialog._shadowOpacity,
-                    ),
-                    blurRadius: MatchDialog._shadowBlur,
-                    spreadRadius: MatchDialog._shadowSpread,
-                  ),
-                ],
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Hearts animation
-                  Container(
-                    padding: const EdgeInsets.all(
-                      MatchDialog._heartIconPadding,
-                    ),
-                    decoration: const BoxDecoration(
-                      gradient: AppTheme.primaryGradient,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.favorite,
-                      color: Colors.white,
-                      size: MatchDialog._heartIconSize,
-                    ),
-                  ),
-                  const SizedBox(height: MatchDialog._spacing),
 
-                  // "It's a Match!" text
-                  ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [AppColor.redPrimary, AppColor.redLight],
-                    ).createShader(bounds),
-                    child: const Text(
-                      MatchDialog._titleText,
-                      style: TextStyle(
-                        fontSize: MatchDialog._titleFontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: MatchDialog._spacingSmall),
-
-                  Semantics(
-                    label: 'Bạn và ${widget.matchedUser.name} đã thích nhau',
-                    child: Text(
-                      'Bạn và ${widget.matchedUser.name} đã thích nhau!',
-                      style: TextStyle(
-                        fontSize: MatchDialog._subtitleFontSize,
-                        color: Colors.grey[600],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: MatchDialog._spacing),
-
-                  // Profile photos
-                  Semantics(
-                    label: 'Ảnh đại diện của bạn và ${widget.matchedUser.name}',
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Current user
-                        _buildProfileCircle(
-                          imageUrl: widget.currentUserPhoto,
-                          isCurrentUser: true,
-                        ),
-                        const SizedBox(width: MatchDialog._spacingMedium),
-                        // Heart between
-                        Container(
-                          padding: const EdgeInsets.all(
-                            MatchDialog._centerHeartPadding,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColor.redPrimary.withOpacity(
-                              MatchDialog._centerHeartOpacity,
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.favorite,
-                            color: AppColor.redPrimary,
-                            size: MatchDialog._centerHeartSize,
-                          ),
-                        ),
-                        const SizedBox(width: MatchDialog._spacingMedium),
-                        // Matched user
-                        _buildProfileCircle(
-                          imageUrl: widget.matchedUser.mainPhoto,
-                          isCurrentUser: false,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: MatchDialog._spacingLarge),
-
-                  // Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Tooltip(
-                          message: MatchDialog._keepSwipingTooltip,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              HapticFeedback.lightImpact();
-                              widget.onKeepSwiping();
-                            },
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: MatchDialog._buttonVerticalPadding,
-                              ),
-                              side: BorderSide(color: Colors.grey.shade300),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  MatchDialog._buttonBorderRadius,
-                                ),
-                              ),
-                            ),
-                            child: Text(
-                              MatchDialog._keepSwipingText,
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: MatchDialog._buttonSpacing),
-                      Expanded(
-                        child: Tooltip(
-                          message: MatchDialog._sendMessageTooltip,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: AppTheme.primaryGradient,
-                              borderRadius: BorderRadius.circular(
-                                MatchDialog._buttonBorderRadius,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColor.redPrimary.withOpacity(
-                                    MatchDialog._buttonShadowOpacity,
-                                  ),
-                                  blurRadius: MatchDialog._buttonShadowBlur,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                HapticFeedback.lightImpact();
-                                widget.onSendMessage();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: MatchDialog._buttonVerticalPadding,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    MatchDialog._buttonBorderRadius,
-                                  ),
-                                ),
-                              ),
-                              child: const Text(
-                                MatchDialog._sendMessageText,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+              // Nội dung chính
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.black.withOpacity(0.4),
+                      Colors.black.withOpacity(0.2),
                     ],
                   ),
-                ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 1. Title "It's a Match"
+                    ScaleTransition(
+                      scale: _scaleAnimation,
+                      child: _buildGradientTitle(),
+                    ),
+
+                    // 2. Hai Avatar va vào nhau - CHỒNG LÊN NHAU NHIỀU
+                    SizedBox(
+                      height: 160,
+                      width: 250, // Thu nhỏ width để avatar chồng lên nhiều hơn
+                      child: Stack(
+                        alignment: Alignment.center,
+                        // clipBehavior:
+                        //     Clip.none, // Cho phép avatar tràn ra ngoài
+                        children: [
+                          // Avatar User (Trái)
+                          Positioned(
+                            left: 0,
+                            child: SlideTransition(
+                              position: _slideLeftAnimation,
+                              child: _buildAvatarCircle(
+                                widget.currentUserPhoto,
+                                true,
+                              ),
+                            ),
+                          ),
+                          // Avatar Match (Phải)
+                          Positioned(
+                            right: 0,
+                            child: SlideTransition(
+                              position: _slideRightAnimation,
+                              child: _buildAvatarCircle(
+                                widget.matchedUser.mainPhoto,
+                                false,
+                              ),
+                            ),
+                          ),
+                          // Trái tim ở giữa với viền gradient
+                          Center(
+                            child: ScaleTransition(
+                              scale: _scaleAnimation,
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFFFF3A5E),
+                                      Color(0xFFFF9068),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFFFF3A5E,
+                                      ).withOpacity(0.6),
+                                      blurRadius: 20,
+                                      spreadRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: Container(
+                                  margin: const EdgeInsets.all(3),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.favorite,
+                                    color: Color(0xFFFF3A5E),
+                                    size: 28,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // 3. Text thông báo
+                    Text(
+                      'Bạn và ${widget.matchedUser.name} đã thích nhau!',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // 4. Button Nhắn tin
+                    SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFF3A5E), Color(0xFFFF6945)],
+                          ),
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFFF3A5E).withOpacity(0.4),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: widget.onSendMessage,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.chat_bubble_outline,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Nhắn tin',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // 5. Button Tiếp tục
+                    TextButton(
+                      onPressed: widget.onKeepSwiping,
+                      child: const Text(
+                        'Tiếp tục',
+                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            ],
+          ),
+        ),
+
+        // Pháo giấy
+        Align(
+          alignment: Alignment.topCenter,
+          child: ConfettiWidget(
+            confettiController: _confettiWidgetController,
+            blastDirection: pi / 2,
+            maxBlastForce: 5,
+            minBlastForce: 2,
+            emissionFrequency: 0.05,
+            numberOfParticles: 20,
+            gravity: 0.2,
+            colors: const [
+              Colors.green,
+              Colors.blue,
+              Colors.pink,
+              Colors.orange,
+              Colors.purple,
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Widget vẽ Avatar với viền Gradient Glow - GIỐNG ẢNH 1
+  Widget _buildAvatarCircle(String? url, bool isLeft) {
+    // Tăng góc xoay để giống ảnh mẫu hơn
+    final double rotateAngle = isLeft ? -0.15 : 0.15;
+
+    return Transform.rotate(
+      angle: rotateAngle,
+      child: Container(
+        width: 140,
+        height: 140,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          // Gradient viền ngoài - NHIỀU LỚP để tạo hiệu ứng glow
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFF3A5E), Color(0xFFFF6945), Color(0xFFFF9068)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            // Lớp shadow 1 - Gần
+            BoxShadow(
+              color: const Color(0xFFFF3A5E).withOpacity(0.8),
+              blurRadius: 15,
+              spreadRadius: 0,
             ),
+            // Lớp shadow 2 - Xa hơn
+            BoxShadow(
+              color: const Color(0xFFFF6945).withOpacity(0.5),
+              blurRadius: 30,
+              spreadRadius: 5,
+            ),
+            // Lớp shadow 3 - Rất xa (outer glow)
+            BoxShadow(
+              color: const Color(0xFFFF9068).withOpacity(0.3),
+              blurRadius: 40,
+              spreadRadius: 10,
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(4), // Độ dày viền gradient
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white, // Viền trắng trong
+            shape: BoxShape.circle,
+          ),
+          padding: const EdgeInsets.all(3),
+          child: ClipOval(
+            child: url != null && url.isNotEmpty
+                ? Image.network(
+                    url,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.person, size: 60),
+                      );
+                    },
+                  )
+                : Container(
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.person, size: 60),
+                  ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildProfileCircle({String? imageUrl, required bool isCurrentUser}) {
-    return Container(
-      width: MatchDialog._profilePhotoSize,
-      height: MatchDialog._profilePhotoSize,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: isCurrentUser ? AppColor.redPrimary : AppColor.redLight,
-          width: MatchDialog._profileBorderWidth,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColor.redPrimary.withOpacity(
-              MatchDialog._profileShadowOpacity,
-            ),
-            blurRadius: MatchDialog._profileShadowBlur,
-            spreadRadius: MatchDialog._profileShadowSpread,
+  // Title Gradient
+  Widget _buildGradientTitle() {
+    return Text(
+      "It's a Match!",
+      style: TextStyle(
+        fontFamily: 'Cursive',
+        fontSize: 48,
+        fontWeight: FontWeight.w900,
+        foreground: Paint()
+          ..shader = const LinearGradient(
+            colors: [Color(0xFFE5394F), Color(0xFFFF9A9E)],
+          ).createShader(const Rect.fromLTWH(0, 0, 320, 100)),
+        shadows: [
+          Shadow(
+            blurRadius: 12,
+            color: Color(0xFFCE1628).withValues(alpha: 0.25),
           ),
         ],
-      ),
-      child: ClipOval(
-        child: imageUrl != null && imageUrl.isNotEmpty
-            ? Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _buildPlaceholder(),
-              )
-            : _buildPlaceholder(),
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder() {
-    return Container(
-      color: Colors.grey[200],
-      child: Icon(
-        Icons.person,
-        size: MatchDialog._placeholderIconSize,
-        color: Colors.grey[400],
       ),
     );
   }

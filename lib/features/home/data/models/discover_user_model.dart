@@ -45,6 +45,8 @@ class DiscoverUserModel with _$DiscoverUserModel {
     String? datingPurpose, // 'relationship', 'friends', 'casual', 'unsure'
     int? distance, // Distance in km
     String? matchedAt, // ISO date string for when match occurred
+    String? matchId, // Interaction ID for marking as seen
+    @Default(false) bool seenMatch, // Whether user has seen the match dialog
     String? education,
     String? zodiac,
     String? communicationStyle,

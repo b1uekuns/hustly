@@ -11,6 +11,8 @@ import '../../../../features/chat/domain/usecases/create_conversation_usecase.da
 import '../../../../widgets/navBar/bottom_nav_bar.dart';
 import '../../data/models/discover_user_model.dart';
 import '../../domain/repositories/discover_repository.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/services/socket_service.dart';
 import '../bloc/discover_bloc.dart';
 import '../controllers/swipe_controller.dart';
 import '../widgets/empty_states.dart';
@@ -39,10 +41,41 @@ class HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     initSwipeController();
+    
+    // Setup Socket.io for real-time match notifications
+    _setupSocketIO();
+    
     // Check for new matches when page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkForNewMatches();
     });
+  }
+
+  void _setupSocketIO() {
+    final socketService = getIt<SocketService>();
+    
+    // Set callback for new match events
+    socketService.onNewMatch = (matchData) {
+      if (mounted) {
+        final matchedUser = MatchedUserData(
+          id: matchData['matchedUser']['_id'] as String,
+          name: matchData['matchedUser']['name'] as String,
+          mainPhoto: matchData['matchedUser']['mainPhoto'] as String?,
+        );
+        
+        final matchId = matchData['matchId'] as String;
+        
+        // Show match dialog
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _showMatchDialog(context, matchedUser, matchId: matchId);
+          }
+        });
+      }
+    };
+    
+    // Connect to Socket.io
+    socketService.connect();
   }
 
   Future<void> _checkForNewMatches() async {
@@ -94,6 +127,12 @@ class HomePageState extends State<HomePage>
 
   @override
   void dispose() {
+    // Disconnect Socket.io when leaving home page
+    final socketService = getIt<SocketService>();
+    socketService.onNewMatch = null;
+    // Don't disconnect - keep connection alive for other pages
+    // socketService.disconnect();
+    
     disposeSwipeController();
     super.dispose();
   }
@@ -316,7 +355,7 @@ class HomePageState extends State<HomePage>
     });
   }
 
-  void _showMatchDialog(BuildContext context, MatchedUserData matchedUser) {
+  void _showMatchDialog(BuildContext context, MatchedUserData matchedUser, {String? matchId}) {
     resetCard();
     showDialog(
       context: context,
@@ -325,14 +364,30 @@ class HomePageState extends State<HomePage>
         matchedUser: matchedUser,
         onSendMessage: () async {
           Navigator.pop(context);
+          if (matchId != null) {
+            await _markMatchAsSeen(matchId);
+          }
           await _navigateToChat(context, matchedUser);
         },
         onKeepSwiping: () {
           Navigator.pop(context);
+          if (matchId != null) {
+            _markMatchAsSeen(matchId);
+          }
           context.read<DiscoverBloc>().add(const DiscoverEvent.nextCard());
         },
       ),
     );
+  }
+
+  Future<void> _markMatchAsSeen(String matchId) async {
+    try {
+      final repository = getIt<DiscoverRepository>();
+      await repository.markMatchAsSeen(matchId);
+      print('Mark match as seen: $matchId');
+    } catch (e) {
+      print('Error marking match as seen: $e');
+    }
   }
 
   Future<void> _navigateToChat(

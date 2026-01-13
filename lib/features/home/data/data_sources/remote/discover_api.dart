@@ -6,7 +6,10 @@ part 'discover_api.g.dart';
 
 @RestApi()
 abstract class DiscoverApi {
-  factory DiscoverApi(Dio dio, {String? baseUrl}) = _DiscoverApi;
+  factory DiscoverApi(
+    Dio dio, {
+    String? baseUrl,
+  }) = _DiscoverApi;
 
   /// Get discover suggestions
   @GET('api/v1/discover')
@@ -36,5 +39,12 @@ abstract class DiscoverApi {
     @Header('Authorization') String authorization,
     @Query('page') int page,
     @Query('limit') int limit,
+  );
+
+  /// Mark match as seen
+  @POST('api/v1/discover/matches/{matchId}/seen')
+  Future<void> markMatchAsSeen(
+    @Path('matchId') String matchId,
+    @Header('Authorization') String authorization,
   );
 }

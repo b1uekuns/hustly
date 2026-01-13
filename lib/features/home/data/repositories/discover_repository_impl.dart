@@ -88,4 +88,19 @@ class DiscoverRepositoryImpl implements DiscoverRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> markMatchAsSeen(String matchId) async {
+    try {
+      final auth = await _getAuthHeader();
+      await discoverApi.markMatchAsSeen(matchId, auth);
+      return const Right(null);
+    } on DioException catch (e) {
+      final message =
+          e.response?.data?['message'] ?? 'Lỗi khi đánh dấu đã xem match';
+      return Left(ServerFailure(message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

@@ -56,16 +56,9 @@ class DiscoverBloc extends Bloc<DiscoverEvent, DiscoverState> {
         emit(DiscoverState.error(failure.message));
       },
       (likeData) {
-        if (likeData.isMatch) {
-          emit(
-            DiscoverState.matched(
-              users: currentState.users,
-              currentIndex: currentState.currentIndex + 1,
-              pagination: currentState.pagination,
-              matchedUser: likeData.matchedUser!,
-            ),
-          );
-        }
+        // Match is now handled via Socket.io event, not API response
+        // Just move to next card after like
+        _moveToNextCard(emit, currentState);
       },
     );
   }
