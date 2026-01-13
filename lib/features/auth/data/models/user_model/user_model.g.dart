@@ -14,13 +14,11 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       dateOfBirth: json['dateOfBirth'] as String?,
       gender: json['gender'] as String?,
       bio: json['bio'] as String?,
-      photos:
-          (json['photos'] as List<dynamic>?)
+      photos: (json['photos'] as List<dynamic>?)
               ?.map((e) => PhotoModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      interests:
-          (json['interests'] as List<dynamic>?)
+      interests: (json['interests'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],

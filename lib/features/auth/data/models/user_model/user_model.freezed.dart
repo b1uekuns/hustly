@@ -12,8 +12,7 @@ part of 'user_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 UserModel _$UserModelFromJson(Map<String, dynamic> json) {
   return _UserModel.fromJson(json);
@@ -45,12 +44,8 @@ mixin _$UserModel {
   String? get rejectionReason => throw _privateConstructorUsedError;
   String? get approvedAt => throw _privateConstructorUsedError;
 
-  /// Serializes this UserModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of UserModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $UserModelCopyWith<UserModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -60,27 +55,26 @@ abstract class $UserModelCopyWith<$Res> {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) then) =
       _$UserModelCopyWithImpl<$Res, UserModel>;
   @useResult
-  $Res call({
-    @JsonKey(name: '_id') String id,
-    String email,
-    String? name,
-    String? dateOfBirth,
-    String? gender,
-    String? bio,
-    List<PhotoModel> photos,
-    List<String> interests,
-    String? interestedIn,
-    String? studentId,
-    String? major,
-    @JsonKey(name: 'class') String? className,
-    bool isEmailVerified,
-    bool isProfileComplete,
-    String? lastActive,
-    bool isOnline,
-    String? approvalStatus,
-    String? rejectionReason,
-    String? approvedAt,
-  });
+  $Res call(
+      {@JsonKey(name: '_id') String id,
+      String email,
+      String? name,
+      String? dateOfBirth,
+      String? gender,
+      String? bio,
+      List<PhotoModel> photos,
+      List<String> interests,
+      String? interestedIn,
+      String? studentId,
+      String? major,
+      @JsonKey(name: 'class') String? className,
+      bool isEmailVerified,
+      bool isProfileComplete,
+      String? lastActive,
+      bool isOnline,
+      String? approvalStatus,
+      String? rejectionReason,
+      String? approvedAt});
 }
 
 /// @nodoc
@@ -93,8 +87,6 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of UserModel
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -118,87 +110,84 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? rejectionReason = freezed,
     Object? approvedAt = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            name: freezed == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            dateOfBirth: freezed == dateOfBirth
-                ? _value.dateOfBirth
-                : dateOfBirth // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            gender: freezed == gender
-                ? _value.gender
-                : gender // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            bio: freezed == bio
-                ? _value.bio
-                : bio // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            photos: null == photos
-                ? _value.photos
-                : photos // ignore: cast_nullable_to_non_nullable
-                      as List<PhotoModel>,
-            interests: null == interests
-                ? _value.interests
-                : interests // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            interestedIn: freezed == interestedIn
-                ? _value.interestedIn
-                : interestedIn // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            studentId: freezed == studentId
-                ? _value.studentId
-                : studentId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            major: freezed == major
-                ? _value.major
-                : major // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            className: freezed == className
-                ? _value.className
-                : className // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isEmailVerified: null == isEmailVerified
-                ? _value.isEmailVerified
-                : isEmailVerified // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            isProfileComplete: null == isProfileComplete
-                ? _value.isProfileComplete
-                : isProfileComplete // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            lastActive: freezed == lastActive
-                ? _value.lastActive
-                : lastActive // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isOnline: null == isOnline
-                ? _value.isOnline
-                : isOnline // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            approvalStatus: freezed == approvalStatus
-                ? _value.approvalStatus
-                : approvalStatus // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            rejectionReason: freezed == rejectionReason
-                ? _value.rejectionReason
-                : rejectionReason // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            approvedAt: freezed == approvedAt
-                ? _value.approvedAt
-                : approvedAt // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: freezed == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String?,
+      dateOfBirth: freezed == dateOfBirth
+          ? _value.dateOfBirth
+          : dateOfBirth // ignore: cast_nullable_to_non_nullable
+              as String?,
+      gender: freezed == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
+      bio: freezed == bio
+          ? _value.bio
+          : bio // ignore: cast_nullable_to_non_nullable
+              as String?,
+      photos: null == photos
+          ? _value.photos
+          : photos // ignore: cast_nullable_to_non_nullable
+              as List<PhotoModel>,
+      interests: null == interests
+          ? _value.interests
+          : interests // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      interestedIn: freezed == interestedIn
+          ? _value.interestedIn
+          : interestedIn // ignore: cast_nullable_to_non_nullable
+              as String?,
+      studentId: freezed == studentId
+          ? _value.studentId
+          : studentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      major: freezed == major
+          ? _value.major
+          : major // ignore: cast_nullable_to_non_nullable
+              as String?,
+      className: freezed == className
+          ? _value.className
+          : className // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isEmailVerified: null == isEmailVerified
+          ? _value.isEmailVerified
+          : isEmailVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isProfileComplete: null == isProfileComplete
+          ? _value.isProfileComplete
+          : isProfileComplete // ignore: cast_nullable_to_non_nullable
+              as bool,
+      lastActive: freezed == lastActive
+          ? _value.lastActive
+          : lastActive // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isOnline: null == isOnline
+          ? _value.isOnline
+          : isOnline // ignore: cast_nullable_to_non_nullable
+              as bool,
+      approvalStatus: freezed == approvalStatus
+          ? _value.approvalStatus
+          : approvalStatus // ignore: cast_nullable_to_non_nullable
+              as String?,
+      rejectionReason: freezed == rejectionReason
+          ? _value.rejectionReason
+          : rejectionReason // ignore: cast_nullable_to_non_nullable
+              as String?,
+      approvedAt: freezed == approvedAt
+          ? _value.approvedAt
+          : approvedAt // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
@@ -206,32 +195,30 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
 abstract class _$$UserModelImplCopyWith<$Res>
     implements $UserModelCopyWith<$Res> {
   factory _$$UserModelImplCopyWith(
-    _$UserModelImpl value,
-    $Res Function(_$UserModelImpl) then,
-  ) = __$$UserModelImplCopyWithImpl<$Res>;
+          _$UserModelImpl value, $Res Function(_$UserModelImpl) then) =
+      __$$UserModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(name: '_id') String id,
-    String email,
-    String? name,
-    String? dateOfBirth,
-    String? gender,
-    String? bio,
-    List<PhotoModel> photos,
-    List<String> interests,
-    String? interestedIn,
-    String? studentId,
-    String? major,
-    @JsonKey(name: 'class') String? className,
-    bool isEmailVerified,
-    bool isProfileComplete,
-    String? lastActive,
-    bool isOnline,
-    String? approvalStatus,
-    String? rejectionReason,
-    String? approvedAt,
-  });
+  $Res call(
+      {@JsonKey(name: '_id') String id,
+      String email,
+      String? name,
+      String? dateOfBirth,
+      String? gender,
+      String? bio,
+      List<PhotoModel> photos,
+      List<String> interests,
+      String? interestedIn,
+      String? studentId,
+      String? major,
+      @JsonKey(name: 'class') String? className,
+      bool isEmailVerified,
+      bool isProfileComplete,
+      String? lastActive,
+      bool isOnline,
+      String? approvalStatus,
+      String? rejectionReason,
+      String? approvedAt});
 }
 
 /// @nodoc
@@ -239,12 +226,9 @@ class __$$UserModelImplCopyWithImpl<$Res>
     extends _$UserModelCopyWithImpl<$Res, _$UserModelImpl>
     implements _$$UserModelImplCopyWith<$Res> {
   __$$UserModelImplCopyWithImpl(
-    _$UserModelImpl _value,
-    $Res Function(_$UserModelImpl) _then,
-  ) : super(_value, _then);
+      _$UserModelImpl _value, $Res Function(_$UserModelImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of UserModel
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -268,115 +252,113 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? rejectionReason = freezed,
     Object? approvedAt = freezed,
   }) {
-    return _then(
-      _$UserModelImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        name: freezed == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        dateOfBirth: freezed == dateOfBirth
-            ? _value.dateOfBirth
-            : dateOfBirth // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        gender: freezed == gender
-            ? _value.gender
-            : gender // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        bio: freezed == bio
-            ? _value.bio
-            : bio // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        photos: null == photos
-            ? _value._photos
-            : photos // ignore: cast_nullable_to_non_nullable
-                  as List<PhotoModel>,
-        interests: null == interests
-            ? _value._interests
-            : interests // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        interestedIn: freezed == interestedIn
-            ? _value.interestedIn
-            : interestedIn // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        studentId: freezed == studentId
-            ? _value.studentId
-            : studentId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        major: freezed == major
-            ? _value.major
-            : major // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        className: freezed == className
-            ? _value.className
-            : className // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isEmailVerified: null == isEmailVerified
-            ? _value.isEmailVerified
-            : isEmailVerified // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        isProfileComplete: null == isProfileComplete
-            ? _value.isProfileComplete
-            : isProfileComplete // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        lastActive: freezed == lastActive
-            ? _value.lastActive
-            : lastActive // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isOnline: null == isOnline
-            ? _value.isOnline
-            : isOnline // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        approvalStatus: freezed == approvalStatus
-            ? _value.approvalStatus
-            : approvalStatus // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        rejectionReason: freezed == rejectionReason
-            ? _value.rejectionReason
-            : rejectionReason // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        approvedAt: freezed == approvedAt
-            ? _value.approvedAt
-            : approvedAt // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$UserModelImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: freezed == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String?,
+      dateOfBirth: freezed == dateOfBirth
+          ? _value.dateOfBirth
+          : dateOfBirth // ignore: cast_nullable_to_non_nullable
+              as String?,
+      gender: freezed == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
+      bio: freezed == bio
+          ? _value.bio
+          : bio // ignore: cast_nullable_to_non_nullable
+              as String?,
+      photos: null == photos
+          ? _value._photos
+          : photos // ignore: cast_nullable_to_non_nullable
+              as List<PhotoModel>,
+      interests: null == interests
+          ? _value._interests
+          : interests // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      interestedIn: freezed == interestedIn
+          ? _value.interestedIn
+          : interestedIn // ignore: cast_nullable_to_non_nullable
+              as String?,
+      studentId: freezed == studentId
+          ? _value.studentId
+          : studentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      major: freezed == major
+          ? _value.major
+          : major // ignore: cast_nullable_to_non_nullable
+              as String?,
+      className: freezed == className
+          ? _value.className
+          : className // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isEmailVerified: null == isEmailVerified
+          ? _value.isEmailVerified
+          : isEmailVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isProfileComplete: null == isProfileComplete
+          ? _value.isProfileComplete
+          : isProfileComplete // ignore: cast_nullable_to_non_nullable
+              as bool,
+      lastActive: freezed == lastActive
+          ? _value.lastActive
+          : lastActive // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isOnline: null == isOnline
+          ? _value.isOnline
+          : isOnline // ignore: cast_nullable_to_non_nullable
+              as bool,
+      approvalStatus: freezed == approvalStatus
+          ? _value.approvalStatus
+          : approvalStatus // ignore: cast_nullable_to_non_nullable
+              as String?,
+      rejectionReason: freezed == rejectionReason
+          ? _value.rejectionReason
+          : rejectionReason // ignore: cast_nullable_to_non_nullable
+              as String?,
+      approvedAt: freezed == approvedAt
+          ? _value.approvedAt
+          : approvedAt // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UserModelImpl extends _UserModel {
-  const _$UserModelImpl({
-    @JsonKey(name: '_id') required this.id,
-    required this.email,
-    this.name,
-    this.dateOfBirth,
-    this.gender,
-    this.bio,
-    final List<PhotoModel> photos = const [],
-    final List<String> interests = const [],
-    this.interestedIn,
-    this.studentId,
-    this.major,
-    @JsonKey(name: 'class') this.className,
-    this.isEmailVerified = false,
-    this.isProfileComplete = false,
-    this.lastActive,
-    this.isOnline = false,
-    this.approvalStatus,
-    this.rejectionReason,
-    this.approvedAt,
-  }) : _photos = photos,
-       _interests = interests,
-       super._();
+  const _$UserModelImpl(
+      {@JsonKey(name: '_id') required this.id,
+      required this.email,
+      this.name,
+      this.dateOfBirth,
+      this.gender,
+      this.bio,
+      final List<PhotoModel> photos = const [],
+      final List<String> interests = const [],
+      this.interestedIn,
+      this.studentId,
+      this.major,
+      @JsonKey(name: 'class') this.className,
+      this.isEmailVerified = false,
+      this.isProfileComplete = false,
+      this.lastActive,
+      this.isOnline = false,
+      this.approvalStatus,
+      this.rejectionReason,
+      this.approvedAt})
+      : _photos = photos,
+        _interests = interests,
+        super._();
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -432,10 +414,10 @@ class _$UserModelImpl extends _UserModel {
   @override
   @JsonKey()
   final bool isOnline;
-  // Approval status fields
+// Approval status fields
   @override
   final String? approvalStatus;
-  // 'pending', 'approved', 'rejected'
+// 'pending', 'approved', 'rejected'
   @override
   final String? rejectionReason;
   @override
@@ -459,10 +441,8 @@ class _$UserModelImpl extends _UserModel {
             (identical(other.gender, gender) || other.gender == gender) &&
             (identical(other.bio, bio) || other.bio == bio) &&
             const DeepCollectionEquality().equals(other._photos, _photos) &&
-            const DeepCollectionEquality().equals(
-              other._interests,
-              _interests,
-            ) &&
+            const DeepCollectionEquality()
+                .equals(other._interests, _interests) &&
             (identical(other.interestedIn, interestedIn) ||
                 other.interestedIn == interestedIn) &&
             (identical(other.studentId, studentId) ||
@@ -486,34 +466,32 @@ class _$UserModelImpl extends _UserModel {
                 other.approvedAt == approvedAt));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hashAll([
-    runtimeType,
-    id,
-    email,
-    name,
-    dateOfBirth,
-    gender,
-    bio,
-    const DeepCollectionEquality().hash(_photos),
-    const DeepCollectionEquality().hash(_interests),
-    interestedIn,
-    studentId,
-    major,
-    className,
-    isEmailVerified,
-    isProfileComplete,
-    lastActive,
-    isOnline,
-    approvalStatus,
-    rejectionReason,
-    approvedAt,
-  ]);
+        runtimeType,
+        id,
+        email,
+        name,
+        dateOfBirth,
+        gender,
+        bio,
+        const DeepCollectionEquality().hash(_photos),
+        const DeepCollectionEquality().hash(_interests),
+        interestedIn,
+        studentId,
+        major,
+        className,
+        isEmailVerified,
+        isProfileComplete,
+        lastActive,
+        isOnline,
+        approvalStatus,
+        rejectionReason,
+        approvedAt
+      ]);
 
-  /// Create a copy of UserModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$UserModelImplCopyWith<_$UserModelImpl> get copyWith =>
@@ -521,32 +499,33 @@ class _$UserModelImpl extends _UserModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserModelImplToJson(this);
+    return _$$UserModelImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _UserModel extends UserModel {
-  const factory _UserModel({
-    @JsonKey(name: '_id') required final String id,
-    required final String email,
-    final String? name,
-    final String? dateOfBirth,
-    final String? gender,
-    final String? bio,
-    final List<PhotoModel> photos,
-    final List<String> interests,
-    final String? interestedIn,
-    final String? studentId,
-    final String? major,
-    @JsonKey(name: 'class') final String? className,
-    final bool isEmailVerified,
-    final bool isProfileComplete,
-    final String? lastActive,
-    final bool isOnline,
-    final String? approvalStatus,
-    final String? rejectionReason,
-    final String? approvedAt,
-  }) = _$UserModelImpl;
+  const factory _UserModel(
+      {@JsonKey(name: '_id') required final String id,
+      required final String email,
+      final String? name,
+      final String? dateOfBirth,
+      final String? gender,
+      final String? bio,
+      final List<PhotoModel> photos,
+      final List<String> interests,
+      final String? interestedIn,
+      final String? studentId,
+      final String? major,
+      @JsonKey(name: 'class') final String? className,
+      final bool isEmailVerified,
+      final bool isProfileComplete,
+      final String? lastActive,
+      final bool isOnline,
+      final String? approvalStatus,
+      final String? rejectionReason,
+      final String? approvedAt}) = _$UserModelImpl;
   const _UserModel._() : super._();
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
@@ -585,18 +564,15 @@ abstract class _UserModel extends UserModel {
   @override
   String? get lastActive;
   @override
-  bool get isOnline; // Approval status fields
-  @override
-  String? get approvalStatus; // 'pending', 'approved', 'rejected'
-  @override
+  bool get isOnline;
+  @override // Approval status fields
+  String? get approvalStatus;
+  @override // 'pending', 'approved', 'rejected'
   String? get rejectionReason;
   @override
   String? get approvedAt;
-
-  /// Create a copy of UserModel
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$UserModelImplCopyWith<_$UserModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -611,12 +587,8 @@ mixin _$PhotoModel {
   String? get publicId => throw _privateConstructorUsedError;
   bool get isMain => throw _privateConstructorUsedError;
 
-  /// Serializes this PhotoModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of PhotoModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $PhotoModelCopyWith<PhotoModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -624,9 +596,8 @@ mixin _$PhotoModel {
 /// @nodoc
 abstract class $PhotoModelCopyWith<$Res> {
   factory $PhotoModelCopyWith(
-    PhotoModel value,
-    $Res Function(PhotoModel) then,
-  ) = _$PhotoModelCopyWithImpl<$Res, PhotoModel>;
+          PhotoModel value, $Res Function(PhotoModel) then) =
+      _$PhotoModelCopyWithImpl<$Res, PhotoModel>;
   @useResult
   $Res call({String url, String? publicId, bool isMain});
 }
@@ -641,8 +612,6 @@ class _$PhotoModelCopyWithImpl<$Res, $Val extends PhotoModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of PhotoModel
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -650,23 +619,20 @@ class _$PhotoModelCopyWithImpl<$Res, $Val extends PhotoModel>
     Object? publicId = freezed,
     Object? isMain = null,
   }) {
-    return _then(
-      _value.copyWith(
-            url: null == url
-                ? _value.url
-                : url // ignore: cast_nullable_to_non_nullable
-                      as String,
-            publicId: freezed == publicId
-                ? _value.publicId
-                : publicId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isMain: null == isMain
-                ? _value.isMain
-                : isMain // ignore: cast_nullable_to_non_nullable
-                      as bool,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      url: null == url
+          ? _value.url
+          : url // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicId: freezed == publicId
+          ? _value.publicId
+          : publicId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isMain: null == isMain
+          ? _value.isMain
+          : isMain // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
   }
 }
 
@@ -674,9 +640,8 @@ class _$PhotoModelCopyWithImpl<$Res, $Val extends PhotoModel>
 abstract class _$$PhotoModelImplCopyWith<$Res>
     implements $PhotoModelCopyWith<$Res> {
   factory _$$PhotoModelImplCopyWith(
-    _$PhotoModelImpl value,
-    $Res Function(_$PhotoModelImpl) then,
-  ) = __$$PhotoModelImplCopyWithImpl<$Res>;
+          _$PhotoModelImpl value, $Res Function(_$PhotoModelImpl) then) =
+      __$$PhotoModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String url, String? publicId, bool isMain});
@@ -687,12 +652,9 @@ class __$$PhotoModelImplCopyWithImpl<$Res>
     extends _$PhotoModelCopyWithImpl<$Res, _$PhotoModelImpl>
     implements _$$PhotoModelImplCopyWith<$Res> {
   __$$PhotoModelImplCopyWithImpl(
-    _$PhotoModelImpl _value,
-    $Res Function(_$PhotoModelImpl) _then,
-  ) : super(_value, _then);
+      _$PhotoModelImpl _value, $Res Function(_$PhotoModelImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of PhotoModel
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -700,33 +662,28 @@ class __$$PhotoModelImplCopyWithImpl<$Res>
     Object? publicId = freezed,
     Object? isMain = null,
   }) {
-    return _then(
-      _$PhotoModelImpl(
-        url: null == url
-            ? _value.url
-            : url // ignore: cast_nullable_to_non_nullable
-                  as String,
-        publicId: freezed == publicId
-            ? _value.publicId
-            : publicId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isMain: null == isMain
-            ? _value.isMain
-            : isMain // ignore: cast_nullable_to_non_nullable
-                  as bool,
-      ),
-    );
+    return _then(_$PhotoModelImpl(
+      url: null == url
+          ? _value.url
+          : url // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicId: freezed == publicId
+          ? _value.publicId
+          : publicId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isMain: null == isMain
+          ? _value.isMain
+          : isMain // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$PhotoModelImpl implements _PhotoModel {
-  const _$PhotoModelImpl({
-    required this.url,
-    this.publicId,
-    this.isMain = false,
-  });
+  const _$PhotoModelImpl(
+      {required this.url, this.publicId, this.isMain = false});
 
   factory _$PhotoModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$PhotoModelImplFromJson(json);
@@ -755,13 +712,11 @@ class _$PhotoModelImpl implements _PhotoModel {
             (identical(other.isMain, isMain) || other.isMain == isMain));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, url, publicId, isMain);
 
-  /// Create a copy of PhotoModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$PhotoModelImplCopyWith<_$PhotoModelImpl> get copyWith =>
@@ -769,16 +724,17 @@ class _$PhotoModelImpl implements _PhotoModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PhotoModelImplToJson(this);
+    return _$$PhotoModelImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _PhotoModel implements PhotoModel {
-  const factory _PhotoModel({
-    required final String url,
-    final String? publicId,
-    final bool isMain,
-  }) = _$PhotoModelImpl;
+  const factory _PhotoModel(
+      {required final String url,
+      final String? publicId,
+      final bool isMain}) = _$PhotoModelImpl;
 
   factory _PhotoModel.fromJson(Map<String, dynamic> json) =
       _$PhotoModelImpl.fromJson;
@@ -789,11 +745,8 @@ abstract class _PhotoModel implements PhotoModel {
   String? get publicId;
   @override
   bool get isMain;
-
-  /// Create a copy of PhotoModel
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$PhotoModelImplCopyWith<_$PhotoModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

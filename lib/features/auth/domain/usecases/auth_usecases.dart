@@ -87,13 +87,13 @@ class RefreshTokenUseCase
 }
 
 // 5. Logout
-@injectable
-class LogoutUseCase implements UseCase<void, NoParams> {
-  final AuthRepository repository;
-  LogoutUseCase(this.repository);
+// @injectable
+// class LogoutUseCase implements UseCase<void, NoParams> {
+//   final AuthRepository repository;
+//   LogoutUseCase(this.repository);
 
-  @override
-  Future<Either<Failure, void>> call(NoParams params) async {
-    return await repository.logout();
-  }
-}
+//   @override
+//   Future<Either<Failure, void>> call(NoParams params) async {
+//     return await repository.logout();
+//   }
+// }

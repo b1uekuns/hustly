@@ -12,8 +12,7 @@ part of 'refresh_token_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 RefreshTokenModel _$RefreshTokenModelFromJson(Map<String, dynamic> json) {
   return _RefreshTokenModel.fromJson(json);
@@ -26,12 +25,8 @@ mixin _$RefreshTokenModel {
   String get refreshToken => throw _privateConstructorUsedError;
   DateTime? get expiresAt => throw _privateConstructorUsedError;
 
-  /// Serializes this RefreshTokenModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of RefreshTokenModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $RefreshTokenModelCopyWith<RefreshTokenModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -39,15 +34,13 @@ mixin _$RefreshTokenModel {
 /// @nodoc
 abstract class $RefreshTokenModelCopyWith<$Res> {
   factory $RefreshTokenModelCopyWith(
-    RefreshTokenModel value,
-    $Res Function(RefreshTokenModel) then,
-  ) = _$RefreshTokenModelCopyWithImpl<$Res, RefreshTokenModel>;
+          RefreshTokenModel value, $Res Function(RefreshTokenModel) then) =
+      _$RefreshTokenModelCopyWithImpl<$Res, RefreshTokenModel>;
   @useResult
-  $Res call({
-    @JsonKey(name: 'token') String accessToken,
-    String refreshToken,
-    DateTime? expiresAt,
-  });
+  $Res call(
+      {@JsonKey(name: 'token') String accessToken,
+      String refreshToken,
+      DateTime? expiresAt});
 }
 
 /// @nodoc
@@ -60,8 +53,6 @@ class _$RefreshTokenModelCopyWithImpl<$Res, $Val extends RefreshTokenModel>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of RefreshTokenModel
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -69,53 +60,45 @@ class _$RefreshTokenModelCopyWithImpl<$Res, $Val extends RefreshTokenModel>
     Object? refreshToken = null,
     Object? expiresAt = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            accessToken: null == accessToken
-                ? _value.accessToken
-                : accessToken // ignore: cast_nullable_to_non_nullable
-                      as String,
-            refreshToken: null == refreshToken
-                ? _value.refreshToken
-                : refreshToken // ignore: cast_nullable_to_non_nullable
-                      as String,
-            expiresAt: freezed == expiresAt
-                ? _value.expiresAt
-                : expiresAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      accessToken: null == accessToken
+          ? _value.accessToken
+          : accessToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      refreshToken: null == refreshToken
+          ? _value.refreshToken
+          : refreshToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      expiresAt: freezed == expiresAt
+          ? _value.expiresAt
+          : expiresAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$RefreshTokenModelImplCopyWith<$Res>
     implements $RefreshTokenModelCopyWith<$Res> {
-  factory _$$RefreshTokenModelImplCopyWith(
-    _$RefreshTokenModelImpl value,
-    $Res Function(_$RefreshTokenModelImpl) then,
-  ) = __$$RefreshTokenModelImplCopyWithImpl<$Res>;
+  factory _$$RefreshTokenModelImplCopyWith(_$RefreshTokenModelImpl value,
+          $Res Function(_$RefreshTokenModelImpl) then) =
+      __$$RefreshTokenModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(name: 'token') String accessToken,
-    String refreshToken,
-    DateTime? expiresAt,
-  });
+  $Res call(
+      {@JsonKey(name: 'token') String accessToken,
+      String refreshToken,
+      DateTime? expiresAt});
 }
 
 /// @nodoc
 class __$$RefreshTokenModelImplCopyWithImpl<$Res>
     extends _$RefreshTokenModelCopyWithImpl<$Res, _$RefreshTokenModelImpl>
     implements _$$RefreshTokenModelImplCopyWith<$Res> {
-  __$$RefreshTokenModelImplCopyWithImpl(
-    _$RefreshTokenModelImpl _value,
-    $Res Function(_$RefreshTokenModelImpl) _then,
-  ) : super(_value, _then);
+  __$$RefreshTokenModelImplCopyWithImpl(_$RefreshTokenModelImpl _value,
+      $Res Function(_$RefreshTokenModelImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of RefreshTokenModel
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -123,33 +106,31 @@ class __$$RefreshTokenModelImplCopyWithImpl<$Res>
     Object? refreshToken = null,
     Object? expiresAt = freezed,
   }) {
-    return _then(
-      _$RefreshTokenModelImpl(
-        accessToken: null == accessToken
-            ? _value.accessToken
-            : accessToken // ignore: cast_nullable_to_non_nullable
-                  as String,
-        refreshToken: null == refreshToken
-            ? _value.refreshToken
-            : refreshToken // ignore: cast_nullable_to_non_nullable
-                  as String,
-        expiresAt: freezed == expiresAt
-            ? _value.expiresAt
-            : expiresAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-      ),
-    );
+    return _then(_$RefreshTokenModelImpl(
+      accessToken: null == accessToken
+          ? _value.accessToken
+          : accessToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      refreshToken: null == refreshToken
+          ? _value.refreshToken
+          : refreshToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      expiresAt: freezed == expiresAt
+          ? _value.expiresAt
+          : expiresAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$RefreshTokenModelImpl extends _RefreshTokenModel {
-  const _$RefreshTokenModelImpl({
-    @JsonKey(name: 'token') required this.accessToken,
-    required this.refreshToken,
-    this.expiresAt,
-  }) : super._();
+  const _$RefreshTokenModelImpl(
+      {@JsonKey(name: 'token') required this.accessToken,
+      required this.refreshToken,
+      this.expiresAt})
+      : super._();
 
   factory _$RefreshTokenModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$RefreshTokenModelImplFromJson(json);
@@ -180,34 +161,31 @@ class _$RefreshTokenModelImpl extends _RefreshTokenModel {
                 other.expiresAt == expiresAt));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode =>
       Object.hash(runtimeType, accessToken, refreshToken, expiresAt);
 
-  /// Create a copy of RefreshTokenModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$RefreshTokenModelImplCopyWith<_$RefreshTokenModelImpl> get copyWith =>
       __$$RefreshTokenModelImplCopyWithImpl<_$RefreshTokenModelImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$RefreshTokenModelImplToJson(this);
+    return _$$RefreshTokenModelImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _RefreshTokenModel extends RefreshTokenModel {
-  const factory _RefreshTokenModel({
-    @JsonKey(name: 'token') required final String accessToken,
-    required final String refreshToken,
-    final DateTime? expiresAt,
-  }) = _$RefreshTokenModelImpl;
+  const factory _RefreshTokenModel(
+      {@JsonKey(name: 'token') required final String accessToken,
+      required final String refreshToken,
+      final DateTime? expiresAt}) = _$RefreshTokenModelImpl;
   const _RefreshTokenModel._() : super._();
 
   factory _RefreshTokenModel.fromJson(Map<String, dynamic> json) =
@@ -220,11 +198,8 @@ abstract class _RefreshTokenModel extends RefreshTokenModel {
   String get refreshToken;
   @override
   DateTime? get expiresAt;
-
-  /// Create a copy of RefreshTokenModel
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$RefreshTokenModelImplCopyWith<_$RefreshTokenModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -138,26 +138,26 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  @override
-  Future<Either<Failure, void>> logout() async {
-    try {
-      final token = await _tokenProvider.getAccessToken();
-      if (token == null) {
-        return const Left(ServerFailure('No token available'));
-      }
+  // @override
+  // Future<Either<Failure, void>> logout() async {
+  //   try {
+  //     final token = await _tokenProvider.getAccessToken();
+  //     if (token == null) {
+  //       return const Left(ServerFailure('No token available'));
+  //     }
 
-      final response = await _authApi.logout('Bearer $token');
+  //     final response = await _authApi.logout('Bearer $token');
 
-      if (response.response.statusCode == 200) {
-        await _tokenProvider.clearTokens();
-        return const Right(null);
-      } else {
-        return Left(
-          ServerFailure(response.data.error?.message ?? 'Failed to logout'),
-        );
-      }
-    } catch (e) {
-      return Left(ErrorHandler.handleException(e as Exception));
-    }
-  }
+  //     if (response.response.statusCode == 200) {
+  //       await _tokenProvider.clearTokens();
+  //       return const Right(null);
+  //     } else {
+  //       return Left(
+  //         ServerFailure(response.data.error?.message ?? 'Failed to logout'),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     return Left(ErrorHandler.handleException(e as Exception));
+  //   }
+  // }
 }

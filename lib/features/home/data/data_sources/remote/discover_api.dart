@@ -6,11 +6,7 @@ part 'discover_api.g.dart';
 
 @RestApi()
 abstract class DiscoverApi {
-  factory DiscoverApi(
-    Dio dio, {
-    String? baseUrl,
-    ParseErrorLogger? errorLogger,
-  }) = _DiscoverApi;
+  factory DiscoverApi(Dio dio, {String? baseUrl}) = _DiscoverApi;
 
   /// Get discover suggestions
   @GET('api/v1/discover')

@@ -12,8 +12,7 @@ part of 'user_entity.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$UserEntity {
@@ -26,9 +25,7 @@ mixin _$UserEntity {
       throw _privateConstructorUsedError; // 'pending', 'approved', 'rejected'
   String? get rejectionReason => throw _privateConstructorUsedError;
 
-  /// Create a copy of UserEntity
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $UserEntityCopyWith<UserEntity> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -36,19 +33,17 @@ mixin _$UserEntity {
 /// @nodoc
 abstract class $UserEntityCopyWith<$Res> {
   factory $UserEntityCopyWith(
-    UserEntity value,
-    $Res Function(UserEntity) then,
-  ) = _$UserEntityCopyWithImpl<$Res, UserEntity>;
+          UserEntity value, $Res Function(UserEntity) then) =
+      _$UserEntityCopyWithImpl<$Res, UserEntity>;
   @useResult
-  $Res call({
-    String studentId,
-    String email,
-    String name,
-    String? avatar,
-    bool isVerified,
-    String? approvalStatus,
-    String? rejectionReason,
-  });
+  $Res call(
+      {String studentId,
+      String email,
+      String name,
+      String? avatar,
+      bool isVerified,
+      String? approvalStatus,
+      String? rejectionReason});
 }
 
 /// @nodoc
@@ -61,8 +56,6 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of UserEntity
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -74,39 +67,36 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
     Object? approvalStatus = freezed,
     Object? rejectionReason = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            studentId: null == studentId
-                ? _value.studentId
-                : studentId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            avatar: freezed == avatar
-                ? _value.avatar
-                : avatar // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isVerified: null == isVerified
-                ? _value.isVerified
-                : isVerified // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            approvalStatus: freezed == approvalStatus
-                ? _value.approvalStatus
-                : approvalStatus // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            rejectionReason: freezed == rejectionReason
-                ? _value.rejectionReason
-                : rejectionReason // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      studentId: null == studentId
+          ? _value.studentId
+          : studentId // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      avatar: freezed == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isVerified: null == isVerified
+          ? _value.isVerified
+          : isVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
+      approvalStatus: freezed == approvalStatus
+          ? _value.approvalStatus
+          : approvalStatus // ignore: cast_nullable_to_non_nullable
+              as String?,
+      rejectionReason: freezed == rejectionReason
+          ? _value.rejectionReason
+          : rejectionReason // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
@@ -114,20 +104,18 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
 abstract class _$$UserEntityImplCopyWith<$Res>
     implements $UserEntityCopyWith<$Res> {
   factory _$$UserEntityImplCopyWith(
-    _$UserEntityImpl value,
-    $Res Function(_$UserEntityImpl) then,
-  ) = __$$UserEntityImplCopyWithImpl<$Res>;
+          _$UserEntityImpl value, $Res Function(_$UserEntityImpl) then) =
+      __$$UserEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String studentId,
-    String email,
-    String name,
-    String? avatar,
-    bool isVerified,
-    String? approvalStatus,
-    String? rejectionReason,
-  });
+  $Res call(
+      {String studentId,
+      String email,
+      String name,
+      String? avatar,
+      bool isVerified,
+      String? approvalStatus,
+      String? rejectionReason});
 }
 
 /// @nodoc
@@ -135,12 +123,9 @@ class __$$UserEntityImplCopyWithImpl<$Res>
     extends _$UserEntityCopyWithImpl<$Res, _$UserEntityImpl>
     implements _$$UserEntityImplCopyWith<$Res> {
   __$$UserEntityImplCopyWithImpl(
-    _$UserEntityImpl _value,
-    $Res Function(_$UserEntityImpl) _then,
-  ) : super(_value, _then);
+      _$UserEntityImpl _value, $Res Function(_$UserEntityImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of UserEntity
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -152,53 +137,50 @@ class __$$UserEntityImplCopyWithImpl<$Res>
     Object? approvalStatus = freezed,
     Object? rejectionReason = freezed,
   }) {
-    return _then(
-      _$UserEntityImpl(
-        studentId: null == studentId
-            ? _value.studentId
-            : studentId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        avatar: freezed == avatar
-            ? _value.avatar
-            : avatar // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isVerified: null == isVerified
-            ? _value.isVerified
-            : isVerified // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        approvalStatus: freezed == approvalStatus
-            ? _value.approvalStatus
-            : approvalStatus // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        rejectionReason: freezed == rejectionReason
-            ? _value.rejectionReason
-            : rejectionReason // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$UserEntityImpl(
+      studentId: null == studentId
+          ? _value.studentId
+          : studentId // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      avatar: freezed == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isVerified: null == isVerified
+          ? _value.isVerified
+          : isVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
+      approvalStatus: freezed == approvalStatus
+          ? _value.approvalStatus
+          : approvalStatus // ignore: cast_nullable_to_non_nullable
+              as String?,
+      rejectionReason: freezed == rejectionReason
+          ? _value.rejectionReason
+          : rejectionReason // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 
 class _$UserEntityImpl implements _UserEntity {
-  const _$UserEntityImpl({
-    required this.studentId,
-    required this.email,
-    required this.name,
-    this.avatar,
-    this.isVerified = false,
-    this.approvalStatus,
-    this.rejectionReason,
-  });
+  const _$UserEntityImpl(
+      {required this.studentId,
+      required this.email,
+      required this.name,
+      this.avatar,
+      this.isVerified = false,
+      this.approvalStatus,
+      this.rejectionReason});
 
   @override
   final String studentId;
@@ -211,10 +193,10 @@ class _$UserEntityImpl implements _UserEntity {
   @override
   @JsonKey()
   final bool isVerified;
-  // Approval status
+// Approval status
   @override
   final String? approvalStatus;
-  // 'pending', 'approved', 'rejected'
+// 'pending', 'approved', 'rejected'
   @override
   final String? rejectionReason;
 
@@ -242,20 +224,10 @@ class _$UserEntityImpl implements _UserEntity {
   }
 
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    studentId,
-    email,
-    name,
-    avatar,
-    isVerified,
-    approvalStatus,
-    rejectionReason,
-  );
+  int get hashCode => Object.hash(runtimeType, studentId, email, name, avatar,
+      isVerified, approvalStatus, rejectionReason);
 
-  /// Create a copy of UserEntity
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$UserEntityImplCopyWith<_$UserEntityImpl> get copyWith =>
@@ -263,15 +235,14 @@ class _$UserEntityImpl implements _UserEntity {
 }
 
 abstract class _UserEntity implements UserEntity {
-  const factory _UserEntity({
-    required final String studentId,
-    required final String email,
-    required final String name,
-    final String? avatar,
-    final bool isVerified,
-    final String? approvalStatus,
-    final String? rejectionReason,
-  }) = _$UserEntityImpl;
+  const factory _UserEntity(
+      {required final String studentId,
+      required final String email,
+      required final String name,
+      final String? avatar,
+      final bool isVerified,
+      final String? approvalStatus,
+      final String? rejectionReason}) = _$UserEntityImpl;
 
   @override
   String get studentId;
@@ -282,16 +253,13 @@ abstract class _UserEntity implements UserEntity {
   @override
   String? get avatar;
   @override
-  bool get isVerified; // Approval status
-  @override
-  String? get approvalStatus; // 'pending', 'approved', 'rejected'
-  @override
+  bool get isVerified;
+  @override // Approval status
+  String? get approvalStatus;
+  @override // 'pending', 'approved', 'rejected'
   String? get rejectionReason;
-
-  /// Create a copy of UserEntity
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$UserEntityImplCopyWith<_$UserEntityImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

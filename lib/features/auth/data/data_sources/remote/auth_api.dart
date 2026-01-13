@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import '../../../../../core/network/models/base_response.dart';
 import '../../models/login_response/login_response_model.dart';
+import '../../models/logout_response/logout_response_model.dart';
 import '../../models/refresh_token/refresh_token_model.dart';
 import '../../models/send_otp/send_otp_response.dart';
 import '../../models/user_model/user_model.dart';
@@ -43,8 +44,8 @@ abstract class AuthApi {
   );
 
   // Logout
-  @POST('api/v1/auth/logout')
-  Future<HttpResponse<BaseResponse<void>>> logout(
-    @Header('Authorization') String token,
-  );
+  // @POST('api/v1/auth/logout')
+  // Future<HttpResponse<BaseResponse<EmptyResponse>>> logout(
+  //   @Header('Authorization') String token,
+  // );
 }

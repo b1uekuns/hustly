@@ -12,8 +12,7 @@ part of 'refresh_token_entities.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$RefreshTokenEntity {
@@ -21,9 +20,7 @@ mixin _$RefreshTokenEntity {
   String get refreshToken => throw _privateConstructorUsedError;
   DateTime? get expiresAt => throw _privateConstructorUsedError;
 
-  /// Create a copy of RefreshTokenEntity
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $RefreshTokenEntityCopyWith<RefreshTokenEntity> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -31,9 +28,8 @@ mixin _$RefreshTokenEntity {
 /// @nodoc
 abstract class $RefreshTokenEntityCopyWith<$Res> {
   factory $RefreshTokenEntityCopyWith(
-    RefreshTokenEntity value,
-    $Res Function(RefreshTokenEntity) then,
-  ) = _$RefreshTokenEntityCopyWithImpl<$Res, RefreshTokenEntity>;
+          RefreshTokenEntity value, $Res Function(RefreshTokenEntity) then) =
+      _$RefreshTokenEntityCopyWithImpl<$Res, RefreshTokenEntity>;
   @useResult
   $Res call({String accessToken, String refreshToken, DateTime? expiresAt});
 }
@@ -48,8 +44,6 @@ class _$RefreshTokenEntityCopyWithImpl<$Res, $Val extends RefreshTokenEntity>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of RefreshTokenEntity
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -57,33 +51,29 @@ class _$RefreshTokenEntityCopyWithImpl<$Res, $Val extends RefreshTokenEntity>
     Object? refreshToken = null,
     Object? expiresAt = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            accessToken: null == accessToken
-                ? _value.accessToken
-                : accessToken // ignore: cast_nullable_to_non_nullable
-                      as String,
-            refreshToken: null == refreshToken
-                ? _value.refreshToken
-                : refreshToken // ignore: cast_nullable_to_non_nullable
-                      as String,
-            expiresAt: freezed == expiresAt
-                ? _value.expiresAt
-                : expiresAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      accessToken: null == accessToken
+          ? _value.accessToken
+          : accessToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      refreshToken: null == refreshToken
+          ? _value.refreshToken
+          : refreshToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      expiresAt: freezed == expiresAt
+          ? _value.expiresAt
+          : expiresAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$RefreshTokenEntityImplCopyWith<$Res>
     implements $RefreshTokenEntityCopyWith<$Res> {
-  factory _$$RefreshTokenEntityImplCopyWith(
-    _$RefreshTokenEntityImpl value,
-    $Res Function(_$RefreshTokenEntityImpl) then,
-  ) = __$$RefreshTokenEntityImplCopyWithImpl<$Res>;
+  factory _$$RefreshTokenEntityImplCopyWith(_$RefreshTokenEntityImpl value,
+          $Res Function(_$RefreshTokenEntityImpl) then) =
+      __$$RefreshTokenEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String accessToken, String refreshToken, DateTime? expiresAt});
@@ -93,13 +83,10 @@ abstract class _$$RefreshTokenEntityImplCopyWith<$Res>
 class __$$RefreshTokenEntityImplCopyWithImpl<$Res>
     extends _$RefreshTokenEntityCopyWithImpl<$Res, _$RefreshTokenEntityImpl>
     implements _$$RefreshTokenEntityImplCopyWith<$Res> {
-  __$$RefreshTokenEntityImplCopyWithImpl(
-    _$RefreshTokenEntityImpl _value,
-    $Res Function(_$RefreshTokenEntityImpl) _then,
-  ) : super(_value, _then);
+  __$$RefreshTokenEntityImplCopyWithImpl(_$RefreshTokenEntityImpl _value,
+      $Res Function(_$RefreshTokenEntityImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of RefreshTokenEntity
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -107,33 +94,28 @@ class __$$RefreshTokenEntityImplCopyWithImpl<$Res>
     Object? refreshToken = null,
     Object? expiresAt = freezed,
   }) {
-    return _then(
-      _$RefreshTokenEntityImpl(
-        accessToken: null == accessToken
-            ? _value.accessToken
-            : accessToken // ignore: cast_nullable_to_non_nullable
-                  as String,
-        refreshToken: null == refreshToken
-            ? _value.refreshToken
-            : refreshToken // ignore: cast_nullable_to_non_nullable
-                  as String,
-        expiresAt: freezed == expiresAt
-            ? _value.expiresAt
-            : expiresAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-      ),
-    );
+    return _then(_$RefreshTokenEntityImpl(
+      accessToken: null == accessToken
+          ? _value.accessToken
+          : accessToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      refreshToken: null == refreshToken
+          ? _value.refreshToken
+          : refreshToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      expiresAt: freezed == expiresAt
+          ? _value.expiresAt
+          : expiresAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ));
   }
 }
 
 /// @nodoc
 
 class _$RefreshTokenEntityImpl implements _RefreshTokenEntity {
-  const _$RefreshTokenEntityImpl({
-    required this.accessToken,
-    required this.refreshToken,
-    this.expiresAt,
-  });
+  const _$RefreshTokenEntityImpl(
+      {required this.accessToken, required this.refreshToken, this.expiresAt});
 
   @override
   final String accessToken;
@@ -164,24 +146,19 @@ class _$RefreshTokenEntityImpl implements _RefreshTokenEntity {
   int get hashCode =>
       Object.hash(runtimeType, accessToken, refreshToken, expiresAt);
 
-  /// Create a copy of RefreshTokenEntity
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$RefreshTokenEntityImplCopyWith<_$RefreshTokenEntityImpl> get copyWith =>
       __$$RefreshTokenEntityImplCopyWithImpl<_$RefreshTokenEntityImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 }
 
 abstract class _RefreshTokenEntity implements RefreshTokenEntity {
-  const factory _RefreshTokenEntity({
-    required final String accessToken,
-    required final String refreshToken,
-    final DateTime? expiresAt,
-  }) = _$RefreshTokenEntityImpl;
+  const factory _RefreshTokenEntity(
+      {required final String accessToken,
+      required final String refreshToken,
+      final DateTime? expiresAt}) = _$RefreshTokenEntityImpl;
 
   @override
   String get accessToken;
@@ -189,11 +166,8 @@ abstract class _RefreshTokenEntity implements RefreshTokenEntity {
   String get refreshToken;
   @override
   DateTime? get expiresAt;
-
-  /// Create a copy of RefreshTokenEntity
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$RefreshTokenEntityImplCopyWith<_$RefreshTokenEntityImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
