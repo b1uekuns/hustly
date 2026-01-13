@@ -22,7 +22,7 @@ mixin SwipeController<T extends StatefulWidget>
   String? flyDirection;
 
   // Scroll controller cho profile
-  final ScrollController scrollController = ScrollController();
+  late ScrollController scrollController = ScrollController();
   double scrollOffset = 0;
 
   // Animation constants
@@ -55,6 +55,7 @@ mixin SwipeController<T extends StatefulWidget>
   /// Khởi tạo controllers
   /// Gọi trong initState() của widget
   void initSwipeController() {
+    scrollController = ScrollController();
     flyController = AnimationController(vsync: this, duration: _flyDuration);
     scrollController.addListener(_onScrollChanged);
   }
@@ -68,7 +69,7 @@ mixin SwipeController<T extends StatefulWidget>
 
   /// Listener cho scroll changes
   void _onScrollChanged() {
-    if (mounted) {
+    if (mounted && scrollController.hasClients) {
       setState(() => scrollOffset = scrollController.offset);
     }
   }

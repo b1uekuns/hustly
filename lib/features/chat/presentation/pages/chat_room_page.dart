@@ -137,20 +137,23 @@ class _ChatRoomViewState extends State<_ChatRoomView> {
       body: BlocConsumer<ChatRoomBloc, ChatRoomState>(
         listener: (context, state) {
           state.maybeWhen(
-            loaded: (conversation, messages, isLoadingMessages, isSending, error) {
-              if (error != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(error),
-                    backgroundColor: AppColor.redIcon,
-                  ),
-                );
-              }
-              // Scroll to bottom when new messages arrive
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _scrollToBottom();
-              });
-            },
+            loaded:
+                (conversation, messages, isLoadingMessages, isSending, error) {
+                  if (error != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(error),
+                        backgroundColor: AppColor.redIcon,
+                      ),
+                    );
+                  }
+                  // Scroll to bottom when new messages arrive
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted && _scrollController.hasClients) {
+                      _scrollToBottom();
+                    }
+                  });
+                },
             orElse: () {},
           );
         },

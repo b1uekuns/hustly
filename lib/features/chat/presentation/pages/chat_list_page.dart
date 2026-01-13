@@ -6,6 +6,7 @@ import 'package:hust_chill_app/core/resources/app_style.dart';
 import 'package:hust_chill_app/features/chat/presentation/bloc/chat_list/chat_list_bloc.dart';
 import 'package:hust_chill_app/features/chat/presentation/widgets/conversation_card.dart';
 import 'package:hust_chill_app/features/chat/presentation/widgets/empty_chat_state.dart';
+import 'package:hust_chill_app/widgets/navBar/bottom_nav_bar.dart';
 
 class ChatListPage extends StatelessWidget {
   const ChatListPage({super.key});
@@ -20,8 +21,15 @@ class ChatListPage extends StatelessWidget {
   }
 }
 
-class _ChatListView extends StatelessWidget {
+class _ChatListView extends StatefulWidget {
   const _ChatListView();
+
+  @override
+  State<_ChatListView> createState() => _ChatListViewState();
+}
+
+class _ChatListViewState extends State<_ChatListView> {
+  int _selectedNavIndex = 3; // Messages tab
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +76,7 @@ class _ChatListView extends StatelessWidget {
                         arguments: conversation,
                       );
                     },
-                    onDelete: () {
-                      _showUnmatchDialog(context, conversation.id);
-                    },
+                    onDelete: () {},
                   );
                 },
               ),
@@ -111,42 +117,13 @@ class _ChatListView extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-
-  void _showUnmatchDialog(BuildContext context, String conversationId) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(
-          'Hủy kết nối',
-          style: AppStyle.def.copyWith(fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          'Bạn có chắc muốn hủy kết nối? Bạn sẽ không thể nhắn tin với người này nữa.',
-          style: AppStyle.def,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'Hủy',
-              style: AppStyle.def.copyWith(color: AppColor.grey),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<ChatListBloc>().add(
-                ChatListEvent.deleteConversation(conversationId),
-              );
-            },
-            child: Text(
-              'Xác nhận',
-              style: AppStyle.def.copyWith(color: AppColor.redIcon),
-            ),
-          ),
-        ],
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedNavIndex,
+        onItemSelected: (index) {
+          setState(() {
+            _selectedNavIndex = index;
+          });
+        },
       ),
     );
   }

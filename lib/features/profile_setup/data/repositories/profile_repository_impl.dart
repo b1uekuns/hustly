@@ -64,7 +64,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
         bio: profile.bio ?? '', // Convert null to empty string
         interests: profile.interests,
         interestedIn: profile.interestedIn,
-        datingPurpose: profile.datingPurpose,
+        datingPurpose: profile.datingPurpose ?? 'unsure', // Default to 'unsure' if null
         studentId: profile.studentId ?? '',
         major: profile.major,
         classField: profile.className,
@@ -80,6 +80,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
       );
 
       final requestJson = request.toJson();
+      // Ensure datingPurpose is always present (not null)
+      if (requestJson['datingPurpose'] == null) {
+        requestJson['datingPurpose'] = 'unsure';
+      }
       // Ensure photos are properly serialized as JSON objects
       requestJson['photos'] = (requestJson['photos'] as List)
           .map((p) => p is PhotoRequest ? p.toJson() : p)

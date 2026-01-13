@@ -32,12 +32,20 @@ class _PendingApprovalPageState extends State<PendingApprovalPage>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
+    // Check immediately when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<AuthBloc>().add(const AuthEvent.authCheckRequested());
+      }
+    });
+
     // Auto-check approval status every 30 seconds
     _startAutoCheck();
   }
 
   void _startAutoCheck() {
-    _autoCheckTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+    // Check every 10 seconds for faster response (reduced from 30s)
+    _autoCheckTimer = Timer.periodic(const Duration(seconds: 10), (_) {
       if (mounted) {
         context.read<AuthBloc>().add(const AuthEvent.authCheckRequested());
       }
